@@ -1,0 +1,152 @@
+/*
+ * Design tokens.
+ *
+ * Themes only redefine colour; every size, radius, shadow and easing curve is
+ * shared so a theme swap can never change the layout. The accent trio
+ * (--accent, --accent-soft, --accent-glow) is written by the settings module
+ * at runtime, which is how the accent picker works without any extra CSS.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Accent — replaced at runtime from settings. */
+  --accent: #00ff88;
+  --accent-soft: rgba(0, 255, 136, 0.16);
+  --accent-glow: rgba(0, 255, 136, 0.42);
+  --accent-line: rgba(0, 255, 136, 0.55);
+  --accent-ink: #04120b;
+
+  /* Surfaces */
+  --bg: #08090c;
+  --bg-deep: #050608;
+  --surface-1: rgba(255, 255, 255, 0.035);
+  --surface-2: rgba(255, 255, 255, 0.055);
+  --surface-3: rgba(255, 255, 255, 0.085);
+  --surface-solid: #101319;
+  --surface-raised: #151922;
+
+  /* Lines */
+  --line: rgba(255, 255, 255, 0.075);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --line-soft: rgba(255, 255, 255, 0.04);
+
+  /* Text */
+  --text: #eef1f6;
+  --text-muted: #98a2b3;
+  --text-faint: #67707f;
+  --text-invert: #0a0c10;
+
+  /* Status */
+  --danger: #ff5f6d;
+  --danger-soft: rgba(255, 95, 109, 0.14);
+  --warning: #f7b955;
+  --warning-soft: rgba(247, 185, 85, 0.14);
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, 0.14);
+  --info: #60a5fa;
+  --info-soft: rgba(96, 165, 250, 0.14);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 44px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 24px 60px -24px rgba(0, 0, 0, 0.75);
+  --shadow-pop: 0 18px 46px -18px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--line);
+
+  /* Type */
+  --font: "Segoe UI Variable Display", "Segoe UI", Inter, system-ui, -apple-system,
+          "Noto Sans", "Noto Sans Arabic", "Noto Sans SC", "Noto Sans JP", sans-serif;
+  --font-mono: "Cascadia Mono", "SF Mono", "JetBrains Mono", Consolas, monospace;
+  --text-xs: 11px;
+  --text-sm: 12.5px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 26px;
+  --text-3xl: 34px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --dur-1: 120ms;
+  --dur-2: 190ms;
+  --dur-3: 260ms;
+  --dur-4: 380ms;
+
+  /* Layout */
+  --titlebar-h: 40px;
+  --sidebar-w: 232px;
+  --topbar-h: 66px;
+  --ui-scale: 1;
+}
+
+/* Midnight: the same palette pushed further down, for dark rooms. */
+:root[data-theme="midnight"] {
+  --bg: #030407;
+  --bg-deep: #000103;
+  --surface-1: rgba(255, 255, 255, 0.028);
+  --surface-2: rgba(255, 255, 255, 0.045);
+  --surface-3: rgba(255, 255, 255, 0.07);
+  --surface-solid: #0a0c11;
+  --surface-raised: #0f1218;
+  --line: rgba(255, 255, 255, 0.06);
+  --text: #e6eaf2;
+  --text-muted: #8b95a6;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f6f9;
+  --bg-deep: #eaeef3;
+  --surface-1: rgba(14, 20, 32, 0.035);
+  --surface-2: rgba(14, 20, 32, 0.055);
+  --surface-3: rgba(14, 20, 32, 0.09);
+  --surface-solid: #ffffff;
+  --surface-raised: #ffffff;
+  --line: rgba(14, 20, 32, 0.1);
+  --line-strong: rgba(14, 20, 32, 0.18);
+  --line-soft: rgba(14, 20, 32, 0.06);
+  --text: #10141c;
+  --text-muted: #59616f;
+  --text-faint: #8b93a1;
+  --text-invert: #ffffff;
+  --accent-ink: #04120b;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.08);
+  --shadow-md: 0 10px 26px -12px rgba(16, 24, 40, 0.28);
+  --shadow-lg: 0 26px 60px -28px rgba(16, 24, 40, 0.34);
+  --shadow-pop: 0 18px 46px -20px rgba(16, 24, 40, 0.3), 0 0 0 1px var(--line);
+}
+
+/* One switch turns every transition and animation off. Respecting the OS
+   preference as well means motion-sensitive users get it without asking. */
+:root[data-animations="off"],
+:root[data-animations="off"] * {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-animations="on"]),
+  :root:not([data-animations="on"]) * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}

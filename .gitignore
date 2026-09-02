@@ -1,0 +1,66 @@
+# --- Build output ---------------------------------------------------------
+build/
+out/
+dist/
+artifacts/
+[Bb]in/
+[Oo]bj/
+*.o
+*.obj
+*.a
+*.lib
+*.exp
+*.ilk
+*.pdb
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# The wasm module is a build artifact, but it is committed so the front end
+# can be opened and reviewed without a C++ toolchain. Regenerate it with
+# scripts/build-wasm.sh; CI rebuilds and verifies it on every push.
+!frontend/assets/reticlex_core.wasm
+
+# --- CMake ----------------------------------------------------------------
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+
+# --- .NET -----------------------------------------------------------------
+*.user
+*.suo
+*.userprefs
+.vs/
+TestResults/
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+
+# --- Node -----------------------------------------------------------------
+node_modules/
+npm-debug.log*
+.npm/
+
+# --- Installer ------------------------------------------------------------
+installer/Output/
+*.iss.bak
+
+# --- Editors and OS -------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Local scratch --------------------------------------------------------
+*.local
+.env
+.env.*

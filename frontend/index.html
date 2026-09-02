@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="dark" data-animations="on">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <!-- The app ships offline; everything it needs is served from its own origin. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>ReticleX</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/controls.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/rtl.css">
+</head>
+<body>
+
+<!-- Shown until the wasm core and the first catalogue have loaded. -->
+<div class="boot" id="boot">
+  <div class="boot__mark" aria-hidden="true">
+    <span class="boot__reticle"></span>
+  </div>
+  <p class="boot__name">ReticleX</p>
+  <div class="boot__bar"><span></span></div>
+  <p class="boot__error" id="boot-error" hidden></p>
+</div>
+
+<div class="app" id="app" hidden>
+
+  <header class="titlebar" id="titlebar">
+    <div class="titlebar__brand">
+      <span class="titlebar__logo" aria-hidden="true"></span>
+      <span class="titlebar__name">ReticleX</span>
+      <span class="titlebar__tagline" data-i18n="app.tagline">Crosshair Design Studio</span>
+    </div>
+    <div class="titlebar__drag"></div>
+    <div class="titlebar__controls">
+      <button type="button" class="titlebar__button" data-window-action="minimize"
+              data-i18n-attr="aria-label:titlebar.minimize;title:titlebar.minimize" aria-label="Minimize">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6h7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" class="titlebar__button" data-window-action="maximize"
+              data-i18n-attr="aria-label:titlebar.maximize;title:titlebar.maximize" aria-label="Maximize">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.6" y="2.6" width="6.8" height="6.8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>
+      </button>
+      <button type="button" class="titlebar__button titlebar__button--close" data-window-action="close"
+              data-i18n-attr="aria-label:titlebar.close;title:titlebar.close" aria-label="Close">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="shell">
+
+    <nav class="sidebar" id="sidebar" data-i18n-attr="aria-label:a11y.sidebar" aria-label="Main navigation">
+      <span class="sidebar__indicator" id="nav-indicator" aria-hidden="true"></span>
+
+      <p class="sidebar__section" data-i18n="nav.sectionMain">Studio</p>
+      <button type="button" class="nav__item" data-page="home">
+        <span class="nav__icon" data-icon="home"></span>
+        <span class="nav__text" data-i18n="nav.home">Home</span>
+      </button>
+      <button type="button" class="nav__item" data-page="designer">
+        <span class="nav__icon" data-icon="designer"></span>
+        <span class="nav__text" data-i18n="nav.designer">Designer</span>
+      </button>
+      <button type="button" class="nav__item" data-page="randomizer">
+        <span class="nav__icon" data-icon="dice"></span>
+        <span class="nav__text" data-i18n="nav.randomizer">Randomizer</span>
+      </button>
+
+      <p class="sidebar__section" data-i18n="nav.sectionLibrary">Library</p>
+      <button type="button" class="nav__item" data-page="presets">
+        <span class="nav__icon" data-icon="presets"></span>
+        <span class="nav__text" data-i18n="nav.presets">Presets</span>
+      </button>
+      <button type="button" class="nav__item" data-page="settings">
+        <span class="nav__icon" data-icon="settings"></span>
+        <span class="nav__text" data-i18n="nav.settings">Settings</span>
+      </button>
+
+      <div class="sidebar__foot">
+        <button type="button" class="nav__mini" data-action="shortcuts" data-tip="shortcuts.title"
+                data-i18n-attr="aria-label:shortcuts.title" aria-label="Keyboard shortcuts">
+          <span class="nav__icon" data-icon="keyboard"></span>
+        </button>
+        <span class="sidebar__version" id="app-version">1.0.0</span>
+      </div>
+    </nav>
+
+    <main class="main" data-i18n-attr="aria-label:a11y.pageContent" aria-label="Page content">
+      <header class="topbar">
+        <div class="topbar__identity">
+          <h1 class="topbar__title" id="page-title" data-i18n="nav.home">Home</h1>
+          <p class="topbar__doc" id="doc-line" hidden>
+            <span id="doc-name"></span>
+            <span class="topbar__badge" id="doc-dirty" data-i18n="common.unsaved" hidden>Unsaved changes</span>
+          </p>
+        </div>
+        <div class="topbar__actions" id="topbar-actions">
+          <button type="button" class="icon-btn" data-action="undo" data-tip="shortcuts.undo" disabled>
+            <span data-icon="undo"></span>
+          </button>
+          <button type="button" class="icon-btn" data-action="redo" data-tip="shortcuts.redo" disabled>
+            <span data-icon="redo"></span>
+          </button>
+          <span class="topbar__divider" aria-hidden="true"></span>
+          <button type="button" class="icon-btn" data-action="import" data-tip="shortcuts.import">
+            <span data-icon="import"></span>
+          </button>
+          <button type="button" class="icon-btn" data-action="export" data-tip="shortcuts.export">
+            <span data-icon="export"></span>
+          </button>
+          <button type="button" class="btn btn--primary" data-action="save" data-tip="shortcuts.save">
+            <span data-icon="save"></span>
+            <span data-i18n="common.save">Save</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="outlet" id="outlet"></div>
+    </main>
+
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

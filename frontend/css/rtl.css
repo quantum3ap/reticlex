@@ -1,0 +1,77 @@
+/*
+ * Right-to-left support.
+ *
+ * The layout is written with logical properties throughout, so most of RTL
+ * works without any rules at all. What remains here are the cases where a
+ * direction-agnostic property does not exist: transforms, gradients that carry
+ * meaning, and the handful of glyphs that must not mirror.
+ */
+
+[dir="rtl"] .quick__item:hover .quick__chevron { transform: translateX(-3px); }
+[dir="rtl"] .quick__chevron { transform: scaleX(-1); }
+
+/* Toasts fly in from the leading edge, which is the right in RTL. */
+[dir="rtl"] .toast { transform: translateX(-24px) scale(0.97); }
+[dir="rtl"] .toast--visible { transform: none; }
+[dir="rtl"] .toast--leaving { transform: translateX(-16px) scale(0.97); }
+
+/* The knob travels the other way. */
+[dir="rtl"] .toggle__input:checked + .toggle__switch .toggle__knob { transform: translateX(-17px); }
+
+/* Range inputs need no help: Chromium honours `direction` and puts the
+   minimum on the right, which is where the fill's inline-start edge already
+   is. Mirroring them would cancel that out. */
+
+[dir="rtl"] .picker__plane {
+  background:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to left, #fff, transparent),
+    var(--hue, #f00);
+}
+
+/* The sidebar's active marker sits on the leading edge in both directions. */
+[dir="rtl"] .sidebar__indicator { border-radius: var(--radius-pill) 0 0 var(--radius-pill); }
+
+/* Arrow-like glyphs read backwards when mirrored; chevrons in a "next"
+   position should flip, everything else must not. */
+[dir="rtl"] .select__chevron,
+[dir="rtl"] .panel-section__chevron { transform: none; }
+[dir="rtl"] .panel-section.is-open .panel-section__chevron { transform: rotate(180deg); }
+
+/* Arabic and its neighbours need a little more line height to breathe. */
+[lang="ar"] {
+  --text-xs: 12px;
+  --text-sm: 13.5px;
+  line-height: 1.65;
+}
+
+[lang="ar"] .titlebar__name,
+[lang="ar"] .boot__name { letter-spacing: normal; }
+
+[lang="ar"] .sidebar__section,
+[lang="ar"] .panel-group__label,
+[lang="ar"] .roll__history-label,
+[lang="ar"] .picker__swatches-label { letter-spacing: normal; }
+
+/* Latin product names stay LTR inside RTL text. */
+[dir="rtl"] .titlebar__name,
+[dir="rtl"] .sidebar__version,
+[dir="rtl"] .color-field__hex,
+[dir="rtl"] .shortcut-row__keys,
+[dir="rtl"] .roll__seed code,
+[dir="rtl"] .about dd {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+
+/* CJK scripts do better without the tightened tracking. */
+[lang="zh"] .hero__title,
+[lang="ja"] .hero__title,
+[lang="zh"] .page-head__title,
+[lang="ja"] .page-head__title { letter-spacing: 0; }
+
+/* Long compound words in German and Russian must not overflow their card. */
+[lang="de"] .card__title,
+[lang="ru"] .card__title,
+[lang="tr"] .card__title { overflow-wrap: anywhere; }
