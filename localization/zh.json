@@ -20,6 +20,7 @@
   "common.search": "搜索",
   "common.import": "导入",
   "common.export": "导出",
+  "common.exportPng": "导出 PNG",
   "common.reset": "重置",
   "common.back": "返回",
   "common.name": "名称",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "模拟移动或开火时会张开的准星。",
   "tip.dynamicSpread": "预览准星当前张开的程度。",
   "tip.dynamicGapBoost": "准星完全张开时额外增加的间隙。",
+  "tip.exportPng": "将准星保存为背景透明的 PNG 图片。",
 
   "capStyle.flat": "平角",
   "capStyle.round": "圆角",

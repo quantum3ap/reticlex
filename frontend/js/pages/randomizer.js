@@ -89,6 +89,7 @@ export function createRandomizerPage(app) {
   const styleControl = createSegmented({
     i18n,
     labelKey: 'randomizer.styleTitle',
+    wrap: true,
     options: [
       { value: RandomStyle.any, labelKey: 'randomizer.styleAny' },
       { value: RandomStyle.precision, labelKey: 'randomizer.stylePrecision' },
@@ -209,7 +210,9 @@ export function createRandomizerPage(app) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, dw, dh);
     const geometry = core.buildGeometry(next);
-    const zoom = Math.min(fitZoom(geometry, width, height, 48), 10) * dpr;
+    // Fit, but capped: blown up to fill the stage, a lone centre dot would
+    // read as a giant square rather than the small dot it is.
+    const zoom = Math.min(fitZoom(geometry, width, height, 48), 6) * dpr;
     drawGeometry(ctx, geometry, { zoom, originX: dw / 2, originY: dh / 2 });
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   }

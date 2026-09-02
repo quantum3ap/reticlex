@@ -20,6 +20,7 @@
   "common.search": "Suchen",
   "common.import": "Importieren",
   "common.export": "Exportieren",
+  "common.exportPng": "Als PNG exportieren",
   "common.reset": "Zurücksetzen",
   "common.back": "Zurück",
   "common.name": "Name",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "Simuliert ein Fadenkreuz, das sich beim Bewegen oder Schießen öffnet.",
   "tip.dynamicSpread": "Zeigt in der Vorschau, wie weit das Fadenkreuz gerade geöffnet ist.",
   "tip.dynamicGapBoost": "Wie viel zusätzliche Lücke bei voll geöffnetem Fadenkreuz entsteht.",
+  "tip.exportPng": "Speichert das Fadenkreuz als PNG-Bild mit transparentem Hintergrund.",
 
   "capStyle.flat": "Flach",
   "capStyle.round": "Rund",

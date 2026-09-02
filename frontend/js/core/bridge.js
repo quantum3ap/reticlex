@@ -8,8 +8,6 @@
  * usable and nothing has to branch on "are we in the app".
  */
 
-import { createId } from './util.js';
-
 const REQUEST_TIMEOUT_MS = 30_000;
 const STORAGE_KEY = 'reticlex.local.v1';
 
@@ -292,6 +290,3 @@ export function createBridge() {
 }
 
 export { LocalBridge, WebViewBridge };
-
-/** Stable identifier for documents created before the host assigns one. */
-export const newDocumentId = createId;

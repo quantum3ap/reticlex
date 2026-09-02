@@ -8,11 +8,11 @@
  * a slider drag.
  */
 
-import { h, clear } from '../ui/dom.js';
+import { h } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { createSlider, createToggle, createSegmented, createChip } from '../ui/controls.js';
 import { createColorField } from '../ui/colorpicker.js';
-import { Preview, ZOOM } from '../render/preview.js';
+import { Preview } from '../render/preview.js';
 import { LIMITS, CAP_STYLES, DOT_SHAPES } from '../core/schema.js';
 import { hexToRgb, rgbToHex } from '../core/util.js';
 
@@ -250,16 +250,22 @@ export function createDesignerPage(app) {
         slider('dynamic_spread', 'field.dynamicSpread', 'tip.dynamicSpread', { unitKey: null }),
         slider('dynamic_gap_boost', 'field.dynamicGapBoost', 'tip.dynamicGapBoost'),
       ], { open: false })),
+    // One row: the panel is already tall, and a second row of buttons costs
+    // sliders on a short window.
     h('div', { class: 'panel__foot' },
       h('button', {
-        type: 'button', class: 'btn btn--primary btn--block', onClick: () => app.run('save'),
+        type: 'button', class: 'btn btn--primary panel__foot-primary', onClick: () => app.run('save'),
       }, icon('save', { size: 16 }), h('span', { i18n: 'common.save' }, i18n.t('common.save'))),
       h('button', {
         type: 'button', class: 'btn btn--ghost', onClick: () => app.run('saveAs'),
       }, h('span', { i18n: 'common.saveAs' }, i18n.t('common.saveAs'))),
       h('button', {
-        type: 'button', class: 'btn btn--ghost', onClick: () => app.savePresetFromCurrent(),
-      }, icon('presets', { size: 16 }), h('span', { i18n: 'presets.createFromCurrent' }, i18n.t('presets.createFromCurrent')))),
+        type: 'button',
+        class: 'icon-btn',
+        'data-tip': 'presets.createFromCurrent',
+        'aria-label': i18n.t('presets.createFromCurrent'),
+        onClick: () => app.savePresetFromCurrent(),
+      }, icon('presets', { size: 16 }))),
   );
 
   // --- Preview toolbar -----------------------------------------------------
@@ -322,14 +328,20 @@ export function createDesignerPage(app) {
     app.saveSettings({ previewInfo: next });
   });
 
-  function toolbarButton(iconName, tipKey, onSelect) {
-    return h('button', {
+  /**
+   * @param {string} tipKey   the explanation shown on hover
+   * @param {string} labelKey the short accessible name; defaults to the tip
+   */
+  function toolbarButton(iconName, tipKey, onSelect, labelKey = tipKey) {
+    const button = h('button', {
       type: 'button',
       class: 'icon-btn',
       'data-tip': tipKey,
-      'aria-label': i18n.t(tipKey),
+      i18nAttr: `aria-label:${labelKey}`,
+      'aria-label': i18n.t(labelKey),
       onClick: onSelect,
     }, icon(iconName, { size: 16 }));
+    return button;
   }
 
   const toolbar = h(
@@ -345,6 +357,7 @@ export function createDesignerPage(app) {
       gridToggle,
       infoToggle,
       toolbarButton('image', 'preview.chooseImage', () => chooseBackgroundImage()),
+      toolbarButton('export', 'tip.exportPng', () => app.exportPng(), 'common.exportPng'),
       toolbarButton('refresh', 'preview.reset', () => {
         preview.reset();
         zoomLabel.textContent = `${preview.zoom}×`;
@@ -430,5 +443,3 @@ export function createDesignerPage(app) {
     },
   };
 }
-
-export { clear, ZOOM };

@@ -20,6 +20,7 @@
   "common.search": "Ara",
   "common.import": "İçe aktar",
   "common.export": "Dışa aktar",
+  "common.exportPng": "PNG dışa aktar",
   "common.reset": "Sıfırla",
   "common.back": "Geri",
   "common.name": "Ad",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "Hareket ederken veya ateş ederken açılan bir nişangâhı taklit eder.",
   "tip.dynamicSpread": "Nişangâhın şu anda ne kadar açık olduğunu önizler.",
   "tip.dynamicGapBoost": "Nişangâh tamamen açıkken eklenen ek boşluk miktarı.",
+  "tip.exportPng": "Nişangâhı saydam arka planlı bir PNG görseli olarak kaydeder.",
 
   "capStyle.flat": "Düz",
   "capStyle.round": "Yuvarlak",

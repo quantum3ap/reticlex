@@ -101,16 +101,6 @@ export function rgbToHex({ r, g, b }) {
   return `#${channel(r)}${channel(g)}${channel(b)}`.toUpperCase();
 }
 
-/** Escapes text destined for innerHTML. Prefer textContent where possible. */
-export function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 /** Case- and accent-insensitive substring match, used by the preset search. */
 export function fuzzyMatch(haystack, needle) {
   if (!needle) return true;

@@ -21,6 +21,7 @@ import {
   documentToJson, parseImport, toPresetPack, createDocument,
 } from './core/schema.js';
 import { debounce, toFileStem } from './core/util.js';
+import { toPngDataUrl } from './render/renderer.js';
 
 import { Toasts } from './ui/toast.js';
 import { Tooltips } from './ui/tooltip.js';
@@ -187,11 +188,33 @@ class App {
         this.bridge.call('window', { action: button.dataset.windowAction }).catch(() => {});
       });
     }
+
+    // A WebView2 child window swallows the hit test the OS would use to move
+    // the frame, so the drag strip asks the host to start the move itself.
+    const dragStrip = document.querySelector('.titlebar__drag');
+    if (dragStrip) {
+      dragStrip.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        this.bridge.call('window', { action: 'drag' }).catch(() => {});
+      });
+      dragStrip.addEventListener('dblclick', () => {
+        this.bridge.call('window', { action: 'toggleMaximize' }).catch(() => {});
+      });
+    }
     for (const button of document.querySelectorAll('[data-action]')) {
       const action = button.dataset.action;
       button.addEventListener('click', () => this.run(action));
     }
     window.addEventListener('resize', () => this.#moveNavIndicator(this.router.current));
+
+    // A file the user opened from Explorer arrives once the page is ready.
+    this.bridge.on?.('open-file', (payload) => {
+      if (!payload?.text) return;
+      this.importFromText(payload.text, payload.fileName ?? '');
+    });
+    this.bridge.on?.('import-failed', (payload) => {
+      this.toasts.error(payload?.errorKey ?? 'import.errorRead', undefined, payload?.detail ?? '');
+    });
 
     // The host tells us when the window state changes so the restore glyph and
     // the rounded corners can follow.
@@ -557,6 +580,30 @@ class App {
 
   async exportDocument(doc) {
     return this.#writeExport(`${toFileStem(doc.name)}.json`, documentToJson(doc, this.appVersion));
+  }
+
+  /**
+   * Writes the crosshair as a transparent PNG.
+   *
+   * Rendered from the same geometry as the preview, so what lands in the file
+   * is what the designer showed.
+   */
+  async exportPng(size = 512) {
+    const name = this.session.name.trim() || this.i18n.t('designer.untitled');
+    const fileName = `${toFileStem(name)}.png`;
+    try {
+      const dataUrl = toPngDataUrl(this.core, this.session.config, size);
+      const result = await this.bridge.call('savePng', { suggestedName: fileName, dataUrl });
+      if (!result?.ok) {
+        this.toasts.info('toast.exportCancelled');
+        return false;
+      }
+      this.toasts.success('toast.exportOk', { name: result.fileName ?? fileName });
+      return true;
+    } catch (error) {
+      this.toasts.error('error.exportFailed', undefined, String(error.message ?? error));
+      return false;
+    }
   }
 
   async exportPresets(presets) {

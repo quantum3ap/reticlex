@@ -20,6 +20,7 @@
   "common.search": "Rechercher",
   "common.import": "Importer",
   "common.export": "Exporter",
+  "common.exportPng": "Exporter en PNG",
   "common.reset": "Réinitialiser",
   "common.back": "Retour",
   "common.name": "Nom",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "Simule un réticule qui s'ouvre quand vous bougez ou tirez.",
   "tip.dynamicSpread": "Prévisualisez l'ouverture actuelle du réticule.",
   "tip.dynamicGapBoost": "Écart supplémentaire ajouté à l'ouverture maximale.",
+  "tip.exportPng": "Enregistre le réticule comme image PNG à fond transparent.",
 
   "capStyle.flat": "Plat",
   "capStyle.round": "Arrondi",

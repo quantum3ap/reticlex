@@ -7,7 +7,7 @@
  * promise always settles exactly once.
  */
 
-import { h, clear, focusFirst, trapFocus } from './dom.js';
+import { h, focusFirst, trapFocus } from './dom.js';
 import { icon } from './icons.js';
 
 const EXIT_MS = 200;
@@ -228,5 +228,3 @@ export class Modals {
 
 /** Returned by an action's onSelect to keep the dialog open (validation). */
 Modals.KEEP_OPEN = Symbol('keep-open');
-
-export { clear };

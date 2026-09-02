@@ -20,6 +20,7 @@
   "common.search": "بحث",
   "common.import": "استيراد",
   "common.export": "تصدير",
+  "common.exportPng": "تصدير PNG",
   "common.reset": "إعادة تعيين",
   "common.back": "رجوع",
   "common.name": "الاسم",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "يحاكي تصويباً يتسع أثناء الحركة أو إطلاق النار.",
   "tip.dynamicSpread": "اعرض مقدار اتساع التصويب حالياً.",
   "tip.dynamicGapBoost": "مقدار الفجوة الإضافية عند الاتساع الكامل.",
+  "tip.exportPng": "يحفظ التصميم كصورة PNG بخلفية شفافة.",
 
   "capStyle.flat": "مستقيم",
   "capStyle.round": "دائري",

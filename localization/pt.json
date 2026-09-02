@@ -20,6 +20,7 @@
   "common.search": "Pesquisar",
   "common.import": "Importar",
   "common.export": "Exportar",
+  "common.exportPng": "Exportar PNG",
   "common.reset": "Repor",
   "common.back": "Voltar",
   "common.name": "Nome",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "Simula uma mira que abre quando se move ou dispara.",
   "tip.dynamicSpread": "Pré-visualize o quanto a mira está aberta neste momento.",
   "tip.dynamicGapBoost": "Quanto espaço extra é acrescentado com a mira totalmente aberta.",
+  "tip.exportPng": "Guarda a mira como imagem PNG com fundo transparente.",
 
   "capStyle.flat": "Reta",
   "capStyle.round": "Redonda",

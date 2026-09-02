@@ -72,5 +72,3 @@ export function icon(name, { size = 20, className = 'icon', strokeWidth = 1.75 }
   svg.append(path);
   return svg;
 }
-
-export const iconNames = Object.keys(PATHS);

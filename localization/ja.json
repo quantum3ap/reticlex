@@ -20,6 +20,7 @@
   "common.search": "検索",
   "common.import": "読み込み",
   "common.export": "書き出し",
+  "common.exportPng": "PNG で書き出す",
   "common.reset": "リセット",
   "common.back": "戻る",
   "common.name": "名前",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "移動時や射撃時に開くクロスヘアを再現します。",
   "tip.dynamicSpread": "クロスヘアが今どれだけ開いているかをプレビューします。",
   "tip.dynamicGapBoost": "完全に開いたときに追加されるすき間の量です。",
+  "tip.exportPng": "クロスヘアを背景が透明な PNG 画像として保存します。",
 
   "capStyle.flat": "平ら",
   "capStyle.round": "丸",

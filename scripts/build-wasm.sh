@@ -18,6 +18,8 @@ COMMON=(
   --target=wasm32
   -O2 -DNDEBUG
   -fno-math-errno
+  # Keep results bit-identical with the native build's golden fixtures.
+  -ffp-contract=off
   -ffunction-sections -fdata-sections
   -fvisibility=hidden
   -nostdlib

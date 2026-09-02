@@ -20,6 +20,7 @@
   "common.search": "Поиск",
   "common.import": "Импорт",
   "common.export": "Экспорт",
+  "common.exportPng": "Экспорт в PNG",
   "common.reset": "Сбросить",
   "common.back": "Назад",
   "common.name": "Название",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "Имитирует прицел, который раскрывается при движении или стрельбе.",
   "tip.dynamicSpread": "Показывает, насколько прицел раскрыт прямо сейчас.",
   "tip.dynamicGapBoost": "Насколько увеличивается зазор при полном раскрытии.",
+  "tip.exportPng": "Сохраняет прицел как PNG с прозрачным фоном.",
 
   "capStyle.flat": "Прямые",
   "capStyle.round": "Скруглённые",

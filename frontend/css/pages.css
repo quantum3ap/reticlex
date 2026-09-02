@@ -290,15 +290,16 @@
 .panel__scroll { overflow-y: auto; padding: var(--space-2); scroll-behavior: smooth; }
 
 .panel__foot {
-  display: grid;
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
-  grid-template-columns: 1fr 1fr;
   padding: var(--space-3);
   border-top: 1px solid var(--line-soft);
   background: var(--surface-1);
 }
 
-.panel__foot .btn--block { grid-column: 1 / -1; }
+.panel__foot-primary { flex: 1 1 auto; }
+.panel__foot .icon-btn { flex: none; border-color: var(--line); }
 
 .panel-section { border-bottom: 1px solid var(--line-soft); }
 .panel-section:last-child { border-bottom: 0; }

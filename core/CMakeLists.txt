@@ -31,11 +31,15 @@ set(RETICLEX_INCLUDES
 add_library(reticlex_core_static STATIC ${RETICLEX_SOURCES})
 target_include_directories(reticlex_core_static PUBLIC ${RETICLEX_INCLUDES})
 
+# Geometry must come out bit-identical from every toolchain, because the
+# native build's golden fixtures are asserted against the WebAssembly build.
+# Contraction into fused multiply-add is the one optimisation that would break
+# that, so it is switched off rather than left to each compiler's default.
 if(MSVC)
     target_compile_options(reticlex_core_static PRIVATE /W4 /fp:precise)
 else()
     target_compile_options(reticlex_core_static PRIVATE
-        -Wall -Wextra -Wno-unused-parameter -fno-math-errno)
+        -Wall -Wextra -Wno-unused-parameter -fno-math-errno -ffp-contract=off)
 endif()
 
 if(RETICLEX_BUILD_SHARED)
@@ -43,16 +47,17 @@ if(RETICLEX_BUILD_SHARED)
     add_library(reticlex_core SHARED ${RETICLEX_SOURCES})
     target_include_directories(reticlex_core PUBLIC ${RETICLEX_INCLUDES})
     target_compile_definitions(reticlex_core PRIVATE RETICLEX_BUILD_SHARED=1)
+    # No SONAME versioning: the library is loaded by name from beside the
+    # executable, and .NET's DllImport probing only looks for the plain form.
     set_target_properties(reticlex_core PROPERTIES
         OUTPUT_NAME "reticlex_core"
         C_VISIBILITY_PRESET hidden
-        CXX_VISIBILITY_PRESET hidden
-        VERSION ${PROJECT_VERSION})
+        CXX_VISIBILITY_PRESET hidden)
     if(MSVC)
         target_compile_options(reticlex_core PRIVATE /W4 /fp:precise)
     else()
         target_compile_options(reticlex_core PRIVATE
-            -Wall -Wextra -Wno-unused-parameter -fno-math-errno)
+            -Wall -Wextra -Wno-unused-parameter -fno-math-errno -ffp-contract=off)
     endif()
 endif()
 

@@ -150,17 +150,31 @@ export function createToggle({ labelKey, tipKey, checked = false, onChange, i18n
  * Segmented control with a sliding indicator.
  * @param {{options:{value:*, labelKey:string, icon?:string}[]}} config
  */
-export function createSegmented({ labelKey, tipKey, options, value, onChange, i18n, compact = false }) {
+/**
+ * @param {{options:{value:*, labelKey:string, icon?:string}[], wrap?:boolean}} config
+ *        wrap lays the options out on as many rows as they need, for narrow
+ *        columns where five equal segments would clip their labels. The
+ *        sliding indicator only makes sense on a single row, so the wrapped
+ *        variant highlights the active option directly instead.
+ */
+export function createSegmented({
+  labelKey, tipKey, options, value, onChange, i18n, compact = false, wrap = false,
+}) {
   const buttons = new Map();
   const indicator = h('span', { class: 'segmented__indicator', 'aria-hidden': 'true' });
 
   const group = h('div', {
-    class: ['segmented__group', compact ? 'segmented__group--compact' : null],
+    class: [
+      'segmented__group',
+      compact ? 'segmented__group--compact' : null,
+      wrap ? 'segmented__group--wrap' : null,
+    ],
     role: 'radiogroup',
     'aria-label': i18n.t(labelKey),
-  }, indicator);
+  }, wrap ? null : indicator);
 
   const moveIndicator = (selected) => {
+    if (wrap) return;
     const button = buttons.get(selected);
     if (!button) return;
     // Percentages keep the indicator correct in both writing directions.
@@ -186,7 +200,7 @@ export function createSegmented({ labelKey, tipKey, options, value, onChange, i1
         },
       },
       option.icon ? icon(option.icon, { size: 16 }) : null,
-      h('span', { i18n: option.labelKey }, i18n.t(option.labelKey)),
+      h('span', { class: 'segmented__text', i18n: option.labelKey }, i18n.t(option.labelKey)),
     );
     buttons.set(option.value, button);
     group.append(button);

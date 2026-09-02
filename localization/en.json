@@ -20,6 +20,7 @@
   "common.search": "Search",
   "common.import": "Import",
   "common.export": "Export",
+  "common.exportPng": "Export PNG",
   "common.reset": "Reset",
   "common.back": "Back",
   "common.name": "Name",
@@ -150,6 +151,7 @@
   "tip.dynamicEnabled": "Simulates a crosshair that opens up while you move or fire.",
   "tip.dynamicSpread": "Preview how far open the crosshair currently is.",
   "tip.dynamicGapBoost": "How much extra gap is added when the crosshair is fully open.",
+  "tip.exportPng": "Saves the crosshair as a transparent PNG image.",
 
   "capStyle.flat": "Flat",
   "capStyle.round": "Round",

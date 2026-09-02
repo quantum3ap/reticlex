@@ -1,0 +1,83 @@
+<Window x:Class="ReticleX.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="ReticleX"
+        Width="1360" Height="880"
+        MinWidth="900" MinHeight="620"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource ShellBackground}"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        WindowStyle="None"
+        ResizeMode="CanResize">
+
+  <!--
+    The title bar is drawn by the front end, so the system one is removed and
+    WindowChrome is left to provide resizing, snapping and correct maximised
+    bounds. CaptionHeight is zero because dragging is initiated by the page.
+  -->
+  <shell:WindowChrome.WindowChrome>
+    <shell:WindowChrome CaptionHeight="0"
+                        ResizeBorderThickness="6"
+                        CornerRadius="0"
+                        GlassFrameThickness="0"
+                        NonClientFrameEdges="None"
+                        UseAeroCaptionButtons="False" />
+  </shell:WindowChrome.WindowChrome>
+
+  <Grid x:Name="RootGrid" Background="{StaticResource ShellBackground}">
+
+    <!-- The web view is inset so the resize border stays hit-testable: the
+         WebView2 child window would otherwise swallow the edge. -->
+    <wv2:WebView2 x:Name="WebView"
+                  Margin="6"
+                  Visibility="Hidden" />
+
+    <!-- Shown only when the WebView2 runtime is missing or the front end
+         cannot be loaded; otherwise the user would face a blank window. -->
+    <Border x:Name="FailurePanel"
+            Visibility="Collapsed"
+            Background="{StaticResource ShellBackground}"
+            Padding="48">
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="560">
+        <TextBlock x:Name="FailureTitle"
+                   Foreground="#EEF1F6"
+                   FontSize="22"
+                   FontWeight="SemiBold"
+                   TextWrapping="Wrap"
+                   Text="Something went wrong" />
+        <TextBlock x:Name="FailureBody"
+                   Margin="0,12,0,0"
+                   Foreground="#98A2B3"
+                   FontSize="14"
+                   TextWrapping="Wrap" />
+        <TextBlock x:Name="FailureDetail"
+                   Margin="0,16,0,0"
+                   Foreground="#67707F"
+                   FontFamily="Consolas"
+                   FontSize="12"
+                   TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" Margin="0,28,0,0">
+          <Button x:Name="RetryButton"
+                  Content="Try again"
+                  Padding="18,9"
+                  Click="OnRetryClicked" />
+          <Button x:Name="RuntimeButton"
+                  Margin="12,0,0,0"
+                  Content="Download WebView2"
+                  Padding="18,9"
+                  Visibility="Collapsed"
+                  Click="OnDownloadRuntimeClicked" />
+          <Button x:Name="CloseButton"
+                  Margin="12,0,0,0"
+                  Content="Close"
+                  Padding="18,9"
+                  Click="OnCloseClicked" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+  </Grid>
+</Window>

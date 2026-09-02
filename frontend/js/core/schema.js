@@ -8,7 +8,7 @@
  * falls back to a default and anything out of range is clamped by the core.
  */
 
-import { clamp, createId, hexToRgb, normalizeHex, rgbToHex } from './util.js';
+import { createId, hexToRgb, normalizeHex, rgbToHex } from './util.js';
 
 export const DOCUMENT_FORMAT = 'reticlex-crosshair';
 export const PRESET_PACK_FORMAT = 'reticlex-preset-pack';
@@ -212,15 +212,6 @@ export function documentToJson(doc, appVersion = '1.0.0') {
   };
 }
 
-export class ImportError extends Error {
-  constructor(messageKey, detail = '') {
-    super(messageKey);
-    this.name = 'ImportError';
-    this.messageKey = messageKey;
-    this.detail = detail;
-  }
-}
-
 /**
  * Parses imported text into one or more documents.
  *
@@ -312,11 +303,4 @@ export function toPresetPack(documents, appVersion = '1.0.0') {
       crosshair: crosshairToJson(doc.config),
     })),
   };
-}
-
-/** Clamps a single control value to its published range. */
-export function clampField(field, value) {
-  const limit = LIMITS[field];
-  if (!limit) return value;
-  return clamp(value, limit.min, limit.max);
 }

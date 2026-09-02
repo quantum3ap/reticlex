@@ -34,11 +34,22 @@ inline int32_t clean_enum(int32_t v, int32_t count, int32_t *adjusted) {
     return c;
 }
 
+/* Colours are authored, stored and exchanged as 8-bit hex, so the canonical
+   form snaps to that grid. Without this a config saved and reloaded would
+   fingerprint differently and the editor would report it as unsaved the
+   moment it opened. */
+inline float clean_channel(float v, int32_t *adjusted) {
+    const float clamped = rx_clampf(v, 0.0f, 1.0f);
+    const float snapped = rx_roundf(clamped * 255.0f) / 255.0f;
+    if (!(snapped == v) && adjusted) ++(*adjusted);
+    return snapped;
+}
+
 inline rx_rgb clean_color(rx_rgb c, int32_t *adjusted) {
     rx_rgb o;
-    o.r = clean(c.r, 0.0f, 1.0f, adjusted);
-    o.g = clean(c.g, 0.0f, 1.0f, adjusted);
-    o.b = clean(c.b, 0.0f, 1.0f, adjusted);
+    o.r = clean_channel(c.r, adjusted);
+    o.g = clean_channel(c.g, adjusted);
+    o.b = clean_channel(c.b, adjusted);
     return o;
 }
 
