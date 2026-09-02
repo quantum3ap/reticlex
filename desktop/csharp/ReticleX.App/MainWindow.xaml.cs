@@ -232,6 +232,16 @@ public partial class MainWindow : Window
 
     private void OnWebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
     {
+        // The bridge is the one place the page can reach the file system, so
+        // the sender is checked rather than assumed. Navigation is already
+        // confined to the virtual host; this states the same boundary at the
+        // point where it actually matters.
+        if (!e.Source.StartsWith($"https://{VirtualHost}/", StringComparison.OrdinalIgnoreCase))
+        {
+            App.Log.Warn($"Ignored a bridge message from {e.Source}.");
+            return;
+        }
+
         try
         {
             _bridge?.Handle(e.WebMessageAsJson);
