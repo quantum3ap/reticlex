@@ -48,7 +48,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # 22, not 20: `node --test` only accepts a glob pattern from 21 on.
+          node-version: '22'
 
       - name: Run the front-end tests
         working-directory: frontend

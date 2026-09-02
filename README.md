@@ -133,7 +133,7 @@ never writes outside your own profile and never asks for administrator rights.
 |---|---|---|
 | CMake 3.20+ and a C/C++ compiler | The native core | MSVC on Windows, GCC or Clang elsewhere |
 | .NET SDK 8.0 | The desktop host | |
-| Node.js 20+ | The front-end tests | No npm dependencies to install |
+| Node.js 22+ | The front-end tests | No npm dependencies to install |
 | Clang 15+ with `wasm-ld` | The WebAssembly module | Only when changing the core |
 | Inno Setup 6 | The installer | Only when packaging |
 

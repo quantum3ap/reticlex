@@ -1,3 +1,7 @@
+// A WPF project's implicit usings deliberately leave out System.IO, because
+// System.IO.Path would collide with System.Windows.Shapes.Path.
+using System.IO;
+
 using Microsoft.Win32;
 
 namespace ReticleX.App.Host;

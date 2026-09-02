@@ -17,10 +17,10 @@ artifacts/
 *.dylib
 *.dll
 
-# The wasm module is a build artifact, but it is committed so the front end
-# can be opened and reviewed without a C++ toolchain. Regenerate it with
-# scripts/build-wasm.sh; CI rebuilds and verifies it on every push.
-!frontend/assets/reticlex_core.wasm
+# frontend/assets/reticlex_core.wasm is a build artifact but is deliberately
+# committed: the front end can then be opened and reviewed without a C++
+# toolchain. Regenerate it with scripts/build-wasm.sh; CI rebuilds it and runs
+# the tests against the fresh module on every push.
 
 # --- CMake ----------------------------------------------------------------
 CMakeCache.txt
