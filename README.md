@@ -171,11 +171,13 @@ This is how the front end is developed and tested.
 
 ### Running the tests
 
+The managed tests find the native core in the build directory automatically,
+so build it first:
+
 ```bash
 ./scripts/build-core.sh                                  # 70 core tests
 cd frontend && node --test "tests/*.test.js"             # 109 front-end tests
-dotnet test desktop/csharp/ReticleX.Tests \
-  -p:ReticleXNativeLibrary=$PWD/build/core/libreticlex_core.so   # 137 managed tests
+dotnet test desktop/csharp/ReticleX.Tests                 # 136 managed tests
 ```
 
 What they cover: crosshair geometry and rasterisation, colour conversion, the

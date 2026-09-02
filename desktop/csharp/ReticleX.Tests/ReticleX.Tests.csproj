@@ -19,10 +19,20 @@
 
   <!--
     The native core lives beside the test binary so the interop tests exercise
-    the real library. CI builds it first and points ReticleXNativeLibrary at
-    the output; when it is absent those tests report that fact rather than
-    silently passing.
+    the real library. Default to wherever the build scripts put it, so a plain
+    `dotnet test` works after building the core; CI overrides the path
+    explicitly. When it is genuinely absent the interop tests say so rather
+    than silently passing.
   -->
+  <!-- Chosen by host platform, not by whichever file happens to exist: a
+       stale reticlex_core.dll left in a Linux tree must not win over the .so
+       the runtime can actually load. -->
+  <PropertyGroup Condition="'$(ReticleXNativeLibrary)' == ''">
+    <_ReticleXDefaultCore Condition="'$(OS)' == 'Windows_NT'">$(MSBuildThisFileDirectory)..\..\..\build\native\Release\reticlex_core.dll</_ReticleXDefaultCore>
+    <_ReticleXDefaultCore Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)../../../build/core/libreticlex_core.so</_ReticleXDefaultCore>
+    <ReticleXNativeLibrary Condition="Exists('$(_ReticleXDefaultCore)')">$(_ReticleXDefaultCore)</ReticleXNativeLibrary>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(ReticleXNativeLibrary)' != '' And Exists('$(ReticleXNativeLibrary)')">
     <None Include="$(ReticleXNativeLibrary)"
           CopyToOutputDirectory="PreserveNewest"

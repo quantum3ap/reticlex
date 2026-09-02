@@ -106,9 +106,13 @@ jobs:
 
       - name: Build the solution
         shell: pwsh
+        # Both properties: the App copies the DLL beside the executable, the
+        # test project copies it beside the test binary. The test step below
+        # uses --no-build, so it has to be placed here.
         run: >
           dotnet build desktop/csharp/ReticleX.sln -c Release --nologo
           -p:ReticleXNativeDll=${{ github.workspace }}\build\native\Release\reticlex_core.dll
+          -p:ReticleXNativeLibrary=${{ github.workspace }}\build\native\Release\reticlex_core.dll
 
       - name: Run the managed tests
         shell: pwsh
