@@ -118,8 +118,7 @@ jobs:
           $version = '${{ needs.verify.outputs.version }}'
           $expected = @(
             "build/artifacts/ReticleX-v$version-Setup.exe",
-            "build/artifacts/ReticleX-v$version-Portable.exe",
-            "build/artifacts/ReticleX-v$version-Portable.zip"
+            "build/artifacts/ReticleX-v$version-Portable.exe"
           )
           foreach ($path in $expected) {
             if (-not (Test-Path $path)) { throw "Missing artifact: $path" }
@@ -146,7 +145,6 @@ jobs:
           files: |
             build/artifacts/ReticleX-v${{ needs.verify.outputs.version }}-Setup.exe
             build/artifacts/ReticleX-v${{ needs.verify.outputs.version }}-Portable.exe
-            build/artifacts/ReticleX-v${{ needs.verify.outputs.version }}-Portable.zip
           body: |
             ## ReticleX ${{ needs.verify.outputs.version }}
 
@@ -155,8 +153,7 @@ jobs:
             | File | Use it when |
             |------|-------------|
             | `ReticleX-v${{ needs.verify.outputs.version }}-Setup.exe` | You want it installed. Per user, no administrator prompt, adds a Start menu entry. |
-            | `ReticleX-v${{ needs.verify.outputs.version }}-Portable.exe` | You want to run it without installing, from anywhere including a USB stick. |
-            | `ReticleX-v${{ needs.verify.outputs.version }}-Portable.zip` | The portable build with its content folder, for offline or air-gapped machines. |
+            | `ReticleX-v${{ needs.verify.outputs.version }}-Portable.exe` | You want to run it without installing, from anywhere including a USB stick. One self-contained file; nothing else needed. |
 
             Windows 10 1809 or newer, 64-bit. The Microsoft Edge WebView2
             runtime is required and is already present on Windows 11 and

@@ -6,9 +6,12 @@
     Produces two executables from one source tree:
 
       ReticleX-v<version>-Setup.exe     Inno Setup installer, per-user, no
-                                        administrator prompt.
-      ReticleX-v<version>-Portable.exe  A single self-contained file that runs
-                                        from anywhere, including a USB stick.
+                                        administrator prompt. Framework
+                                        dependent, so .NET updates apply to it.
+      ReticleX-v<version>-Portable.exe  One self-contained file with the web
+                                        front end, the catalogues and the
+                                        presets embedded. Runs from anywhere,
+                                        including a USB stick.
 
     The native core must already be built; pass its path or let the script use
     the conventional build/native location.
@@ -71,39 +74,39 @@ Write-Host "==> Publishing the installed build" -ForegroundColor Cyan
 dotnet publish $appProject @common --self-contained false -o $publishDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed ($LASTEXITCODE)." }
 
-# --- Portable build: self-contained single file, nothing to install ----------
+# --- Portable build: one self-contained file, nothing to install -------------
+# IncludeAllContentForSelfExtract matters here: the web front end has to exist
+# on disk for WebView2 to serve it, so without it the single file would start
+# and then find nothing to show. With it, the content is unpacked beside the
+# extracted binaries and AppContext.BaseDirectory points at them.
 Write-Host "==> Publishing the portable build" -ForegroundColor Cyan
 dotnet publish $appProject @common `
     --self-contained true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
+    -p:IncludeAllContentForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true `
     -o $portableDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish (portable) failed ($LASTEXITCODE)." }
 
-foreach ($dir in @($publishDir, $portableDir)) {
-    $exe = Join-Path $dir 'ReticleX.exe'
-    if (-not (Test-Path $exe)) { throw "ReticleX.exe was not produced in $dir." }
-    if (-not (Test-Path (Join-Path $dir 'reticlex_core.dll'))) {
-        throw "reticlex_core.dll is missing from $dir."
-    }
-    if (-not (Test-Path (Join-Path $dir 'app/frontend/index.html'))) {
-        throw "The web front end is missing from $dir."
-    }
-    if (-not (Test-Path (Join-Path $dir 'app/localization/ar.json'))) {
-        throw "The translation catalogues are missing from $dir."
+# The installed layout keeps everything as loose files.
+foreach ($required in @('ReticleX.exe', 'reticlex_core.dll', 'app/frontend/index.html',
+                        'app/localization/ar.json', 'app/presets/builtin.json')) {
+    if (-not (Test-Path (Join-Path $publishDir $required))) {
+        throw "$required is missing from the installed build."
     }
 }
 
-# --- Portable executable -----------------------------------------------------
-# Single-file publish still leaves the content folder beside the executable, so
-# the portable download is a zip of the whole folder plus the bare exe for
-# people who only want to try it.
-$portableExe = Join-Path $OutputDir "ReticleX-v$Version-Portable.exe"
-Copy-Item (Join-Path $portableDir 'ReticleX.exe') $portableExe -Force
+# The portable layout is a single file; everything else is inside it.
+$portableSource = Join-Path $portableDir 'ReticleX.exe'
+if (-not (Test-Path $portableSource)) { throw 'The portable ReticleX.exe was not produced.' }
+$portableSize = (Get-Item $portableSource).Length
+if ($portableSize -lt 30MB) {
+    throw "The portable build is only $portableSize bytes, so its payload cannot be embedded."
+}
 
-$portableZip = Join-Path $OutputDir "ReticleX-v$Version-Portable.zip"
-Compress-Archive -Path (Join-Path $portableDir '*') -DestinationPath $portableZip -Force
+$portableExe = Join-Path $OutputDir "ReticleX-v$Version-Portable.exe"
+Copy-Item $portableSource $portableExe -Force
 
 # --- Installer ---------------------------------------------------------------
 if (-not $SkipInstaller) {

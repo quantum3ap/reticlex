@@ -115,8 +115,7 @@ Grab the latest build from [**Releases**](https://github.com/quantum3ap/reticlex
 | Download | Use it when |
 |---|---|
 | `ReticleX-v<version>-Setup.exe` | You want it installed. Per user, no administrator prompt, Start menu entry. |
-| `ReticleX-v<version>-Portable.exe` | You want to run it from anywhere, including a USB stick. |
-| `ReticleX-v<version>-Portable.zip` | The portable build with its content folder, for offline machines. |
+| `ReticleX-v<version>-Portable.exe` | You want to run it from anywhere, including a USB stick. One self-contained file. |
 
 **Requirements.** Windows 10 version 1809 or newer, 64-bit, and the Microsoft
 Edge WebView2 runtime. WebView2 already ships with Windows 11 and with
