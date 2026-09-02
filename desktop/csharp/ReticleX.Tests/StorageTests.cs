@@ -210,6 +210,22 @@ public class StorageTests
         Assert.NotNull(settings.ToJson());
     }
 
+    [Theory]
+    [InlineData("""{"locale":7}""")]
+    [InlineData("""{"locale":null}""")]
+    [InlineData("""{"locale":{"code":"ar"}}""")]
+    [InlineData("""{"locale":["ar"]}""")]
+    [InlineData("""{"startWithWindows":"yes"}""")]
+    public void MistypedPreferencesReadAsUnsetRatherThanThrowing(string json)
+    {
+        // These are read before the window exists, so a hand-edited file that
+        // puts the wrong kind of value here must read as "not chosen" rather
+        // than take the whole application down.
+        var settings = AppSettings.FromJson(json);
+        Assert.Null(settings.Locale);
+        Assert.False(settings.StartWithWindows);
+    }
+
     [Fact]
     public void SettingsBeyondTheSizeCapAreRefused()
     {

@@ -46,8 +46,16 @@ public sealed class AppSettings
     public string ToJson() => Values.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
 
     /// <summary>The chosen language, or null when the user has not picked one.</summary>
+    /// <remarks>
+    /// Read before the window exists, so a hand-edited file holding a number or
+    /// an object here must read as "no choice made" rather than throw.
+    /// </remarks>
     public string? Locale =>
-        Values.TryGetPropertyValue("locale", out var node) ? node?.GetValue<string>() : null;
+        Values.TryGetPropertyValue("locale", out var node)
+        && node is JsonValue value
+        && value.TryGetValue<string>(out var locale)
+            ? locale
+            : null;
 
     public bool StartWithWindows =>
         Values.TryGetPropertyValue("startWithWindows", out var node)

@@ -135,8 +135,10 @@ public partial class MainWindow : Window
         // content root (not just /frontend) is what lets the page reach
         // ../localization and ../presets with the same relative paths it uses
         // when opened directly in a browser during development.
+        // DenyCors rather than Allow: the interface only ever fetches its own
+        // origin, so nothing needs cross-origin access to these files.
         core.SetVirtualHostNameToFolderMapping(
-            VirtualHost, App.ContentRoot, CoreWebView2HostResourceAccessKind.Allow);
+            VirtualHost, App.ContentRoot, CoreWebView2HostResourceAccessKind.DenyCors);
 
         var settings = core.Settings;
         settings.AreDefaultContextMenusEnabled = false;
@@ -164,10 +166,16 @@ public partial class MainWindow : Window
             }
         };
 
+        // The interface is local and self-contained; nothing should navigate
+        // away from it. about:blank is allowed because WebView2 uses it while
+        // initialising.
         core.NavigationStarting += (_, args) =>
         {
-            if (!args.Uri.StartsWith($"https://{VirtualHost}/", StringComparison.OrdinalIgnoreCase))
+            var allowed = args.Uri.StartsWith($"https://{VirtualHost}/", StringComparison.OrdinalIgnoreCase)
+                          || args.Uri.StartsWith("about:", StringComparison.OrdinalIgnoreCase);
+            if (!allowed)
             {
+                App.Log.Warn($"Blocked a navigation to {args.Uri}.");
                 args.Cancel = true;
             }
         };

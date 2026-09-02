@@ -25,9 +25,14 @@ jobs:
       - name: Resolve the version
         id: version
         shell: bash
+        # The dispatch input arrives through the environment rather than being
+        # pasted into the script, so it is a shell value from the start and is
+        # never a chance to run something.
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            version="${{ github.event.inputs.version }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            version="$INPUT_VERSION"
           else
             version="${GITHUB_REF_NAME#v}"
           fi
