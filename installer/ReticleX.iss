@@ -4,10 +4,15 @@
 ; account keeps its own copy. The build script passes the version and the
 ; staged payload directory in; nothing here needs editing between releases.
 ;
-;   iscc /DAppVersion=1.0.0 /DPayloadDir=..\build\publish installer\ReticleX.iss
+;   iscc /DAppVersion=1.0.0 /DAppNumericVersion=1.0.0.0 /DPayloadDir=..\build\publish installer\ReticleX.iss
 
 #ifndef AppVersion
   #define AppVersion "1.0.0"
+#endif
+; VersionInfoVersion only accepts numbers, so a prerelease version needs a
+; numeric form alongside the display one.
+#ifndef AppNumericVersion
+  #define AppNumericVersion "1.0.0.0"
 #endif
 #ifndef PayloadDir
   #define PayloadDir "..\build\publish"
@@ -30,7 +35,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppUrl}
 AppSupportURL={#AppUrl}/issues
 AppUpdatesURL={#AppUrl}/releases
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion={#AppNumericVersion}
 VersionInfoProductName={#AppName}
 VersionInfoDescription={#AppName} crosshair design studio
 

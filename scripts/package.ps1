@@ -49,6 +49,15 @@ $publishDir   = Join-Path $root 'build/publish'
 $portableDir  = Join-Path $root 'build/portable'
 $appProject   = Join-Path $root 'desktop/csharp/ReticleX.App/ReticleX.App.csproj'
 
+# AssemblyVersion, FileVersion and the installer's VersionInfoVersion only
+# accept numbers, so a prerelease suffix — "1.0.0-rc.1", or the "0.0.0-ci" the
+# CI packaging check uses — is stripped for those. $Version itself keeps the
+# full string, since that is what names the files and what the About page shows.
+if ($Version -notmatch '^(\d+)\.(\d+)\.(\d+)') {
+    throw "Version '$Version' has to start with major.minor.patch."
+}
+$numericVersion = '{0}.{1}.{2}.0' -f $Matches[1], $Matches[2], $Matches[3]
+
 if (-not (Test-Path $NativeDll)) {
     throw "reticlex_core.dll was not found at $NativeDll. Run scripts/build-native.ps1 first."
 }
@@ -62,8 +71,8 @@ $common = @(
     '-c', 'Release',
     '-r', 'win-x64',
     "-p:Version=$Version",
-    "-p:FileVersion=$Version.0",
-    "-p:AssemblyVersion=$Version.0",
+    "-p:FileVersion=$numericVersion",
+    "-p:AssemblyVersion=$numericVersion",
     "-p:ReticleXNativeDll=$NativeDll",
     '-p:DebugType=none',
     '--nologo'
@@ -121,6 +130,7 @@ if (-not $SkipInstaller) {
         Write-Host "==> Building the installer" -ForegroundColor Cyan
         & $iscc `
             "/DAppVersion=$Version" `
+            "/DAppNumericVersion=$numericVersion" `
             "/DPayloadDir=$publishDir" `
             "/DOutputDir=$OutputDir" `
             (Join-Path $root 'installer/ReticleX.iss')
