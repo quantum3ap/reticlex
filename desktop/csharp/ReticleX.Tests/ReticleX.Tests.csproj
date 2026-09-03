@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>ReticleX.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReticleX.Core\ReticleX.Core.csproj" />
+  </ItemGroup>
+
+  <!--
+    The native core lives beside the test binary so the interop tests exercise
+    the real library. Default to wherever the build scripts put it, so a plain
+    `dotnet test` works after building the core; CI overrides the path
+    explicitly. When it is genuinely absent the interop tests say so rather
+    than silently passing.
+  -->
+  <!-- Chosen by host platform, not by whichever file happens to exist: a
+       stale reticlex_core.dll left in a Linux tree must not win over the .so
+       the runtime can actually load. -->
+  <PropertyGroup Condition="'$(ReticleXNativeLibrary)' == ''">
+    <_ReticleXDefaultCore Condition="'$(OS)' == 'Windows_NT'">$(MSBuildThisFileDirectory)..\..\..\build\native\Release\reticlex_core.dll</_ReticleXDefaultCore>
+    <_ReticleXDefaultCore Condition="'$(OS)' != 'Windows_NT'">$(MSBuildThisFileDirectory)../../../build/core/libreticlex_core.so</_ReticleXDefaultCore>
+    <ReticleXNativeLibrary Condition="Exists('$(_ReticleXDefaultCore)')">$(_ReticleXDefaultCore)</ReticleXNativeLibrary>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(ReticleXNativeLibrary)' != '' And Exists('$(ReticleXNativeLibrary)')">
+    <None Include="$(ReticleXNativeLibrary)"
+          CopyToOutputDirectory="PreserveNewest"
+          Link="$([System.IO.Path]::GetFileName('$(ReticleXNativeLibrary)'))" />
+  </ItemGroup>
+
+  <!-- The catalogues and presets the tests read straight from the repository. -->
+  <ItemGroup>
+    <None Include="..\..\..\localization\*.json" LinkBase="localization" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\presets\builtin.json" LinkBase="presets" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+<Application x:Class="ReticleX.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnMainWindowClose">
+  <Application.Resources>
+    <!-- The interface lives in the web view; WPF only paints the frame behind
+         it, which must match the front end's background so a resize never
+         flashes a light rectangle. -->
+    <SolidColorBrush x:Key="ShellBackground" Color="#08090C" />
+  </Application.Resources>
+</Application>

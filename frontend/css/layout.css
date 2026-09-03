@@ -1,0 +1,318 @@
+/* The application shell: title bar, sidebar, main column and page transitions. */
+
+.app {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: var(--titlebar-h) 1fr;
+}
+
+/* --- Title bar ----------------------------------------------------------- */
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-inline: var(--space-4) 0;
+  border-bottom: 1px solid var(--line-soft);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.titlebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+.titlebar__logo {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  flex: none;
+}
+
+.titlebar__logo::before,
+.titlebar__logo::after {
+  content: "";
+  position: absolute;
+  background: var(--accent);
+  border-radius: 1px;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.titlebar__logo::before { inset-inline-start: 7px; top: 0; width: 2px; height: 100%; }
+.titlebar__logo::after { top: 7px; inset-inline-start: 0; width: 100%; height: 2px; }
+
+.titlebar__name {
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  font-size: var(--text-sm);
+}
+
+.titlebar__tagline {
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  padding-inline-start: var(--space-2);
+  border-inline-start: 1px solid var(--line);
+}
+
+/* The host maps this region to the OS drag behaviour. */
+.titlebar__drag { flex: 1 1 auto; height: 100%; -webkit-app-region: drag; app-region: drag; }
+
+.titlebar__controls { display: flex; flex: none; height: 100%; }
+
+.titlebar__button {
+  width: 46px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+
+.titlebar__button svg { width: 12px; height: 12px; }
+.titlebar__button:hover { background: var(--surface-2); color: var(--text); }
+.titlebar__button--close:hover { background: #e11d48; color: #fff; }
+
+/* --- Shell --------------------------------------------------------------- */
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 0;
+}
+
+/* --- Sidebar ------------------------------------------------------------- */
+
+.sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  border-inline-end: 1px solid var(--line-soft);
+  background: color-mix(in srgb, var(--bg-deep) 60%, transparent);
+  overflow-y: auto;
+}
+
+.sidebar__section {
+  margin: var(--space-4) var(--space-3) var(--space-2);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.sidebar__section:first-of-type { margin-top: var(--space-1); }
+
+.sidebar__indicator {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  width: 3px;
+  height: 40px;
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+  background: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+  opacity: 0;
+  transition: transform var(--dur-3) var(--ease-out), height var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
+  pointer-events: none;
+}
+
+.nav__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 10px var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  font-weight: 500;
+  text-align: start;
+  transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease),
+              transform var(--dur-1) var(--ease);
+}
+
+.nav__icon { display: grid; place-items: center; flex: none; }
+
+.nav__item:hover { background: var(--surface-1); color: var(--text); }
+.nav__item:active { transform: scale(0.98); }
+
+.nav__item.is-active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.nav__item.is-active .nav__icon { color: var(--accent); }
+
+.sidebar__foot {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-top: 1px solid var(--line-soft);
+}
+
+.nav__mini {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  color: var(--text-muted);
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease),
+              background var(--dur-1) var(--ease);
+}
+
+.nav__mini:hover { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+
+.sidebar__version {
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+/* --- Main column --------------------------------------------------------- */
+
+.main {
+  display: grid;
+  grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-inline: var(--space-6);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.topbar__identity { min-width: 0; flex: 1 1 auto; }
+
+.topbar__title {
+  font-size: var(--text-xl);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar__doc {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  min-width: 0;
+}
+
+.topbar__doc > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 34ch;
+}
+
+.topbar__badge {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+.topbar__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin-inline: var(--space-1);
+}
+
+/* Undo/redo and save belong to editing; they fade back on browsing pages. */
+.topbar__actions[data-context="settings"] [data-action="undo"],
+.topbar__actions[data-context="settings"] [data-action="redo"],
+.topbar__actions[data-context="presets"] [data-action="undo"],
+.topbar__actions[data-context="presets"] [data-action="redo"] {
+  opacity: 0.35;
+}
+
+/* --- Outlet and page transitions ----------------------------------------- */
+
+.outlet {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out);
+}
+
+.page--active { opacity: 1; transform: none; }
+.page--entering { opacity: 0; transform: translateY(10px); }
+.page--leaving { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+
+.page__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-8);
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* The designer fills the viewport instead of scrolling as a document. */
+.page__inner--designer {
+  max-width: none;
+  height: 100%;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  gap: 0;
+}
+
+.page__inner--settings { max-width: 880px; }
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  :root { --sidebar-w: 76px; }
+  .nav__text, .sidebar__section, .sidebar__version { display: none; }
+  .nav__item { justify-content: center; padding-inline: 0; }
+  .sidebar__foot { justify-content: center; }
+  .titlebar__tagline { display: none; }
+}
+
+@media (max-width: 860px) {
+  .page__inner { padding-inline: var(--space-4); }
+  .topbar { padding-inline: var(--space-4); }
+}

@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>ReticleX</AssemblyName>
+    <RootNamespace>ReticleX.App</RootNamespace>
+    <ApplicationIcon>Assets\reticlex.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <!-- Windows shows these in the file properties dialog. -->
+    <AssemblyTitle>ReticleX</AssemblyTitle>
+    <Description>ReticleX - crosshair design studio</Description>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <SelfContained>false</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReticleX.Core\ReticleX.Core.csproj" />
+  </ItemGroup>
+
+  <!--
+    The native core is produced by CMake, not by MSBuild. CI points
+    ReticleXNativeDll at the build output; a local build picks it up from the
+    conventional location if it is there. The application degrades gracefully
+    when it is missing (see NativeCore.IsAvailable), so its absence is a
+    warning rather than a build break.
+  -->
+  <PropertyGroup>
+    <ReticleXNativeDll Condition="'$(ReticleXNativeDll)' == ''">$(MSBuildThisFileDirectory)..\..\..\build\native\Release\reticlex_core.dll</ReticleXNativeDll>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(ReticleXNativeDll)')">
+    <None Include="$(ReticleXNativeDll)" Link="reticlex_core.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="WarnAboutMissingNativeCore" BeforeTargets="Build"
+          Condition="!Exists('$(ReticleXNativeDll)')">
+    <Warning Text="reticlex_core.dll was not found at $(ReticleXNativeDll). Build it with scripts/build-native.ps1 first, or the application will start without the native core." />
+  </Target>
+
+  <!--
+    The web front end, the translation catalogues and the built-in presets ship
+    alongside the executable. WebView2 serves them from a virtual host so the
+    same relative paths work here and in a browser during development.
+  -->
+  <ItemGroup>
+    <Content Include="..\..\..\frontend\**\*.*"
+             Exclude="..\..\..\frontend\tests\**\*.*;..\..\..\frontend\package.json;..\..\..\frontend\node_modules\**\*.*"
+             LinkBase="app\frontend"
+             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\localization\*.json"
+             LinkBase="app\localization"
+             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\presets\builtin.json"
+             LinkBase="app\presets"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\reticlex.ico" />
+  </ItemGroup>
+
+</Project>

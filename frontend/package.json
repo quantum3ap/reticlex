@@ -1,0 +1,12 @@
+{
+  "name": "reticlex-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ReticleX user interface: rendering, state and localization.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "serve": "node ../scripts/dev-server.js"
+  },
+  "engines": { "node": ">=22" }
+}

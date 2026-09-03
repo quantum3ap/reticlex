@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Deliberately cross-platform (net8.0, no Windows-only APIs) so the storage,
+    import/export and interop layers can be unit tested on any CI runner. The
+    Windows-specific pieces live in ReticleX.App.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>ReticleX.Core</AssemblyName>
+    <RootNamespace>ReticleX.Core</RootNamespace>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Description>Storage, serialization and native interop for ReticleX.</Description>
+  </PropertyGroup>
+
+</Project>
