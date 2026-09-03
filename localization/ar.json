@@ -2,10 +2,8 @@
   "meta.name": "Arabic",
   "meta.nativeName": "العربية",
   "meta.dir": "rtl",
-
   "app.name": "ReticleX",
   "app.tagline": "استوديو تصميم نقاط التصويب",
-
   "common.save": "حفظ",
   "common.saveAs": "حفظ باسم",
   "common.cancel": "إلغاء",
@@ -40,7 +38,6 @@
   "common.copied": "تم النسخ",
   "common.optional": "اختياري",
   "common.more": "المزيد",
-
   "nav.home": "الرئيسية",
   "nav.designer": "المصمم",
   "nav.presets": "الإعدادات الجاهزة",
@@ -48,12 +45,10 @@
   "nav.settings": "الإعدادات",
   "nav.sectionMain": "الاستوديو",
   "nav.sectionLibrary": "المكتبة",
-
   "titlebar.minimize": "تصغير",
   "titlebar.maximize": "تكبير",
   "titlebar.restore": "استعادة",
   "titlebar.close": "إغلاق",
-
   "home.welcomeTitle": "صمّم نقطة تصويب تستمتع فعلاً بالتصويب بها.",
   "home.welcomeBody": "اضبط كل خط وفجوة وحدّ خارجي في الوقت الفعلي، واحفظ ما تشاء من التصاميم، وانتقل بينها بنقرة واحدة.",
   "home.createButton": "إنشاء نقطة تصويب",
@@ -75,7 +70,6 @@
   "home.statEdited": "آخر تعديل",
   "home.viewAll": "عرض الكل",
   "home.modified": "عُدّل {date}",
-
   "designer.untitled": "تصميم بلا عنوان",
   "designer.sectionGeneral": "عام",
   "designer.sectionShape": "الشكل",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "يبقي المحورين متطابقين بحيث يحرّكهما شريط واحد معاً.",
   "designer.resetSection": "إعادة تعيين هذا القسم",
   "designer.newCrosshair": "تصميم جديد",
-
   "field.scale": "الحجم الكلي",
   "field.rotation": "الدوران",
   "field.opacity": "العتامة",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "تصويب ديناميكي",
   "field.dynamicSpread": "الحركة",
   "field.dynamicGapBoost": "أقصى اتساع",
-
   "tip.scale": "يكبّر أو يصغّر التصميم بالكامل مع الحفاظ على تناسب كل عنصر.",
   "tip.rotation": "يدير التصميم حول مركزه. مفيد للتصاميم على شكل حرف X.",
   "tip.opacity": "مدى وضوح التصميم. القيم الأقل تُظهر المشهد خلفه.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "اعرض مقدار اتساع التصويب حالياً.",
   "tip.dynamicGapBoost": "مقدار الفجوة الإضافية عند الاتساع الكامل.",
   "tip.exportPng": "يحفظ التصميم كصورة PNG بخلفية شفافة.",
-
   "capStyle.flat": "مستقيم",
   "capStyle.round": "دائري",
   "capStyle.tapered": "مدبب",
   "dotShape.square": "مربعة",
   "dotShape.round": "دائرية",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "أزرق",
   "color.swatches": "عيّنات",
   "color.invalid": "أدخل لوناً مثل ‎#00FF88",
-
   "preview.title": "المعاينة",
   "preview.zoomIn": "تكبير",
   "preview.zoomOut": "تصغير",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "التكبير",
   "preview.infoContrast": "التباين",
   "preview.contrastLow": "تباين منخفض مع هذه الخلفية",
-
   "presets.title": "الإعدادات الجاهزة",
   "presets.subtitle": "تصاميم مختارة بعناية إضافة إلى كل ما حفظته",
   "presets.searchPlaceholder": "ابحث في الجاهزة",
@@ -210,7 +198,6 @@
   "presets.count": "{count} إعداد جاهز",
   "presets.countOne": "إعداد جاهز واحد",
   "presets.builtInReadOnly": "لا يمكن تعديل الإعدادات المدمجة. انسخها لإنشاء نسختك الخاصة.",
-
   "randomizer.title": "التوليد العشوائي",
   "randomizer.subtitle": "ولّد تصميماً يستحق الحفظ، لا مجرد تصميم عشوائي",
   "randomizer.generate": "ولّد تصميماً عشوائياً",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "إلغاء التحديد",
   "randomizer.recent": "آخر النتائج",
   "randomizer.empty": "اضغط زر التوليد للحصول على أول تصميم.",
-
   "settings.title": "الإعدادات",
   "settings.appearance": "المظهر",
   "settings.theme": "السمة",
@@ -278,7 +264,24 @@
   "settings.runtime": "بيئة التشغيل",
   "settings.runtimeDesktop": "سطح مكتب ويندوز",
   "settings.runtimeBrowser": "معاينة في المتصفح",
-
+  "overlay.title": "التراكب على الشاشة",
+  "overlay.enable": "إظهار التراكب",
+  "overlay.enableTip": "يرسم علامة التصويب الحالية فوق كل شيء آخر، لتتمكن من استخدامها خارج ReticleX.",
+  "overlay.monitor": "الشاشة",
+  "overlay.monitorTip": "الشاشة التي يتمركز عليها التراكب. الوضع التلقائي يتبع نافذة ReticleX.",
+  "overlay.monitorAuto": "تلقائي",
+  "overlay.monitorLabel": "الشاشة {index} — {width}×{height}",
+  "overlay.monitorPrimary": "الرئيسية",
+  "overlay.offsetX": "الإزاحة الأفقية",
+  "overlay.offsetY": "الإزاحة الرأسية",
+  "overlay.offsetTip": "يزيح التراكب عن مركز الشاشة، بالبكسل.",
+  "overlay.hotkey": "الاختصار",
+  "overlay.hotkeyTip": "يُظهر التراكب ويخفيه من أي مكان، حتى عندما تكون نافذة أخرى نشطة.",
+  "overlay.hotkeyTaken": "لم يمنح Windows الاختصار {hotkey} لـ ReticleX؛ هناك برنامج آخر يستخدمه. اختر اختصارًا مختلفًا.",
+  "overlay.hint": "اضغط {hotkey} في أي وقت لإظهار التراكب أو إخفائه. إنه يتجاهل الماوس، لذا تمر النقرات من خلاله.",
+  "overlay.toggle": "التراكب",
+  "overlay.toggleTip": "ارسم علامة التصويب هذه فوق الشاشة، مع تحديثها أثناء تعديلها.",
+  "overlay.unsupported": "يحتاج التراكب إلى تطبيق ReticleX لسطح المكتب؛ لا يمكن للمتصفح الرسم فوق النوافذ الأخرى.",
   "dialog.deleteTitle": "حذف \"{name}\"؟",
   "dialog.deleteBody": "لا يمكن التراجع عن هذا الإجراء.",
   "dialog.renameTitle": "إعادة تسمية التصميم",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "تجاهل التغييرات غير المحفوظة؟",
   "dialog.discardBody": "التصميم الحالي يحتوي على تغييرات لم تُحفظ بعد.",
   "dialog.discardConfirm": "تجاهل",
-
   "toast.saved": "تم حفظ التصميم",
   "toast.savedAs": "حُفظ باسم \"{name}\"",
   "toast.renamed": "أُعيدت التسمية إلى \"{name}\"",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "نُسخت البذرة",
   "toast.startWithWindowsOn": "سيبدأ ReticleX مع ويندوز",
   "toast.startWithWindowsOff": "لن يبدأ ReticleX مع ويندوز بعد الآن",
-
+  "toast.overlayOn": "التراكب مفعّل",
+  "toast.overlayOff": "التراكب معطّل",
+  "toast.overlayHotkeyTaken": "الاختصار {hotkey} مستخدم بالفعل من برنامج آخر",
   "import.errorEmpty": "هذا الملف فارغ",
   "import.errorJson": "هذا الملف ليس بصيغة JSON صالحة",
   "import.errorShape": "هذا الملف ليس تصميم ReticleX",
@@ -330,7 +334,6 @@
   "import.warnClamped": "بعض القيم كانت خارج النطاق وتم ضبطها",
   "import.warnEmpty": "التصميم المستورد لا يرسم شيئاً",
   "import.warnInvalidColor": "تعذّرت قراءة أحد الألوان فاستُبدل",
-
   "error.title": "حدث خطأ ما",
   "error.retry": "أعد المحاولة",
   "error.hostUnavailable": "التشغيل بدون مضيف سطح المكتب. تُحفظ التغييرات في هذا المتصفح فقط.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "فشل التصدير",
   "error.coreFailed": "تعذّر تحميل نواة الرسم",
   "error.coreFailedBody": "لا يستطيع ReticleX رسم التصاميم بدونها. جرّب إعادة تثبيت التطبيق.",
-
+  "error.overlayFailed": "تعذّر تغيير التراكب",
   "shortcuts.title": "اختصارات لوحة المفاتيح",
   "shortcuts.new": "تصميم جديد",
   "shortcuts.save": "حفظ",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "إعادة",
   "shortcuts.help": "عرض الاختصارات",
   "shortcuts.close": "إغلاق النافذة",
-
   "units.px": "بكسل",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "الصليب الكلاسيكي",
   "preset.classic-cross.description": "التصميم رباعي الأذرع الذي يبدأ منه معظم اللاعبين. فجوة متوازنة وحد واضح.",
   "preset.precision-dot.name": "نقطة الدقة",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "خطوط سميكة وحد قوي يصمدان أمام أشد المشاهد سطوعاً.",
   "preset.dynamic-spread.name": "الاتساع الديناميكي",
   "preset.dynamic-spread.description": "يتسع أثناء الحركة. حرّك شريط الحركة لرؤية الاتساع الكامل.",
-
   "a11y.sidebar": "التنقل الرئيسي",
   "a11y.pageContent": "محتوى الصفحة",
   "a11y.closeDialog": "إغلاق النافذة",

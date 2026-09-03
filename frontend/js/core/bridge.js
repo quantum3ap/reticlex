@@ -188,6 +188,24 @@ class LocalBridge {
         return { ok: false, unsupported: true };
       case 'window':
         return { ok: false, unsupported: true };
+      // The overlay is a real window drawn over the desktop, so a browser
+      // cannot provide it. Reporting "not supported" rather than throwing keeps
+      // the settings page rendering with the controls explained and disabled.
+      case 'overlayInfo':
+      case 'overlaySet':
+        return {
+          supported: false,
+          enabled: false,
+          monitor: '',
+          offsetX: 0,
+          offsetY: 0,
+          hotkey: 'Ctrl+Shift+X',
+          hotkeyRegistered: false,
+          maxOffset: 4000,
+          monitors: [],
+        };
+      case 'overlayConfig':
+        return { ok: false, unsupported: true };
       default:
         throw new BridgeError(`Unknown host method "${method}"`, method);
     }

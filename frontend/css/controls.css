@@ -509,6 +509,7 @@
 
 .color-field { display: grid; gap: 6px; }
 .color-field.is-disabled { opacity: 0.4; pointer-events: none; }
+.select.is-disabled { opacity: 0.4; pointer-events: none; }
 .color-field__label { font-size: var(--text-sm); color: var(--text-muted); }
 
 .color-field__button {

@@ -27,6 +27,28 @@ export const PREVIEW_BACKGROUNDS = ['dark', 'light', 'fps', 'contrast', 'custom'
 
 export const UI_SCALE = Object.freeze({ min: 0.85, max: 1.3, step: 0.05 });
 
+/** How far the overlay may be nudged from a monitor's centre, in pixels. */
+export const OVERLAY_OFFSET = Object.freeze({ min: -4000, max: 4000, step: 1 });
+
+/** Default global shortcut for showing and hiding the overlay. */
+export const DEFAULT_OVERLAY_HOTKEY = 'Ctrl+Shift+X';
+
+/**
+ * The shortcuts offered for the overlay. Deliberately a short list of
+ * combinations games rarely bind, rather than a free-text field that could be
+ * set to something Windows will refuse.
+ */
+export const OVERLAY_HOTKEYS = Object.freeze([
+  'Ctrl+Shift+X',
+  'Ctrl+Shift+C',
+  'Ctrl+Alt+X',
+  'Alt+Shift+X',
+  'Ctrl+F9',
+  'Ctrl+F10',
+  'Alt+F9',
+  'Alt+F10',
+]);
+
 /** A custom preview background larger than this is dropped rather than saved. */
 const MAX_BACKGROUND_BYTES = 2_000_000;
 
@@ -52,6 +74,11 @@ export function defaultSettings() {
     previewImage: null,
     randomizerMask: 0x1FF,
     randomizerStyle: 0,
+    overlayEnabled: false,
+    overlayMonitor: '',
+    overlayOffsetX: 0,
+    overlayOffsetY: 0,
+    overlayHotkey: DEFAULT_OVERLAY_HOTKEY,
   };
 }
 
@@ -119,10 +146,26 @@ export function normalizeSettings(raw) {
   settings.randomizerStyle = Number.isInteger(raw.randomizerStyle)
     ? clamp(raw.randomizerStyle, 0, 4) : defaults.randomizerStyle;
 
+  // The overlay is never restored as "on" from a corrupt file: it is a window
+  // drawn over everything else, so it only ever appears because the value read
+  // back was unambiguously true.
+  settings.overlayEnabled = raw.overlayEnabled === true;
+  settings.overlayMonitor = typeof raw.overlayMonitor === 'string' ? raw.overlayMonitor : '';
+  settings.overlayOffsetX = clampOffset(raw.overlayOffsetX);
+  settings.overlayOffsetY = clampOffset(raw.overlayOffsetY);
+  settings.overlayHotkey = OVERLAY_HOTKEYS.includes(raw.overlayHotkey)
+    ? raw.overlayHotkey : defaults.overlayHotkey;
+
   if (raw.version !== SETTINGS_VERSION) repaired = true;
   settings.version = SETTINGS_VERSION;
 
   return { settings, repaired };
+}
+
+function clampOffset(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 0;
+  return Math.round(clamp(number, OVERLAY_OFFSET.min, OVERLAY_OFFSET.max));
 }
 
 /** True when the stored image is small enough to be worth writing back. */

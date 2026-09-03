@@ -28,6 +28,7 @@ public partial class MainWindow : Window
     private readonly JsonStore _store;
     private readonly CrosshairLibrary _library;
     private readonly ThumbnailService _thumbnails;
+    private readonly OverlayController _overlay;
 
     private WebBridge? _bridge;
     private bool _initialising;
@@ -43,6 +44,7 @@ public partial class MainWindow : Window
         _store = new JsonStore((message, error) => App.Log.Warn(message, error));
         _library = new CrosshairLibrary(_paths, _store);
         _thumbnails = new ThumbnailService(_paths, (message, error) => App.Log.Warn(message, error));
+        _overlay = new OverlayController((message, error) => App.Log.Warn(message, error));
 
         // Set here rather than in XAML: the property is a System.Drawing colour
         // and the markup converter for it is not dependable.
@@ -50,6 +52,9 @@ public partial class MainWindow : Window
 
         StateChanged += OnStateChanged;
         Loaded += async (_, _) => await InitialiseWebViewAsync();
+        // The overlay is a second top-level window; closing the main one has to
+        // take it down too, or the process would stay alive with nothing shown.
+        Closed += (_, _) => _overlay.Dispose();
     }
 
     // --- Start-up -----------------------------------------------------------
@@ -96,7 +101,7 @@ public partial class MainWindow : Window
             await WebView.EnsureCoreWebView2Async(environment);
             ConfigureWebView();
 
-            _bridge = new WebBridge(WebView, this, _paths, _store, _library, _thumbnails);
+            _bridge = new WebBridge(WebView, this, _paths, _store, _library, _thumbnails, _overlay);
             WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
             WebView.CoreWebView2.Navigate(StartPage);

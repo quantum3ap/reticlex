@@ -4,7 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  ACCENTS, PREVIEW_BACKGROUNDS, SETTINGS_VERSION, THEMES, UI_SCALE,
+  ACCENTS, DEFAULT_OVERLAY_HOTKEY, OVERLAY_HOTKEYS, OVERLAY_OFFSET,
+  PREVIEW_BACKGROUNDS, SETTINGS_VERSION, THEMES, UI_SCALE,
   canPersistBackground, defaultSettings, normalizeSettings,
 } from '../js/core/settings.js';
 
@@ -105,4 +106,66 @@ test('normalising twice changes nothing the second time', () => {
 test('remembers whether the language was chosen deliberately', () => {
   assert.equal(normalizeSettings({}).settings.localeChosen, false);
   assert.equal(normalizeSettings({ localeChosen: true }).settings.localeChosen, true);
+});
+
+
+// --- Overlay ---------------------------------------------------------------
+
+test('the overlay is off by default and bound to a usable shortcut', () => {
+  const settings = defaultSettings();
+  assert.equal(settings.overlayEnabled, false);
+  assert.equal(settings.overlayMonitor, '');
+  assert.equal(settings.overlayOffsetX, 0);
+  assert.equal(settings.overlayOffsetY, 0);
+  assert.equal(settings.overlayHotkey, DEFAULT_OVERLAY_HOTKEY);
+  assert.ok(OVERLAY_HOTKEYS.includes(settings.overlayHotkey));
+});
+
+test('every offered shortcut has a modifier, which Windows requires', () => {
+  for (const hotkey of OVERLAY_HOTKEYS) {
+    const parts = hotkey.split('+');
+    assert.ok(parts.length >= 2, `${hotkey} has no modifier`);
+    assert.ok(parts.slice(0, -1).every((part) => ['Ctrl', 'Alt', 'Shift', 'Win'].includes(part)),
+      `${hotkey} has an unexpected modifier`);
+  }
+});
+
+test('the overlay only turns on for a literal true', () => {
+  for (const value of ['true', 1, 'yes', {}, [], 'on']) {
+    assert.equal(normalizeSettings({ overlayEnabled: value }).settings.overlayEnabled, false);
+  }
+  assert.equal(normalizeSettings({ overlayEnabled: true }).settings.overlayEnabled, true);
+});
+
+test('overlay offsets are clamped and rounded to whole pixels', () => {
+  const cases = [
+    [1e9, OVERLAY_OFFSET.max],
+    [-1e9, OVERLAY_OFFSET.min],
+    [12.6, 13],
+    ['40', 40],
+    [Number.NaN, 0],
+    [Number.POSITIVE_INFINITY, 0],
+    [undefined, 0],
+    [null, 0],
+  ];
+  for (const [input, expected] of cases) {
+    const { settings } = normalizeSettings({ overlayOffsetX: input, overlayOffsetY: input });
+    assert.equal(settings.overlayOffsetX, expected, `offsetX for ${String(input)}`);
+    assert.equal(settings.overlayOffsetY, expected, `offsetY for ${String(input)}`);
+    assert.ok(Number.isInteger(settings.overlayOffsetX));
+  }
+});
+
+test('an unknown shortcut falls back to the default', () => {
+  assert.equal(normalizeSettings({ overlayHotkey: 'Ctrl+Q' }).settings.overlayHotkey,
+    DEFAULT_OVERLAY_HOTKEY);
+  assert.equal(normalizeSettings({ overlayHotkey: 42 }).settings.overlayHotkey,
+    DEFAULT_OVERLAY_HOTKEY);
+  assert.equal(normalizeSettings({ overlayHotkey: 'Alt+F9' }).settings.overlayHotkey, 'Alt+F9');
+});
+
+test('a monitor identifier survives but a non-string does not', () => {
+  assert.equal(normalizeSettings({ overlayMonitor: '\\\\.\\DISPLAY2' }).settings.overlayMonitor,
+    '\\\\.\\DISPLAY2');
+  assert.equal(normalizeSettings({ overlayMonitor: 7 }).settings.overlayMonitor, '');
 });

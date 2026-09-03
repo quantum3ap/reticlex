@@ -2,10 +2,8 @@
   "meta.name": "Turkish",
   "meta.nativeName": "Türkçe",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "Nişangâh Tasarım Stüdyosu",
-
   "common.save": "Kaydet",
   "common.saveAs": "Farklı kaydet",
   "common.cancel": "İptal",
@@ -40,7 +38,6 @@
   "common.copied": "Kopyalandı",
   "common.optional": "İsteğe bağlı",
   "common.more": "Daha fazla",
-
   "nav.home": "Ana sayfa",
   "nav.designer": "Tasarımcı",
   "nav.presets": "Hazır ayarlar",
@@ -48,12 +45,10 @@
   "nav.settings": "Ayarlar",
   "nav.sectionMain": "Stüdyo",
   "nav.sectionLibrary": "Kitaplık",
-
   "titlebar.minimize": "Simge durumuna küçült",
   "titlebar.maximize": "Ekranı kapla",
   "titlebar.restore": "Geri yükle",
   "titlebar.close": "Kapat",
-
   "home.welcomeTitle": "Gerçekten nişan almak isteyeceğin bir nişangâh tasarla.",
   "home.welcomeBody": "Her çizgiyi, boşluğu ve dış çizgiyi anlık olarak ayarla, istediğin kadar nişangâh kaydet ve aralarında tek tıkla geçiş yap.",
   "home.createButton": "Nişangâh oluştur",
@@ -75,7 +70,6 @@
   "home.statEdited": "Son düzenleme",
   "home.viewAll": "Tümünü gör",
   "home.modified": "{date} tarihinde değiştirildi",
-
   "designer.untitled": "Adsız nişangâh",
   "designer.sectionGeneral": "Genel",
   "designer.sectionShape": "Biçim",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "İki ekseni aynı tutar, böylece tek kaydırıcı ikisini birlikte hareket ettirir.",
   "designer.resetSection": "Bu bölümü sıfırla",
   "designer.newCrosshair": "Yeni nişangâh",
-
   "field.scale": "Genel boyut",
   "field.rotation": "Döndürme",
   "field.opacity": "Saydamlık",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "Dinamik nişangâh",
   "field.dynamicSpread": "Hareket",
   "field.dynamicGapBoost": "En fazla açılma",
-
   "tip.scale": "Tüm nişangâhı bir anda ölçekler; oranlar korunur.",
   "tip.rotation": "Nişangâhı merkezi etrafında döndürür. X biçimli tasarımlar için kullanışlıdır.",
   "tip.opacity": "Nişangâhın ne kadar dolu göründüğü. Düşük değerler sahneyi daha çok gösterir.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "Nişangâhın şu anda ne kadar açık olduğunu önizler.",
   "tip.dynamicGapBoost": "Nişangâh tamamen açıkken eklenen ek boşluk miktarı.",
   "tip.exportPng": "Nişangâhı saydam arka planlı bir PNG görseli olarak kaydeder.",
-
   "capStyle.flat": "Düz",
   "capStyle.round": "Yuvarlak",
   "capStyle.tapered": "Sivri",
   "dotShape.square": "Kare",
   "dotShape.round": "Yuvarlak",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "Mavi",
   "color.swatches": "Renk örnekleri",
   "color.invalid": "#00FF88 gibi bir renk gir",
-
   "preview.title": "Önizleme",
   "preview.zoomIn": "Yakınlaştır",
   "preview.zoomOut": "Uzaklaştır",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "Yakınlaştırma",
   "preview.infoContrast": "Karşıtlık",
   "preview.contrastLow": "Bu arka planda karşıtlık düşük",
-
   "presets.title": "Hazır ayarlar",
   "presets.subtitle": "Özenle seçilmiş nişangâhlar ve kaydettiğin her şey",
   "presets.searchPlaceholder": "Hazır ayarlarda ara",
@@ -210,7 +198,6 @@
   "presets.count": "{count} hazır ayar",
   "presets.countOne": "1 hazır ayar",
   "presets.builtInReadOnly": "Yerleşik hazır ayarlar düzenlenemez. Kendi sürümün için çoğalt.",
-
   "randomizer.title": "Rastgele",
   "randomizer.subtitle": "Rastgele değil, saklamaya değer bir tasarım üret",
   "randomizer.generate": "Rastgele nişangâh üret",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "Seçimi kaldır",
   "randomizer.recent": "Son üretilenler",
   "randomizer.empty": "İlk nişangâhın için üret düğmesine bas.",
-
   "settings.title": "Ayarlar",
   "settings.appearance": "Görünüm",
   "settings.theme": "Tema",
@@ -278,7 +264,24 @@
   "settings.runtime": "Çalışma ortamı",
   "settings.runtimeDesktop": "Windows masaüstü",
   "settings.runtimeBrowser": "Tarayıcı önizlemesi",
-
+  "overlay.title": "Ekran kaplaması",
+  "overlay.enable": "Kaplamayı göster",
+  "overlay.enableTip": "Geçerli nişangâhı diğer her şeyin üzerine çizer, böylece ReticleX dışında da kullanabilirsiniz.",
+  "overlay.monitor": "Monitör",
+  "overlay.monitorTip": "Kaplamanın hangi ekranda ortalanacağı. Otomatik, ReticleX penceresini izler.",
+  "overlay.monitorAuto": "Otomatik",
+  "overlay.monitorLabel": "Ekran {index} — {width}×{height}",
+  "overlay.monitorPrimary": "birincil",
+  "overlay.offsetX": "Yatay kaydırma",
+  "overlay.offsetY": "Dikey kaydırma",
+  "overlay.offsetTip": "Kaplamayı ekranın merkezinden piksel cinsinden kaydırır.",
+  "overlay.hotkey": "Kısayol",
+  "overlay.hotkeyTip": "Başka bir pencere etkinken bile kaplamayı her yerden gösterir ve gizler.",
+  "overlay.hotkeyTaken": "Windows {hotkey} kısayolunu ReticleX'e vermedi; başka bir program onu kullanıyor. Farklı bir kısayol seçin.",
+  "overlay.hint": "Kaplamayı göstermek veya gizlemek için istediğiniz zaman {hotkey} tuşlarına basın. Fareyi yok sayar, tıklamalar içinden geçer.",
+  "overlay.toggle": "Kaplama",
+  "overlay.toggleTip": "Bu nişangâhı ekranın üzerine çiz ve düzenledikçe güncelle.",
+  "overlay.unsupported": "Kaplama için ReticleX masaüstü uygulaması gerekir; bir tarayıcı diğer pencerelerin üzerine çizemez.",
   "dialog.deleteTitle": "\"{name}\" silinsin mi?",
   "dialog.deleteBody": "Bu işlem geri alınamaz.",
   "dialog.renameTitle": "Nişangâhı yeniden adlandır",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "Kaydedilmemiş değişiklikler atılsın mı?",
   "dialog.discardBody": "Geçerli nişangâhta henüz kaydedilmemiş değişiklikler var.",
   "dialog.discardConfirm": "At",
-
   "toast.saved": "Nişangâh kaydedildi",
   "toast.savedAs": "\"{name}\" olarak kaydedildi",
   "toast.renamed": "\"{name}\" olarak yeniden adlandırıldı",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "Tohum kopyalandı",
   "toast.startWithWindowsOn": "ReticleX Windows ile başlayacak",
   "toast.startWithWindowsOff": "ReticleX artık Windows ile başlamayacak",
-
+  "toast.overlayOn": "Kaplama açık",
+  "toast.overlayOff": "Kaplama kapalı",
+  "toast.overlayHotkeyTaken": "{hotkey} zaten başka bir program tarafından kullanılıyor",
   "import.errorEmpty": "Bu dosya boş",
   "import.errorJson": "Bu dosya geçerli bir JSON değil",
   "import.errorShape": "Bu dosya bir ReticleX nişangâhı değil",
@@ -330,7 +334,6 @@
   "import.warnClamped": "Bazı değerler aralık dışındaydı ve düzeltildi",
   "import.warnEmpty": "İçe aktarılan nişangâh hiçbir şey çizmiyor",
   "import.warnInvalidColor": "Bir renk okunamadı ve değiştirildi",
-
   "error.title": "Bir şeyler ters gitti",
   "error.retry": "Yeniden dene",
   "error.hostUnavailable": "Masaüstü ana uygulaması olmadan çalışıyor. Değişiklikler yalnızca bu tarayıcıda saklanır.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "Dışa aktarma başarısız oldu",
   "error.coreFailed": "Çizim çekirdeği yüklenemedi",
   "error.coreFailedBody": "ReticleX onsuz nişangâh çizemez. Uygulamayı yeniden kurmayı dene.",
-
+  "error.overlayFailed": "Kaplama değiştirilemedi",
   "shortcuts.title": "Klavye kısayolları",
   "shortcuts.new": "Yeni nişangâh",
   "shortcuts.save": "Kaydet",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "Yinele",
   "shortcuts.help": "Kısayolları göster",
   "shortcuts.close": "İletişim kutusunu kapat",
-
   "units.px": "piksel",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "Klasik haç",
   "preset.classic-cross.description": "Çoğu oyuncunun başladığı dört kollu nişangâh. Dengeli boşluk, net dış çizgi.",
   "preset.precision-dot.name": "Hassas nokta",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "En parlak sahnelerde bile ayakta kalan kalın çizgiler ve güçlü bir dış çizgi.",
   "preset.dynamic-spread.name": "Dinamik açılma",
   "preset.dynamic-spread.description": "Hareket ettikçe açılır. Tam açılmayı görmek için hareket kaydırıcısını sürükle.",
-
   "a11y.sidebar": "Ana gezinme",
   "a11y.pageContent": "Sayfa içeriği",
   "a11y.closeDialog": "İletişim kutusunu kapat",

@@ -14,7 +14,8 @@ import { Library } from './core/library.js';
 import { Session } from './core/session.js';
 import { Store } from './core/store.js';
 import {
-  ACCENTS, THEMES, applyAppearance, applyLocale, canPersistBackground,
+  ACCENTS, DEFAULT_OVERLAY_HOTKEY, OVERLAY_OFFSET, THEMES,
+  applyAppearance, applyLocale, canPersistBackground,
   defaultSettings, normalizeSettings,
 } from './core/settings.js';
 import {
@@ -41,12 +42,25 @@ import { SHORTCUTS, registerShortcuts } from './shortcuts.js';
 const AUTOSAVE_DELAY = 1200;
 
 class App {
+  #overlayPushQueued = false;
+
   constructor() {
     this.store = new Store({ page: 'home' });
     this.settings = defaultSettings();
     this.appVersion = '1.0.0';
     this.hasHost = false;
     this.dataPath = '';
+    this.overlay = {
+      supported: false,
+      enabled: false,
+      monitor: '',
+      offsetX: 0,
+      offsetY: 0,
+      hotkey: DEFAULT_OVERLAY_HOTKEY,
+      hotkeyRegistered: false,
+      maxOffset: OVERLAY_OFFSET.max,
+      monitors: [],
+    };
   }
 
   async boot() {
@@ -111,6 +125,10 @@ class App {
     document.getElementById('boot').hidden = true;
     document.getElementById('app').hidden = false;
     document.getElementById('app-version').textContent = `v${this.appVersion}`;
+
+    // After the interface is up: the overlay is the host's window, and a slow
+    // or missing one must not hold back the first paint.
+    await this.#initOverlay();
 
     if (!this.hasHost) {
       this.toasts.show({ messageKey: 'error.hostUnavailable', type: 'info', duration: 5200 });
@@ -241,6 +259,7 @@ class App {
     this.session.onChange(() => {
       this.#refreshDocumentLine();
       this.autoSave();
+      this.#pushOverlayConfig();
     });
     this.library.onChange(() => this.router.refresh());
     this.#refreshDocumentLine();
@@ -630,6 +649,116 @@ class App {
       this.toasts.error('error.exportFailed', undefined, String(error.message ?? error));
       return false;
     }
+  }
+
+  // --- Overlay ------------------------------------------------------------
+
+  /**
+   * Brings the host's overlay in line with stored preferences and starts
+   * listening for changes made outside the interface.
+   *
+   * The overlay is a window the host draws over everything else; the front end
+   * only ever asks for it, and treats whatever comes back as the truth.
+   */
+  async #initOverlay() {
+    this.bridge.on('overlayChanged', (state) => {
+      if (!state) return;
+      this.#applyOverlayState(state, { persist: true });
+      this.router.refresh();
+      this.toasts.show({
+        messageKey: state.enabled ? 'toast.overlayOn' : 'toast.overlayOff',
+        type: 'info',
+        duration: 2400,
+      });
+    });
+
+    try {
+      const state = await this.bridge.call('overlaySet', {
+        enabled: this.settings.overlayEnabled,
+        monitor: this.settings.overlayMonitor,
+        offsetX: this.settings.overlayOffsetX,
+        offsetY: this.settings.overlayOffsetY,
+        hotkey: this.settings.overlayHotkey,
+        config: this.session.config,
+      });
+      this.#applyOverlayState(state);
+    } catch (error) {
+      console.error('[app] overlay unavailable', error);
+    }
+  }
+
+  /** Copies a host reply into local state, and optionally back into settings. */
+  #applyOverlayState(state, { persist = false } = {}) {
+    if (!state || typeof state !== 'object') return this.overlay;
+    this.overlay = {
+      supported: Boolean(state.supported),
+      enabled: Boolean(state.enabled),
+      monitor: typeof state.monitor === 'string' ? state.monitor : '',
+      offsetX: Number(state.offsetX) || 0,
+      offsetY: Number(state.offsetY) || 0,
+      hotkey: typeof state.hotkey === 'string' ? state.hotkey : DEFAULT_OVERLAY_HOTKEY,
+      hotkeyRegistered: Boolean(state.hotkeyRegistered),
+      maxOffset: Number(state.maxOffset) || OVERLAY_OFFSET.max,
+      monitors: Array.isArray(state.monitors) ? state.monitors : [],
+    };
+
+    if (persist) {
+      this.saveSettings({
+        overlayEnabled: this.overlay.enabled,
+        overlayMonitor: this.overlay.monitor,
+        overlayOffsetX: this.overlay.offsetX,
+        overlayOffsetY: this.overlay.offsetY,
+        overlayHotkey: this.overlay.hotkey,
+      });
+    }
+    this.store.set({ overlayRevision: Date.now() });
+    return this.overlay;
+  }
+
+  /**
+   * Applies an overlay change and remembers it.
+   * @param {object} patch any of enabled, monitor, offsetX, offsetY, hotkey
+   */
+  async setOverlay(patch) {
+    try {
+      const state = await this.bridge.call('overlaySet', { ...patch, config: this.session.config });
+      const applied = this.#applyOverlayState(state, { persist: true });
+      if ('enabled' in patch && applied.supported) {
+        this.toasts.show({
+          messageKey: applied.enabled ? 'toast.overlayOn' : 'toast.overlayOff',
+          type: 'success',
+          duration: 2400,
+        });
+      }
+      if (patch.hotkey && applied.supported && !applied.hotkeyRegistered) {
+        this.toasts.error('toast.overlayHotkeyTaken', { hotkey: applied.hotkey });
+      }
+      return applied;
+    } catch (error) {
+      this.toasts.error('error.overlayFailed', undefined, String(error.message ?? error));
+      return this.overlay;
+    }
+  }
+
+  /** Flips the overlay from the interface, the same as the global hotkey does. */
+  toggleOverlay() {
+    return this.setOverlay({ enabled: !this.overlay.enabled });
+  }
+
+  /**
+   * Sends the reticle being edited to a visible overlay, so the designer's
+   * sliders move it on screen. Coalesced to one call per frame: a drag would
+   * otherwise cross the bridge on every pointer move.
+   */
+  #pushOverlayConfig() {
+    if (!this.overlay.enabled || !this.overlay.supported) return;
+    if (this.#overlayPushQueued) return;
+    this.#overlayPushQueued = true;
+    requestAnimationFrame(() => {
+      this.#overlayPushQueued = false;
+      if (!this.overlay.enabled) return;
+      this.bridge.call('overlayConfig', { config: this.session.config }).catch(() => {});
+    });
   }
 
   // --- Settings -----------------------------------------------------------

@@ -2,10 +2,8 @@
   "meta.name": "German",
   "meta.nativeName": "Deutsch",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "Studio für Fadenkreuz-Design",
-
   "common.save": "Speichern",
   "common.saveAs": "Speichern unter",
   "common.cancel": "Abbrechen",
@@ -40,7 +38,6 @@
   "common.copied": "Kopiert",
   "common.optional": "Optional",
   "common.more": "Mehr",
-
   "nav.home": "Start",
   "nav.designer": "Designer",
   "nav.presets": "Vorlagen",
@@ -48,12 +45,10 @@
   "nav.settings": "Einstellungen",
   "nav.sectionMain": "Studio",
   "nav.sectionLibrary": "Bibliothek",
-
   "titlebar.minimize": "Minimieren",
   "titlebar.maximize": "Maximieren",
   "titlebar.restore": "Wiederherstellen",
   "titlebar.close": "Schließen",
-
   "home.welcomeTitle": "Gestalte ein Fadenkreuz, mit dem du wirklich zielen willst.",
   "home.welcomeBody": "Stelle jede Linie, jede Lücke und jede Kontur in Echtzeit ein, speichere beliebig viele Fadenkreuze und wechsle mit einem Klick zwischen ihnen.",
   "home.createButton": "Fadenkreuz erstellen",
@@ -75,7 +70,6 @@
   "home.statEdited": "Zuletzt bearbeitet",
   "home.viewAll": "Alle anzeigen",
   "home.modified": "Geändert am {date}",
-
   "designer.untitled": "Unbenanntes Fadenkreuz",
   "designer.sectionGeneral": "Allgemein",
   "designer.sectionShape": "Form",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "Hält beide Achsen identisch, sodass ein Regler sie gemeinsam bewegt.",
   "designer.resetSection": "Diesen Abschnitt zurücksetzen",
   "designer.newCrosshair": "Neues Fadenkreuz",
-
   "field.scale": "Gesamtgröße",
   "field.rotation": "Drehung",
   "field.opacity": "Deckkraft",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "Dynamisches Fadenkreuz",
   "field.dynamicSpread": "Bewegung",
   "field.dynamicGapBoost": "Maximale Streuung",
-
   "tip.scale": "Skaliert das gesamte Fadenkreuz auf einmal; alle Proportionen bleiben erhalten.",
   "tip.rotation": "Dreht das Fadenkreuz um seinen Mittelpunkt. Praktisch für X-förmige Designs.",
   "tip.opacity": "Wie kräftig das Fadenkreuz wirkt. Niedrige Werte lassen mehr von der Szene durch.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "Zeigt in der Vorschau, wie weit das Fadenkreuz gerade geöffnet ist.",
   "tip.dynamicGapBoost": "Wie viel zusätzliche Lücke bei voll geöffnetem Fadenkreuz entsteht.",
   "tip.exportPng": "Speichert das Fadenkreuz als PNG-Bild mit transparentem Hintergrund.",
-
   "capStyle.flat": "Flach",
   "capStyle.round": "Rund",
   "capStyle.tapered": "Spitz",
   "dotShape.square": "Eckig",
   "dotShape.round": "Rund",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "Blau",
   "color.swatches": "Farbfelder",
   "color.invalid": "Gib eine Farbe wie #00FF88 ein",
-
   "preview.title": "Vorschau",
   "preview.zoomIn": "Vergrößern",
   "preview.zoomOut": "Verkleinern",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "Zoom",
   "preview.infoContrast": "Kontrast",
   "preview.contrastLow": "Geringer Kontrast auf diesem Hintergrund",
-
   "presets.title": "Vorlagen",
   "presets.subtitle": "Ausgewählte Fadenkreuze und alles, was du gespeichert hast",
   "presets.searchPlaceholder": "Vorlagen durchsuchen",
@@ -210,7 +198,6 @@
   "presets.count": "{count} Vorlagen",
   "presets.countOne": "1 Vorlage",
   "presets.builtInReadOnly": "Mitgelieferte Vorlagen lassen sich nicht bearbeiten. Dupliziere sie für deine eigene Version.",
-
   "randomizer.title": "Zufall",
   "randomizer.subtitle": "Erzeuge ein Design, das es wert ist, behalten zu werden",
   "randomizer.generate": "Zufälliges Fadenkreuz erzeugen",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "Auswahl aufheben",
   "randomizer.recent": "Letzte Ergebnisse",
   "randomizer.empty": "Drücke auf Erzeugen für dein erstes Fadenkreuz.",
-
   "settings.title": "Einstellungen",
   "settings.appearance": "Darstellung",
   "settings.theme": "Design",
@@ -278,7 +264,24 @@
   "settings.runtime": "Laufzeitumgebung",
   "settings.runtimeDesktop": "Windows-Desktop",
   "settings.runtimeBrowser": "Browser-Vorschau",
-
+  "overlay.title": "Bildschirm-Overlay",
+  "overlay.enable": "Overlay anzeigen",
+  "overlay.enableTip": "Zeichnet das aktuelle Fadenkreuz über alles andere, damit Sie es außerhalb von ReticleX nutzen können.",
+  "overlay.monitor": "Monitor",
+  "overlay.monitorTip": "Auf welchem Bildschirm das Overlay zentriert wird. Automatisch folgt dem ReticleX-Fenster.",
+  "overlay.monitorAuto": "Automatisch",
+  "overlay.monitorLabel": "Bildschirm {index} — {width}×{height}",
+  "overlay.monitorPrimary": "primär",
+  "overlay.offsetX": "Horizontaler Versatz",
+  "overlay.offsetY": "Vertikaler Versatz",
+  "overlay.offsetTip": "Verschiebt das Overlay in Pixeln aus der Bildschirmmitte.",
+  "overlay.hotkey": "Tastenkürzel",
+  "overlay.hotkeyTip": "Blendet das Overlay von überall ein und aus, auch wenn ein anderes Fenster aktiv ist.",
+  "overlay.hotkeyTaken": "Windows hat ReticleX {hotkey} nicht zugewiesen; ein anderes Programm belegt es bereits. Wählen Sie ein anderes Kürzel.",
+  "overlay.hint": "Drücken Sie jederzeit {hotkey}, um das Overlay ein- oder auszublenden. Es ignoriert die Maus, Klicks gehen hindurch.",
+  "overlay.toggle": "Overlay",
+  "overlay.toggleTip": "Dieses Fadenkreuz über den Bildschirm zeichnen und beim Bearbeiten mitführen.",
+  "overlay.unsupported": "Das Overlay benötigt die ReticleX-Desktopanwendung; ein Browser kann nicht über andere Fenster zeichnen.",
   "dialog.deleteTitle": "„{name}“ löschen?",
   "dialog.deleteBody": "Das lässt sich nicht rückgängig machen.",
   "dialog.renameTitle": "Fadenkreuz umbenennen",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "Nicht gespeicherte Änderungen verwerfen?",
   "dialog.discardBody": "Das aktuelle Fadenkreuz hat Änderungen, die noch nicht gespeichert wurden.",
   "dialog.discardConfirm": "Verwerfen",
-
   "toast.saved": "Fadenkreuz gespeichert",
   "toast.savedAs": "Als „{name}“ gespeichert",
   "toast.renamed": "In „{name}“ umbenannt",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "Startwert kopiert",
   "toast.startWithWindowsOn": "ReticleX startet künftig mit Windows",
   "toast.startWithWindowsOff": "ReticleX startet nicht mehr mit Windows",
-
+  "toast.overlayOn": "Overlay an",
+  "toast.overlayOff": "Overlay aus",
+  "toast.overlayHotkeyTaken": "{hotkey} ist bereits von einem anderen Programm belegt",
   "import.errorEmpty": "Diese Datei ist leer",
   "import.errorJson": "Diese Datei ist kein gültiges JSON",
   "import.errorShape": "Diese Datei ist kein ReticleX-Fadenkreuz",
@@ -330,7 +334,6 @@
   "import.warnClamped": "Einige Werte lagen außerhalb des zulässigen Bereichs und wurden angepasst",
   "import.warnEmpty": "Das importierte Fadenkreuz zeichnet nichts",
   "import.warnInvalidColor": "Eine Farbe konnte nicht gelesen werden und wurde ersetzt",
-
   "error.title": "Etwas ist schiefgelaufen",
   "error.retry": "Erneut versuchen",
   "error.hostUnavailable": "Läuft ohne Desktop-Host. Änderungen bleiben nur in diesem Browser erhalten.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "Der Export ist fehlgeschlagen",
   "error.coreFailed": "Der Rendering-Kern konnte nicht geladen werden",
   "error.coreFailedBody": "Ohne ihn kann ReticleX keine Fadenkreuze zeichnen. Versuche, die Anwendung neu zu installieren.",
-
+  "error.overlayFailed": "Das Overlay konnte nicht geändert werden",
   "shortcuts.title": "Tastenkürzel",
   "shortcuts.new": "Neues Fadenkreuz",
   "shortcuts.save": "Speichern",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "Wiederholen",
   "shortcuts.help": "Tastenkürzel anzeigen",
   "shortcuts.close": "Dialog schließen",
-
   "units.px": "px",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "Klassisches Kreuz",
   "preset.classic-cross.description": "Das Vier-Arm-Fadenkreuz, mit dem fast jeder anfängt. Ausgewogene Lücke, klare Kontur.",
   "preset.precision-dot.name": "Präzisionspunkt",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "Dicke Linien und eine starke Kontur, die auch die hellsten Szenen überstehen.",
   "preset.dynamic-spread.name": "Dynamische Streuung",
   "preset.dynamic-spread.description": "Öffnet sich beim Bewegen. Zieh den Bewegungsregler, um die volle Streuung zu sehen.",
-
   "a11y.sidebar": "Hauptnavigation",
   "a11y.pageContent": "Seiteninhalt",
   "a11y.closeDialog": "Dialog schließen",

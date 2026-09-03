@@ -2,10 +2,8 @@
   "meta.name": "Japanese",
   "meta.nativeName": "日本語",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "クロスヘア デザインスタジオ",
-
   "common.save": "保存",
   "common.saveAs": "名前を付けて保存",
   "common.cancel": "キャンセル",
@@ -40,7 +38,6 @@
   "common.copied": "コピーしました",
   "common.optional": "任意",
   "common.more": "その他",
-
   "nav.home": "ホーム",
   "nav.designer": "デザイナー",
   "nav.presets": "プリセット",
@@ -48,12 +45,10 @@
   "nav.settings": "設定",
   "nav.sectionMain": "スタジオ",
   "nav.sectionLibrary": "ライブラリ",
-
   "titlebar.minimize": "最小化",
   "titlebar.maximize": "最大化",
   "titlebar.restore": "元のサイズに戻す",
   "titlebar.close": "閉じる",
-
   "home.welcomeTitle": "本当に狙いたくなるクロスヘアを作りましょう。",
   "home.welcomeBody": "線・すき間・アウトラインをリアルタイムに調整し、好きなだけ保存して、ワンクリックで切り替えられます。",
   "home.createButton": "クロスヘアを作成",
@@ -75,7 +70,6 @@
   "home.statEdited": "最終編集",
   "home.viewAll": "すべて表示",
   "home.modified": "{date} に更新",
-
   "designer.untitled": "無題のクロスヘア",
   "designer.sectionGeneral": "全般",
   "designer.sectionShape": "形状",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "両方の軸を同じ値に保ち、1 つのスライダーでまとめて調整できます。",
   "designer.resetSection": "このセクションをリセット",
   "designer.newCrosshair": "新しいクロスヘア",
-
   "field.scale": "全体のサイズ",
   "field.rotation": "回転",
   "field.opacity": "不透明度",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "ダイナミッククロスヘア",
   "field.dynamicSpread": "移動量",
   "field.dynamicGapBoost": "最大拡散",
-
   "tip.scale": "比率を保ったまま、クロスヘア全体を一度に拡大縮小します。",
   "tip.rotation": "中心を軸にクロスヘアを回転します。X 字型のデザインに便利です。",
   "tip.opacity": "クロスヘアの濃さです。値を下げるほど背景が透けて見えます。",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "クロスヘアが今どれだけ開いているかをプレビューします。",
   "tip.dynamicGapBoost": "完全に開いたときに追加されるすき間の量です。",
   "tip.exportPng": "クロスヘアを背景が透明な PNG 画像として保存します。",
-
   "capStyle.flat": "平ら",
   "capStyle.round": "丸",
   "capStyle.tapered": "テーパー",
   "dotShape.square": "四角",
   "dotShape.round": "丸",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "青",
   "color.swatches": "スウォッチ",
   "color.invalid": "#00FF88 のような色を入力してください",
-
   "preview.title": "プレビュー",
   "preview.zoomIn": "拡大",
   "preview.zoomOut": "縮小",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "ズーム",
   "preview.infoContrast": "コントラスト",
   "preview.contrastLow": "この背景ではコントラストが低めです",
-
   "presets.title": "プリセット",
   "presets.subtitle": "厳選したクロスヘアと、保存したすべてのデザイン",
   "presets.searchPlaceholder": "プリセットを検索",
@@ -210,7 +198,6 @@
   "presets.count": "プリセット {count} 件",
   "presets.countOne": "プリセット 1 件",
   "presets.builtInReadOnly": "内蔵プリセットは編集できません。複製すると自分用の版を作れます。",
-
   "randomizer.title": "ランダム生成",
   "randomizer.subtitle": "ただの乱数ではなく、残しておきたくなるデザインを生成します",
   "randomizer.generate": "ランダムなクロスヘアを生成",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "選択を解除",
   "randomizer.recent": "最近の生成結果",
   "randomizer.empty": "生成ボタンを押して最初のクロスヘアを作りましょう。",
-
   "settings.title": "設定",
   "settings.appearance": "外観",
   "settings.theme": "テーマ",
@@ -278,7 +264,24 @@
   "settings.runtime": "実行環境",
   "settings.runtimeDesktop": "Windows デスクトップ",
   "settings.runtimeBrowser": "ブラウザープレビュー",
-
+  "overlay.title": "画面オーバーレイ",
+  "overlay.enable": "オーバーレイを表示",
+  "overlay.enableTip": "現在のクロスヘアを他のすべての上に描画し、ReticleX の外でも使えるようにします。",
+  "overlay.monitor": "モニター",
+  "overlay.monitorTip": "オーバーレイを中央に表示するディスプレイ。自動は ReticleX のウィンドウに従います。",
+  "overlay.monitorAuto": "自動",
+  "overlay.monitorLabel": "ディスプレイ {index} — {width}×{height}",
+  "overlay.monitorPrimary": "メイン",
+  "overlay.offsetX": "水平方向のオフセット",
+  "overlay.offsetY": "垂直方向のオフセット",
+  "overlay.offsetTip": "オーバーレイを画面中央からピクセル単位でずらします。",
+  "overlay.hotkey": "ショートカット",
+  "overlay.hotkeyTip": "他のウィンドウがアクティブなときでも、どこからでもオーバーレイを表示・非表示にします。",
+  "overlay.hotkeyTaken": "Windows が {hotkey} を ReticleX に割り当てませんでした。別のプログラムが使用しています。別のショートカットを選んでください。",
+  "overlay.hint": "いつでも {hotkey} を押すとオーバーレイを表示・非表示にできます。マウスを無視するので、クリックはそのまま通り抜けます。",
+  "overlay.toggle": "オーバーレイ",
+  "overlay.toggleTip": "このクロスヘアを画面の上に描画し、編集に合わせて更新します。",
+  "overlay.unsupported": "オーバーレイには ReticleX デスクトップアプリが必要です。ブラウザーは他のウィンドウの上に描画できません。",
   "dialog.deleteTitle": "「{name}」を削除しますか？",
   "dialog.deleteBody": "この操作は元に戻せません。",
   "dialog.renameTitle": "クロスヘアの名前を変更",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "未保存の変更を破棄しますか？",
   "dialog.discardBody": "現在のクロスヘアには保存されていない変更があります。",
   "dialog.discardConfirm": "破棄",
-
   "toast.saved": "クロスヘアを保存しました",
   "toast.savedAs": "「{name}」として保存しました",
   "toast.renamed": "「{name}」に名前を変更しました",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "シードをコピーしました",
   "toast.startWithWindowsOn": "ReticleX は Windows と同時に起動します",
   "toast.startWithWindowsOff": "ReticleX は Windows と同時に起動しなくなります",
-
+  "toast.overlayOn": "オーバーレイ オン",
+  "toast.overlayOff": "オーバーレイ オフ",
+  "toast.overlayHotkeyTaken": "{hotkey} は既に別のプログラムが使用しています",
   "import.errorEmpty": "このファイルは空です",
   "import.errorJson": "このファイルは有効な JSON ではありません",
   "import.errorShape": "このファイルは ReticleX のクロスヘアではありません",
@@ -330,7 +334,6 @@
   "import.warnClamped": "範囲外の値がいくつかあり、調整されました",
   "import.warnEmpty": "読み込んだクロスヘアは何も描画しません",
   "import.warnInvalidColor": "色を読み取れなかったため置き換えました",
-
   "error.title": "問題が発生しました",
   "error.retry": "再試行",
   "error.hostUnavailable": "デスクトップホストなしで動作しています。変更はこのブラウザーにのみ保存されます。",
@@ -339,7 +342,7 @@
   "error.exportFailed": "書き出しに失敗しました",
   "error.coreFailed": "描画コアを読み込めませんでした",
   "error.coreFailedBody": "これがないと ReticleX はクロスヘアを描画できません。アプリの再インストールをお試しください。",
-
+  "error.overlayFailed": "オーバーレイを変更できませんでした",
   "shortcuts.title": "キーボードショートカット",
   "shortcuts.new": "新しいクロスヘア",
   "shortcuts.save": "保存",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "やり直す",
   "shortcuts.help": "ショートカットを表示",
   "shortcuts.close": "ダイアログを閉じる",
-
   "units.px": "px",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "クラシッククロス",
   "preset.classic-cross.description": "多くのプレイヤーが最初に使う 4 本線のクロスヘア。バランスの取れたすき間とくっきりしたアウトライン。",
   "preset.precision-dot.name": "プレシジョンドット",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "太いラインと強いアウトラインで、最も明るい場面でも埋もれません。",
   "preset.dynamic-spread.name": "ダイナミックスプレッド",
   "preset.dynamic-spread.description": "移動に合わせて開きます。移動量スライダーを動かすと最大の広がりを確認できます。",
-
   "a11y.sidebar": "メインナビゲーション",
   "a11y.pageContent": "ページの内容",
   "a11y.closeDialog": "ダイアログを閉じる",

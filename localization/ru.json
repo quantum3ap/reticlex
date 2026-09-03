@@ -2,10 +2,8 @@
   "meta.name": "Russian",
   "meta.nativeName": "Русский",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "Студия дизайна прицелов",
-
   "common.save": "Сохранить",
   "common.saveAs": "Сохранить как",
   "common.cancel": "Отмена",
@@ -40,7 +38,6 @@
   "common.copied": "Скопировано",
   "common.optional": "Необязательно",
   "common.more": "Ещё",
-
   "nav.home": "Главная",
   "nav.designer": "Редактор",
   "nav.presets": "Пресеты",
@@ -48,12 +45,10 @@
   "nav.settings": "Настройки",
   "nav.sectionMain": "Студия",
   "nav.sectionLibrary": "Библиотека",
-
   "titlebar.minimize": "Свернуть",
   "titlebar.maximize": "Развернуть",
   "titlebar.restore": "Восстановить",
   "titlebar.close": "Закрыть",
-
   "home.welcomeTitle": "Соберите прицел, с которым действительно хочется целиться.",
   "home.welcomeBody": "Настраивайте каждую линию, зазор и обводку в реальном времени, сохраняйте сколько угодно прицелов и переключайтесь между ними одним щелчком.",
   "home.createButton": "Создать прицел",
@@ -75,7 +70,6 @@
   "home.statEdited": "Последнее изменение",
   "home.viewAll": "Показать все",
   "home.modified": "Изменён {date}",
-
   "designer.untitled": "Прицел без названия",
   "designer.sectionGeneral": "Общее",
   "designer.sectionShape": "Форма",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "Держит обе оси одинаковыми, чтобы один ползунок двигал их вместе.",
   "designer.resetSection": "Сбросить этот раздел",
   "designer.newCrosshair": "Новый прицел",
-
   "field.scale": "Общий размер",
   "field.rotation": "Поворот",
   "field.opacity": "Непрозрачность",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "Динамический прицел",
   "field.dynamicSpread": "Движение",
   "field.dynamicGapBoost": "Максимальный разброс",
-
   "tip.scale": "Масштабирует весь прицел целиком, сохраняя пропорции.",
   "tip.rotation": "Поворачивает прицел вокруг центра. Удобно для дизайнов в форме X.",
   "tip.opacity": "Насколько плотным выглядит прицел. Меньшие значения сильнее показывают сцену.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "Показывает, насколько прицел раскрыт прямо сейчас.",
   "tip.dynamicGapBoost": "Насколько увеличивается зазор при полном раскрытии.",
   "tip.exportPng": "Сохраняет прицел как PNG с прозрачным фоном.",
-
   "capStyle.flat": "Прямые",
   "capStyle.round": "Скруглённые",
   "capStyle.tapered": "Сужающиеся",
   "dotShape.square": "Квадрат",
   "dotShape.round": "Круг",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "Синий",
   "color.swatches": "Образцы",
   "color.invalid": "Введите цвет вида #00FF88",
-
   "preview.title": "Предпросмотр",
   "preview.zoomIn": "Приблизить",
   "preview.zoomOut": "Отдалить",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "Масштаб",
   "preview.infoContrast": "Контраст",
   "preview.contrastLow": "Низкий контраст на этом фоне",
-
   "presets.title": "Пресеты",
   "presets.subtitle": "Отобранные прицелы и всё, что вы сохранили",
   "presets.searchPlaceholder": "Поиск по пресетам",
@@ -210,7 +198,6 @@
   "presets.count": "Пресетов: {count}",
   "presets.countOne": "1 пресет",
   "presets.builtInReadOnly": "Встроенные пресеты нельзя изменять. Дублируйте, чтобы создать свою версию.",
-
   "randomizer.title": "Генератор",
   "randomizer.subtitle": "Создайте дизайн, который захочется сохранить, а не просто случайный",
   "randomizer.generate": "Сгенерировать случайный прицел",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "Снять выбор",
   "randomizer.recent": "Недавние варианты",
   "randomizer.empty": "Нажмите «Сгенерировать», чтобы получить первый прицел.",
-
   "settings.title": "Настройки",
   "settings.appearance": "Оформление",
   "settings.theme": "Тема",
@@ -278,7 +264,24 @@
   "settings.runtime": "Среда выполнения",
   "settings.runtimeDesktop": "Рабочий стол Windows",
   "settings.runtimeBrowser": "Предпросмотр в браузере",
-
+  "overlay.title": "Оверлей на экране",
+  "overlay.enable": "Показывать оверлей",
+  "overlay.enableTip": "Рисует текущий прицел поверх всего остального, чтобы им можно было пользоваться вне ReticleX.",
+  "overlay.monitor": "Монитор",
+  "overlay.monitorTip": "На каком экране центрируется оверлей. «Автоматически» следует за окном ReticleX.",
+  "overlay.monitorAuto": "Автоматически",
+  "overlay.monitorLabel": "Экран {index} — {width}×{height}",
+  "overlay.monitorPrimary": "основной",
+  "overlay.offsetX": "Смещение по горизонтали",
+  "overlay.offsetY": "Смещение по вертикали",
+  "overlay.offsetTip": "Сдвигает оверлей от центра экрана, в пикселях.",
+  "overlay.hotkey": "Сочетание клавиш",
+  "overlay.hotkeyTip": "Показывает и скрывает оверлей откуда угодно, даже когда активно другое окно.",
+  "overlay.hotkeyTaken": "Windows не отдала сочетание {hotkey} для ReticleX: его уже использует другая программа. Выберите другое сочетание.",
+  "overlay.hint": "Нажмите {hotkey} в любой момент, чтобы показать или скрыть оверлей. Он не реагирует на мышь, щелчки проходят сквозь него.",
+  "overlay.toggle": "Оверлей",
+  "overlay.toggleTip": "Рисовать этот прицел поверх экрана, обновляя его по мере редактирования.",
+  "overlay.unsupported": "Оверлею нужно настольное приложение ReticleX: браузер не может рисовать поверх других окон.",
   "dialog.deleteTitle": "Удалить «{name}»?",
   "dialog.deleteBody": "Это действие нельзя отменить.",
   "dialog.renameTitle": "Переименовать прицел",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "Отменить несохранённые изменения?",
   "dialog.discardBody": "В текущем прицеле есть изменения, которые ещё не сохранены.",
   "dialog.discardConfirm": "Отменить изменения",
-
   "toast.saved": "Прицел сохранён",
   "toast.savedAs": "Сохранён как «{name}»",
   "toast.renamed": "Переименован в «{name}»",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "Зерно скопировано",
   "toast.startWithWindowsOn": "ReticleX будет запускаться вместе с Windows",
   "toast.startWithWindowsOff": "ReticleX больше не будет запускаться вместе с Windows",
-
+  "toast.overlayOn": "Оверлей включён",
+  "toast.overlayOff": "Оверлей выключен",
+  "toast.overlayHotkeyTaken": "Сочетание {hotkey} уже занято другой программой",
   "import.errorEmpty": "Этот файл пуст",
   "import.errorJson": "Этот файл не является корректным JSON",
   "import.errorShape": "Этот файл не является прицелом ReticleX",
@@ -330,7 +334,6 @@
   "import.warnClamped": "Некоторые значения выходили за пределы и были скорректированы",
   "import.warnEmpty": "Импортированный прицел ничего не рисует",
   "import.warnInvalidColor": "Один из цветов не удалось прочитать, он был заменён",
-
   "error.title": "Что-то пошло не так",
   "error.retry": "Попробовать снова",
   "error.hostUnavailable": "Работа без настольной оболочки. Изменения сохраняются только в этом браузере.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "Экспорт не удался",
   "error.coreFailed": "Не удалось загрузить ядро отрисовки",
   "error.coreFailedBody": "Без него ReticleX не может рисовать прицелы. Попробуйте переустановить приложение.",
-
+  "error.overlayFailed": "Не удалось изменить оверлей",
   "shortcuts.title": "Сочетания клавиш",
   "shortcuts.new": "Новый прицел",
   "shortcuts.save": "Сохранить",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "Повторить",
   "shortcuts.help": "Показать сочетания клавиш",
   "shortcuts.close": "Закрыть диалог",
-
   "units.px": "пикс.",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "Классический крест",
   "preset.classic-cross.description": "Прицел с четырьмя лучами, с которого начинают почти все. Сбалансированный зазор и чёткая обводка.",
   "preset.precision-dot.name": "Точка точности",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "Толстые линии и мощная обводка, которые выдерживают самые яркие сцены.",
   "preset.dynamic-spread.name": "Динамический разброс",
   "preset.dynamic-spread.description": "Раскрывается при движении. Потяните ползунок движения, чтобы увидеть полный разброс.",
-
   "a11y.sidebar": "Основная навигация",
   "a11y.pageContent": "Содержимое страницы",
   "a11y.closeDialog": "Закрыть диалог",

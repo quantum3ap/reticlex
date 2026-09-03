@@ -37,6 +37,7 @@ public sealed class WebBridge
     private readonly JsonStore _store;
     private readonly CrosshairLibrary _library;
     private readonly ThumbnailService _thumbnails;
+    private readonly OverlayController _overlay;
     private readonly Dictionary<string, Func<JsonObject, JsonNode?>> _handlers;
 
     public WebBridge(
@@ -45,7 +46,8 @@ public sealed class WebBridge
         AppPaths paths,
         JsonStore store,
         CrosshairLibrary library,
-        ThumbnailService thumbnails)
+        ThumbnailService thumbnails,
+        OverlayController overlay)
     {
         _webView = webView;
         _window = window;
@@ -53,6 +55,11 @@ public sealed class WebBridge
         _store = store;
         _library = library;
         _thumbnails = thumbnails;
+        _overlay = overlay;
+
+        // The hotkey can flip the overlay while the interface is not even
+        // visible, so the page is told rather than left to guess.
+        _overlay.Changed += options => Emit("overlayChanged", OverlayState(options));
 
         _handlers = new Dictionary<string, Func<JsonObject, JsonNode?>>(StringComparer.Ordinal)
         {
@@ -71,6 +78,9 @@ public sealed class WebBridge
             ["openExternal"] = OpenExternal,
             ["openDataFolder"] = OpenDataFolder,
             ["window"] = WindowCommand,
+            ["overlayInfo"] = OverlayInfo,
+            ["overlaySet"] = OverlaySet,
+            ["overlayConfig"] = OverlayConfig,
         };
     }
 
@@ -393,6 +403,97 @@ public sealed class WebBridge
         _window.Dispatcher.Invoke(() => _window.RunWindowCommand(action));
         return new JsonObject { ["ok"] = true };
     }
+
+    // --- Overlay ------------------------------------------------------------
+
+    private JsonNode? OverlayInfo(JsonObject _) =>
+        _window.Dispatcher.Invoke(() => OverlayState(_overlay.Options));
+
+    private JsonNode? OverlaySet(JsonObject parameters) =>
+        _window.Dispatcher.Invoke(() =>
+        {
+            // A reticle sent alongside the change is applied first, so switching
+            // the overlay on never shows a stale one for a frame.
+            if (parameters["config"] is JsonObject configNode)
+            {
+                _overlay.SetConfig(ReadConfig(configNode));
+            }
+
+            var applied = _overlay.Update(_overlay.Options.With(
+                enabled: Flag(parameters, "enabled"),
+                monitor: parameters["monitor"]?.GetValue<string>(),
+                offsetX: Whole(parameters, "offsetX"),
+                offsetY: Whole(parameters, "offsetY"),
+                hotkey: parameters["hotkey"]?.GetValue<string>()));
+
+            return OverlayState(applied);
+        });
+
+    /// <summary>
+    /// Pushes the reticle currently being edited. Separate from OverlaySet
+    /// because the designer calls it on every slider move.
+    /// </summary>
+    private JsonNode? OverlayConfig(JsonObject parameters)
+    {
+        if (parameters["config"] is not JsonObject node)
+        {
+            throw new ArgumentException("A configuration is required.");
+        }
+
+        var config = ReadConfig(node);
+        _window.Dispatcher.Invoke(() => _overlay.SetConfig(config));
+        return new JsonObject { ["ok"] = true };
+    }
+
+    private static CrosshairConfig ReadConfig(JsonObject node)
+    {
+        var config = node.Deserialize<CrosshairConfig>(JsonStore.Options);
+        // The overlay draws whatever it is given, so it is repaired here rather
+        // than trusted, exactly as a saved document would be.
+        if (ReticleX.Core.Interop.NativeCore.IsAvailable)
+        {
+            ReticleX.Core.Interop.NativeCore.Normalize(ref config);
+        }
+        return config;
+    }
+
+    private JsonNode? OverlayState(OverlayOptions options)
+    {
+        var monitors = new JsonArray();
+        foreach (var monitor in _overlay.Monitors())
+        {
+            monitors.Add(new JsonObject
+            {
+                ["id"] = monitor.DeviceName,
+                ["width"] = monitor.Width,
+                ["height"] = monitor.Height,
+                ["primary"] = monitor.IsPrimary,
+                ["scale"] = Math.Round(monitor.Scale, 2),
+            });
+        }
+
+        return new JsonObject
+        {
+            ["supported"] = _overlay.Supported,
+            ["enabled"] = options.Enabled,
+            ["monitor"] = options.Monitor,
+            ["offsetX"] = options.OffsetX,
+            ["offsetY"] = options.OffsetY,
+            ["hotkey"] = options.Hotkey,
+            ["hotkeyRegistered"] = _overlay.HotkeyRegistered,
+            ["maxOffset"] = OverlayOptions.MaxOffset,
+            ["monitors"] = monitors,
+        };
+    }
+
+    private static bool? Flag(JsonObject parameters, string key) =>
+        parameters[key] is JsonValue value && value.TryGetValue<bool>(out var flag) ? flag : null;
+
+    private static int? Whole(JsonObject parameters, string key) =>
+        parameters[key] is JsonValue value && value.TryGetValue<double>(out var number)
+        && double.IsFinite(number)
+            ? (int)Math.Round(Math.Clamp(number, -OverlayOptions.MaxOffset, OverlayOptions.MaxOffset))
+            : null;
 
     // --- Helpers ------------------------------------------------------------
 

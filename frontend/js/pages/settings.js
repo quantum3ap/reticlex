@@ -9,7 +9,7 @@
 import { h, clear } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { createToggle, createSegmented, createSlider, createSelect } from '../ui/controls.js';
-import { UI_SCALE } from '../core/settings.js';
+import { OVERLAY_HOTKEYS, UI_SCALE } from '../core/settings.js';
 import { SHORTCUTS } from '../shortcuts.js';
 
 const REPOSITORY_URL = 'https://github.com/quantum3ap/reticlex';
@@ -103,6 +103,102 @@ export function createSettingsPage(app) {
     onChange: (checked) => app.saveSettings({ autoSave: checked }, { notify: true }),
   });
 
+  // --- Overlay -------------------------------------------------------------
+
+  const overlayToggle = createToggle({
+    i18n,
+    labelKey: 'overlay.enable',
+    tipKey: 'overlay.enableTip',
+    checked: app.overlay.enabled,
+    onChange: async (checked) => {
+      const state = await app.setOverlay({ enabled: checked });
+      overlayToggle.set(state.enabled);
+      renderOverlay();
+    },
+  });
+
+  const monitorSelect = createSelect({
+    i18n,
+    labelKey: 'overlay.monitor',
+    tipKey: 'overlay.monitorTip',
+    options: [{ value: '', label: i18n.t('overlay.monitorAuto') }],
+    value: app.overlay.monitor,
+    onChange: (value) => app.setOverlay({ monitor: value }),
+  });
+
+  const offsetX = createSlider({
+    i18n,
+    labelKey: 'overlay.offsetX',
+    tipKey: 'overlay.offsetTip',
+    min: -400,
+    max: 400,
+    step: 1,
+    decimals: 0,
+    unitKey: 'units.px',
+    value: app.overlay.offsetX,
+    onCommit: (value) => app.setOverlay({ offsetX: value }),
+  });
+
+  const offsetY = createSlider({
+    i18n,
+    labelKey: 'overlay.offsetY',
+    tipKey: 'overlay.offsetTip',
+    min: -400,
+    max: 400,
+    step: 1,
+    decimals: 0,
+    unitKey: 'units.px',
+    value: app.overlay.offsetY,
+    onCommit: (value) => app.setOverlay({ offsetY: value }),
+  });
+
+  const hotkeySelect = createSelect({
+    i18n,
+    labelKey: 'overlay.hotkey',
+    tipKey: 'overlay.hotkeyTip',
+    options: OVERLAY_HOTKEYS.map((key) => ({ value: key, label: key })),
+    value: app.overlay.hotkey,
+    onChange: (value) => app.setOverlay({ hotkey: value }),
+  });
+
+  const overlayHint = h('p', { class: 'settings__hint' });
+  const overlayNotice = h('p', { class: 'settings__hint settings__hint--warn' });
+
+  function renderOverlay() {
+    const state = app.overlay;
+    overlayToggle.set(state.enabled);
+    offsetX.set(state.offsetX);
+    offsetY.set(state.offsetY);
+    hotkeySelect.set(state.hotkey);
+
+    monitorSelect.setOptions([
+      { value: '', label: i18n.t('overlay.monitorAuto') },
+      ...state.monitors.map((monitor, index) => ({
+        value: monitor.id,
+        label: i18n.t('overlay.monitorLabel', {
+          index: String(index + 1),
+          width: String(monitor.width),
+          height: String(monitor.height),
+        }) + (monitor.primary ? ` · ${i18n.t('overlay.monitorPrimary')}` : ''),
+      })),
+    ], state.monitor);
+
+    overlayHint.textContent = i18n.t('overlay.hint', { hotkey: state.hotkey });
+
+    // Two different problems, and the user can act on both: an unsupported
+    // host means the browser build, a refused hotkey means another program
+    // already owns that combination.
+    const problem = !state.supported
+      ? i18n.t('overlay.unsupported')
+      : (!state.hotkeyRegistered ? i18n.t('overlay.hotkeyTaken', { hotkey: state.hotkey }) : '');
+    overlayNotice.textContent = problem;
+    overlayNotice.hidden = problem === '';
+
+    for (const control of [overlayToggle, monitorSelect, offsetX, offsetY, hotkeySelect]) {
+      control.element.classList.toggle('is-disabled', !state.supported);
+    }
+  }
+
   const aboutList = h('dl', { class: 'about' });
   const shortcutList = h('div', { class: 'shortcut-list' });
 
@@ -139,6 +235,16 @@ export function createSettingsPage(app) {
           onClick: () => app.clearAllData(),
         }, icon('trash', { size: 16 }),
         h('span', { i18n: 'settings.clearData' }, i18n.t('settings.clearData')))),
+    ]),
+
+    settingsCard('overlay.title', 'monitor', [
+      overlayToggle.element,
+      monitorSelect.element,
+      offsetX.element,
+      offsetY.element,
+      hotkeySelect.element,
+      overlayHint,
+      overlayNotice,
     ]),
 
     settingsCard('shortcuts.title', 'keyboard', [shortcutList]),
@@ -215,6 +321,7 @@ export function createSettingsPage(app) {
       scaleSlider.set(app.settings.uiScale);
       languageSelect.set(app.settings.locale);
       markAccent();
+      renderOverlay();
       renderAbout();
       renderShortcuts();
     },
