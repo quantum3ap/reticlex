@@ -1,0 +1,30 @@
+<Window x:Class="ReticleX.App.Host.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ReticleX Overlay"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        Topmost="True"
+        Focusable="False"
+        IsHitTestVisible="False"
+        ResizeMode="NoResize"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Width="640" Height="640">
+
+  <!--
+    AllowsTransparency with WindowStyle=None is what gives the window a real
+    per-pixel alpha channel; without it the reticle would sit on a black square.
+    The image is drawn unscaled and its bitmap carries the monitor's DPI, so one
+    pixel of the rendered reticle is one physical pixel on screen.
+  -->
+  <Image x:Name="Reticle"
+         Stretch="None"
+         HorizontalAlignment="Center"
+         VerticalAlignment="Center"
+         IsHitTestVisible="False"
+         RenderOptions.BitmapScalingMode="NearestNeighbor" />
+</Window>

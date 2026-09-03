@@ -2,10 +2,8 @@
   "meta.name": "English",
   "meta.nativeName": "English",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "Crosshair Design Studio",
-
   "common.save": "Save",
   "common.saveAs": "Save As",
   "common.cancel": "Cancel",
@@ -40,7 +38,6 @@
   "common.copied": "Copied",
   "common.optional": "Optional",
   "common.more": "More",
-
   "nav.home": "Home",
   "nav.designer": "Designer",
   "nav.presets": "Presets",
@@ -48,12 +45,10 @@
   "nav.settings": "Settings",
   "nav.sectionMain": "Studio",
   "nav.sectionLibrary": "Library",
-
   "titlebar.minimize": "Minimize",
   "titlebar.maximize": "Maximize",
   "titlebar.restore": "Restore",
   "titlebar.close": "Close",
-
   "home.welcomeTitle": "Design a crosshair you actually want to aim with.",
   "home.welcomeBody": "Tune every line, gap and outline in real time, save as many reticles as you like, and switch between them in a click.",
   "home.createButton": "Create Crosshair",
@@ -75,7 +70,6 @@
   "home.statEdited": "Last edited",
   "home.viewAll": "View all",
   "home.modified": "Modified {date}",
-
   "designer.untitled": "Untitled crosshair",
   "designer.sectionGeneral": "General",
   "designer.sectionShape": "Shape",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "Keeps both axes identical so one slider moves them together.",
   "designer.resetSection": "Reset this section",
   "designer.newCrosshair": "New crosshair",
-
   "field.scale": "Overall size",
   "field.rotation": "Rotation",
   "field.opacity": "Opacity",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "Dynamic crosshair",
   "field.dynamicSpread": "Movement",
   "field.dynamicGapBoost": "Maximum spread",
-
   "tip.scale": "Scales the whole reticle at once. Everything else stays in proportion.",
   "tip.rotation": "Turns the reticle around its center. Useful for X-shaped designs.",
   "tip.opacity": "How solid the crosshair looks. Lower values let more of the scene through.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "Preview how far open the crosshair currently is.",
   "tip.dynamicGapBoost": "How much extra gap is added when the crosshair is fully open.",
   "tip.exportPng": "Saves the crosshair as a transparent PNG image.",
-
   "capStyle.flat": "Flat",
   "capStyle.round": "Round",
   "capStyle.tapered": "Tapered",
   "dotShape.square": "Square",
   "dotShape.round": "Round",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "Blue",
   "color.swatches": "Swatches",
   "color.invalid": "Enter a color like #00FF88",
-
   "preview.title": "Preview",
   "preview.zoomIn": "Zoom in",
   "preview.zoomOut": "Zoom out",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "Zoom",
   "preview.infoContrast": "Contrast",
   "preview.contrastLow": "Low contrast against this background",
-
   "presets.title": "Presets",
   "presets.subtitle": "Curated reticles plus everything you have saved",
   "presets.searchPlaceholder": "Search presets",
@@ -210,7 +198,6 @@
   "presets.count": "{count} presets",
   "presets.countOne": "1 preset",
   "presets.builtInReadOnly": "Built-in presets cannot be edited. Duplicate it to make your own version.",
-
   "randomizer.title": "Randomizer",
   "randomizer.subtitle": "Generate a design worth keeping, not just a random one",
   "randomizer.generate": "Generate Random Crosshair",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "Select none",
   "randomizer.recent": "Recent rolls",
   "randomizer.empty": "Press generate to roll your first crosshair.",
-
   "settings.title": "Settings",
   "settings.appearance": "Appearance",
   "settings.theme": "Theme",
@@ -278,7 +264,24 @@
   "settings.runtime": "Runtime",
   "settings.runtimeDesktop": "Windows desktop",
   "settings.runtimeBrowser": "Browser preview",
-
+  "overlay.title": "On-screen overlay",
+  "overlay.enable": "Show the overlay",
+  "overlay.enableTip": "Draws the current crosshair on top of everything else, so you can use it outside ReticleX.",
+  "overlay.monitor": "Monitor",
+  "overlay.monitorTip": "Which display the overlay is centred on. Automatic follows the ReticleX window.",
+  "overlay.monitorAuto": "Automatic",
+  "overlay.monitorLabel": "Display {index} — {width}×{height}",
+  "overlay.monitorPrimary": "primary",
+  "overlay.offsetX": "Horizontal offset",
+  "overlay.offsetY": "Vertical offset",
+  "overlay.offsetTip": "Nudges the overlay away from the centre of the screen, in pixels.",
+  "overlay.hotkey": "Shortcut",
+  "overlay.hotkeyTip": "Shows and hides the overlay from anywhere, even while another window has focus.",
+  "overlay.hotkeyTaken": "Windows would not give {hotkey} to ReticleX; another program already uses it. Pick a different shortcut.",
+  "overlay.hint": "Press {hotkey} at any time to show or hide the overlay. It ignores the mouse, so clicks pass straight through it.",
+  "overlay.toggle": "Overlay",
+  "overlay.toggleTip": "Draw this crosshair on top of the screen, updating as you edit it.",
+  "overlay.unsupported": "The overlay needs the ReticleX desktop application; a browser cannot draw over other windows.",
   "dialog.deleteTitle": "Delete \"{name}\"?",
   "dialog.deleteBody": "This cannot be undone.",
   "dialog.renameTitle": "Rename crosshair",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "Discard unsaved changes?",
   "dialog.discardBody": "The current crosshair has changes that have not been saved.",
   "dialog.discardConfirm": "Discard",
-
   "toast.saved": "Crosshair saved",
   "toast.savedAs": "Saved as \"{name}\"",
   "toast.renamed": "Renamed to \"{name}\"",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "Seed copied",
   "toast.startWithWindowsOn": "ReticleX will start with Windows",
   "toast.startWithWindowsOff": "ReticleX will no longer start with Windows",
-
+  "toast.overlayOn": "Overlay on",
+  "toast.overlayOff": "Overlay off",
+  "toast.overlayHotkeyTaken": "{hotkey} is already taken by another program",
   "import.errorEmpty": "That file is empty",
   "import.errorJson": "That file is not valid JSON",
   "import.errorShape": "That file is not a ReticleX crosshair",
@@ -330,7 +334,6 @@
   "import.warnClamped": "Some values were out of range and have been adjusted",
   "import.warnEmpty": "The imported crosshair draws nothing",
   "import.warnInvalidColor": "A color could not be read and was replaced",
-
   "error.title": "Something went wrong",
   "error.retry": "Try again",
   "error.hostUnavailable": "Running without the desktop host. Changes are kept in this browser only.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "The export failed",
   "error.coreFailed": "The rendering core failed to load",
   "error.coreFailedBody": "ReticleX cannot draw crosshairs without it. Try reinstalling the application.",
-
+  "error.overlayFailed": "The overlay could not be changed",
   "shortcuts.title": "Keyboard shortcuts",
   "shortcuts.new": "New crosshair",
   "shortcuts.save": "Save",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "Redo",
   "shortcuts.help": "Show shortcuts",
   "shortcuts.close": "Close dialog",
-
   "units.px": "px",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "Classic Cross",
   "preset.classic-cross.description": "The four-arm reticle most players start from. Balanced gap, crisp outline.",
   "preset.precision-dot.name": "Precision Dot",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "Thick lines and a strong outline that survive the brightest scenes.",
   "preset.dynamic-spread.name": "Dynamic Spread",
   "preset.dynamic-spread.description": "Opens up as you move. Drag the movement slider to see the full spread.",
-
   "a11y.sidebar": "Main navigation",
   "a11y.pageContent": "Page content",
   "a11y.closeDialog": "Close dialog",

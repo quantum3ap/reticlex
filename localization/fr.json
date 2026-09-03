@@ -2,10 +2,8 @@
   "meta.name": "French",
   "meta.nativeName": "Français",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "Studio de création de réticules",
-
   "common.save": "Enregistrer",
   "common.saveAs": "Enregistrer sous",
   "common.cancel": "Annuler",
@@ -40,7 +38,6 @@
   "common.copied": "Copié",
   "common.optional": "Facultatif",
   "common.more": "Plus",
-
   "nav.home": "Accueil",
   "nav.designer": "Créateur",
   "nav.presets": "Préréglages",
@@ -48,12 +45,10 @@
   "nav.settings": "Paramètres",
   "nav.sectionMain": "Studio",
   "nav.sectionLibrary": "Bibliothèque",
-
   "titlebar.minimize": "Réduire",
   "titlebar.maximize": "Agrandir",
   "titlebar.restore": "Restaurer",
   "titlebar.close": "Fermer",
-
   "home.welcomeTitle": "Créez un réticule avec lequel vous aurez vraiment envie de viser.",
   "home.welcomeBody": "Ajustez chaque ligne, espacement et contour en temps réel, enregistrez autant de réticules que vous voulez et passez de l'un à l'autre en un clic.",
   "home.createButton": "Créer un réticule",
@@ -75,7 +70,6 @@
   "home.statEdited": "Dernière modification",
   "home.viewAll": "Tout afficher",
   "home.modified": "Modifié le {date}",
-
   "designer.untitled": "Réticule sans titre",
   "designer.sectionGeneral": "Général",
   "designer.sectionShape": "Forme",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "Garde les deux axes identiques pour qu'un seul curseur les déplace ensemble.",
   "designer.resetSection": "Réinitialiser cette section",
   "designer.newCrosshair": "Nouveau réticule",
-
   "field.scale": "Taille globale",
   "field.rotation": "Rotation",
   "field.opacity": "Opacité",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "Réticule dynamique",
   "field.dynamicSpread": "Mouvement",
   "field.dynamicGapBoost": "Ouverture maximale",
-
   "tip.scale": "Met à l'échelle tout le réticule d'un coup, en conservant les proportions.",
   "tip.rotation": "Fait pivoter le réticule autour de son centre. Pratique pour les designs en X.",
   "tip.opacity": "À quel point le réticule paraît opaque. Une valeur basse laisse voir la scène.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "Prévisualisez l'ouverture actuelle du réticule.",
   "tip.dynamicGapBoost": "Écart supplémentaire ajouté à l'ouverture maximale.",
   "tip.exportPng": "Enregistre le réticule comme image PNG à fond transparent.",
-
   "capStyle.flat": "Plat",
   "capStyle.round": "Arrondi",
   "capStyle.tapered": "Effilé",
   "dotShape.square": "Carré",
   "dotShape.round": "Rond",
-
   "color.hex": "HEX",
   "color.rgb": "RVB",
   "color.hsl": "TSL",
@@ -171,7 +161,6 @@
   "color.blue": "Bleu",
   "color.swatches": "Échantillons",
   "color.invalid": "Saisissez une couleur comme #00FF88",
-
   "preview.title": "Aperçu",
   "preview.zoomIn": "Zoom avant",
   "preview.zoomOut": "Zoom arrière",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "Zoom",
   "preview.infoContrast": "Contraste",
   "preview.contrastLow": "Contraste faible sur cet arrière-plan",
-
   "presets.title": "Préréglages",
   "presets.subtitle": "Une sélection de réticules, plus tout ce que vous avez enregistré",
   "presets.searchPlaceholder": "Rechercher un préréglage",
@@ -210,7 +198,6 @@
   "presets.count": "{count} préréglages",
   "presets.countOne": "1 préréglage",
   "presets.builtInReadOnly": "Les préréglages intégrés ne sont pas modifiables. Dupliquez-le pour créer votre version.",
-
   "randomizer.title": "Aléatoire",
   "randomizer.subtitle": "Générez un design qui mérite d'être gardé, pas seulement un design au hasard",
   "randomizer.generate": "Générer un réticule aléatoire",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "Tout désélectionner",
   "randomizer.recent": "Tirages récents",
   "randomizer.empty": "Appuyez sur générer pour votre premier réticule.",
-
   "settings.title": "Paramètres",
   "settings.appearance": "Apparence",
   "settings.theme": "Thème",
@@ -278,7 +264,24 @@
   "settings.runtime": "Environnement",
   "settings.runtimeDesktop": "Bureau Windows",
   "settings.runtimeBrowser": "Aperçu navigateur",
-
+  "overlay.title": "Superposition à l'écran",
+  "overlay.enable": "Afficher la superposition",
+  "overlay.enableTip": "Dessine le réticule actuel par-dessus tout le reste, pour l'utiliser en dehors de ReticleX.",
+  "overlay.monitor": "Écran",
+  "overlay.monitorTip": "L'écran sur lequel la superposition est centrée. Automatique suit la fenêtre ReticleX.",
+  "overlay.monitorAuto": "Automatique",
+  "overlay.monitorLabel": "Écran {index} — {width}×{height}",
+  "overlay.monitorPrimary": "principal",
+  "overlay.offsetX": "Décalage horizontal",
+  "overlay.offsetY": "Décalage vertical",
+  "overlay.offsetTip": "Éloigne la superposition du centre de l'écran, en pixels.",
+  "overlay.hotkey": "Raccourci",
+  "overlay.hotkeyTip": "Affiche et masque la superposition depuis n'importe où, même si une autre fenêtre est active.",
+  "overlay.hotkeyTaken": "Windows n'a pas accordé {hotkey} à ReticleX ; un autre programme l'utilise déjà. Choisissez un autre raccourci.",
+  "overlay.hint": "Appuyez sur {hotkey} à tout moment pour afficher ou masquer la superposition. Elle ignore la souris : les clics la traversent.",
+  "overlay.toggle": "Superposition",
+  "overlay.toggleTip": "Dessine ce réticule par-dessus l'écran, mis à jour au fil de vos modifications.",
+  "overlay.unsupported": "La superposition nécessite l'application de bureau ReticleX ; un navigateur ne peut pas dessiner par-dessus d'autres fenêtres.",
   "dialog.deleteTitle": "Supprimer « {name} » ?",
   "dialog.deleteBody": "Cette action est irréversible.",
   "dialog.renameTitle": "Renommer le réticule",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "Abandonner les modifications non enregistrées ?",
   "dialog.discardBody": "Le réticule actuel comporte des modifications qui n'ont pas été enregistrées.",
   "dialog.discardConfirm": "Abandonner",
-
   "toast.saved": "Réticule enregistré",
   "toast.savedAs": "Enregistré sous « {name} »",
   "toast.renamed": "Renommé en « {name} »",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "Graine copiée",
   "toast.startWithWindowsOn": "ReticleX démarrera avec Windows",
   "toast.startWithWindowsOff": "ReticleX ne démarrera plus avec Windows",
-
+  "toast.overlayOn": "Superposition activée",
+  "toast.overlayOff": "Superposition désactivée",
+  "toast.overlayHotkeyTaken": "{hotkey} est déjà pris par un autre programme",
   "import.errorEmpty": "Ce fichier est vide",
   "import.errorJson": "Ce fichier n'est pas du JSON valide",
   "import.errorShape": "Ce fichier n'est pas un réticule ReticleX",
@@ -330,7 +334,6 @@
   "import.warnClamped": "Certaines valeurs étaient hors limites et ont été ajustées",
   "import.warnEmpty": "Le réticule importé ne dessine rien",
   "import.warnInvalidColor": "Une couleur n'a pas pu être lue et a été remplacée",
-
   "error.title": "Une erreur est survenue",
   "error.retry": "Réessayer",
   "error.hostUnavailable": "Exécution sans l'hôte de bureau. Les modifications ne sont conservées que dans ce navigateur.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "L'export a échoué",
   "error.coreFailed": "Le cœur de rendu n'a pas pu être chargé",
   "error.coreFailedBody": "ReticleX ne peut pas dessiner de réticule sans lui. Essayez de réinstaller l'application.",
-
+  "error.overlayFailed": "Impossible de modifier la superposition",
   "shortcuts.title": "Raccourcis clavier",
   "shortcuts.new": "Nouveau réticule",
   "shortcuts.save": "Enregistrer",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "Rétablir",
   "shortcuts.help": "Afficher les raccourcis",
   "shortcuts.close": "Fermer la boîte de dialogue",
-
   "units.px": "px",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "Croix classique",
   "preset.classic-cross.description": "Le réticule à quatre branches par lequel presque tout le monde commence. Écart équilibré, contour net.",
   "preset.precision-dot.name": "Point de précision",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "Lignes épaisses et contour appuyé qui tiennent bon sur les scènes les plus lumineuses.",
   "preset.dynamic-spread.name": "Ouverture dynamique",
   "preset.dynamic-spread.description": "S'ouvre quand vous bougez. Faites glisser le curseur de mouvement pour voir l'ouverture complète.",
-
   "a11y.sidebar": "Navigation principale",
   "a11y.pageContent": "Contenu de la page",
   "a11y.closeDialog": "Fermer la boîte de dialogue",

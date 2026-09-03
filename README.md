@@ -55,6 +55,20 @@ same frame.
 - Optional pixel grid and a live read-out of size, shape count and the WCAG
   contrast ratio against the current background
 
+### On-screen overlay
+
+Draws the crosshair you are editing on top of everything else, so it is usable
+outside ReticleX.
+
+- Click-through and never focusable: the mouse behaves as though it is not there
+- A global shortcut shows and hides it, chosen from a short list of
+  combinations, and works while another window has focus
+- Monitor picker and pixel offsets for multi-monitor and letterboxed setups
+- Drawn by the same rasteriser as the designer at 1:1, so what you designed is
+  what appears — and edits land on screen as you make them
+- Rendered at each display's real pixel density, so it stays crisp on a
+  high-DPI monitor
+
 ### Library
 
 - Save, rename, duplicate and delete, with auto-save for work in progress
@@ -96,7 +110,7 @@ result carries a seed you can copy and reproduce exactly.
 | Português | Türkçe | Русский | 简体中文 | 日本語 |
 
 Every string in the interface comes from `localization/*.json`; nothing is
-hard-coded. All ten catalogues carry the same 356 keys, and a test fails the
+hard-coded. All ten catalogues carry the same 380 keys, and a test fails the
 build if one falls behind or a placeholder stops matching. Selecting Arabic
 mirrors the layout without a restart. On first launch ReticleX follows the
 Windows display language when it has a catalogue for it, and English otherwise.
@@ -175,15 +189,16 @@ so build it first:
 
 ```bash
 ./scripts/build-core.sh                                  # 70 core tests
-cd frontend && node --test "tests/*.test.js"             # 109 front-end tests
-dotnet test desktop/csharp/ReticleX.Tests                 # 136 managed tests
+cd frontend && node --test "tests/*.test.js"             # 115 front-end tests
+dotnet test desktop/csharp/ReticleX.Tests                 # 179 managed tests
 ```
 
 What they cover: crosshair geometry and rasterisation, colour conversion, the
 randomizer's reproducibility and output quality, configuration validation and
 repair, JSON import and export against adversarial input, undo and redo,
 settings persistence, the storage layer's behaviour with corrupt files,
-translation completeness across all ten languages, and the ABI agreement
+translation completeness across all ten languages, overlay placement and
+shortcut parsing, and the ABI agreement
 between the C struct, the managed struct and the WebAssembly module.
 
 ### Cutting a release
@@ -240,7 +255,8 @@ Four layers, each doing what it is genuinely best at.
   no allocation, no exceptions, reentrant.
 - **C#** — everything that is genuinely a Windows problem: the window, the
   file dialogs, the registry, per-user storage with atomic writes and corrupt
-  file quarantine, and PNG thumbnails rendered through the native core.
+  file quarantine, PNG thumbnails rendered through the native core, and the
+  click-through overlay with its display enumeration and global shortcut.
 - **JavaScript, HTML, CSS** — the interface. Canvas for the preview, CSS for a
   design system that themes and mirrors itself, no framework and no
   dependencies.
@@ -263,8 +279,8 @@ reticlex/
 │   └── CMakeLists.txt
 ├── desktop/csharp/
 │   ├── ReticleX.Core/        Storage, serialization, interop (net8.0)
-│   ├── ReticleX.App/         WPF + WebView2 shell (net8.0-windows)
-│   └── ReticleX.Tests/       137 tests (net8.0)
+│   ├── ReticleX.App/         WPF + WebView2 shell and overlay (net8.0-windows)
+│   └── ReticleX.Tests/       179 tests (net8.0)
 ├── frontend/
 │   ├── css/                  Tokens, layout, controls, components, RTL
 │   ├── js/
@@ -272,9 +288,9 @@ reticlex/
 │   │   ├── render/           Canvas renderer and the preview surface
 │   │   ├── ui/               Controls, cards, toasts, tooltips, dialogs
 │   │   └── pages/            Home, Designer, Presets, Randomizer, Settings
-│   ├── tests/                109 tests plus the golden fixtures
+│   ├── tests/                115 tests plus the golden fixtures
 │   └── index.html
-├── localization/             Ten catalogues, 356 keys each
+├── localization/             Ten catalogues, 380 keys each
 ├── presets/                  The built-in reticles
 ├── installer/                Inno Setup script
 ├── scripts/                  Build, package and generation scripts
@@ -326,9 +342,24 @@ message rather than a crash.
 ## Scope
 
 ReticleX is a design and visualisation tool. It draws crosshairs, saves them as
-JSON, and exports them as PNG. It does not read or write any other process's
-memory, inject code, hook input, or interact with any game in any way. There is
-nothing here to bypass anti-cheat with, and nothing that would want to.
+JSON, exports them as PNG, and can draw one in a window above your other
+windows.
+
+It does not read or write any other process's memory, inject code into anything,
+log keystrokes, or communicate with a game in any way. The overlay is an
+ordinary always-on-top window that knows nothing about what is underneath it;
+the global shortcut is registered with Windows through `RegisterHotKey`, which
+delivers that one combination and nothing else — no keyboard hook, and no other
+key ever reaches this process. There is nothing here to bypass anti-cheat with,
+and nothing that would want to.
+
+**A note on the overlay and competitive games.** Some games prohibit
+third-party crosshair overlays in their rules and will act on it, regardless of
+how the overlay is built — Valorant and leagues such as FACEIT and ESEA are the
+usual examples, and Fortnite's rules cover it too. That is a rules question
+rather than a technical one, and ReticleX does nothing to hide itself.
+Check your game's terms before using the overlay with it; many games have
+built-in crosshair settings that avoid the question entirely.
 
 ## Contributing
 

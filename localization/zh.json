@@ -2,10 +2,8 @@
   "meta.name": "Chinese",
   "meta.nativeName": "简体中文",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "准星设计工作室",
-
   "common.save": "保存",
   "common.saveAs": "另存为",
   "common.cancel": "取消",
@@ -40,7 +38,6 @@
   "common.copied": "已复制",
   "common.optional": "可选",
   "common.more": "更多",
-
   "nav.home": "主页",
   "nav.designer": "设计器",
   "nav.presets": "预设",
@@ -48,12 +45,10 @@
   "nav.settings": "设置",
   "nav.sectionMain": "工作室",
   "nav.sectionLibrary": "库",
-
   "titlebar.minimize": "最小化",
   "titlebar.maximize": "最大化",
   "titlebar.restore": "还原",
   "titlebar.close": "关闭",
-
   "home.welcomeTitle": "设计一个你真正愿意用来瞄准的准星。",
   "home.welcomeBody": "实时调整每一条线、每一处间隙和描边，想存多少准星就存多少，一键切换。",
   "home.createButton": "创建准星",
@@ -75,7 +70,6 @@
   "home.statEdited": "上次编辑",
   "home.viewAll": "查看全部",
   "home.modified": "修改于 {date}",
-
   "designer.untitled": "未命名准星",
   "designer.sectionGeneral": "常规",
   "designer.sectionShape": "形状",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "让两个方向保持一致，一个滑块即可同时调整两者。",
   "designer.resetSection": "重置本节",
   "designer.newCrosshair": "新建准星",
-
   "field.scale": "整体大小",
   "field.rotation": "旋转",
   "field.opacity": "不透明度",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "动态准星",
   "field.dynamicSpread": "移动幅度",
   "field.dynamicGapBoost": "最大扩散",
-
   "tip.scale": "一次缩放整个准星，各部分比例保持不变。",
   "tip.rotation": "围绕中心旋转准星，适合做成 X 形的设计。",
   "tip.opacity": "准星看起来有多实。数值越低，越能看清后面的画面。",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "预览准星当前张开的程度。",
   "tip.dynamicGapBoost": "准星完全张开时额外增加的间隙。",
   "tip.exportPng": "将准星保存为背景透明的 PNG 图片。",
-
   "capStyle.flat": "平角",
   "capStyle.round": "圆角",
   "capStyle.tapered": "锥形",
   "dotShape.square": "方形",
   "dotShape.round": "圆形",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "蓝",
   "color.swatches": "色板",
   "color.invalid": "请输入类似 #00FF88 的颜色",
-
   "preview.title": "预览",
   "preview.zoomIn": "放大",
   "preview.zoomOut": "缩小",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "缩放",
   "preview.infoContrast": "对比度",
   "preview.contrastLow": "在此背景上对比度偏低",
-
   "presets.title": "预设",
   "presets.subtitle": "精选准星，以及你保存过的一切",
   "presets.searchPlaceholder": "搜索预设",
@@ -210,7 +198,6 @@
   "presets.count": "{count} 个预设",
   "presets.countOne": "1 个预设",
   "presets.builtInReadOnly": "内置预设无法编辑。创建副本即可做出自己的版本。",
-
   "randomizer.title": "随机生成",
   "randomizer.subtitle": "生成值得保留的设计，而不只是随便一个",
   "randomizer.generate": "生成随机准星",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "全不选",
   "randomizer.recent": "最近生成",
   "randomizer.empty": "点击生成，得到你的第一个准星。",
-
   "settings.title": "设置",
   "settings.appearance": "外观",
   "settings.theme": "主题",
@@ -278,7 +264,24 @@
   "settings.runtime": "运行环境",
   "settings.runtimeDesktop": "Windows 桌面",
   "settings.runtimeBrowser": "浏览器预览",
-
+  "overlay.title": "屏幕叠加层",
+  "overlay.enable": "显示叠加层",
+  "overlay.enableTip": "把当前准星画在其他所有内容之上，让你在 ReticleX 之外也能使用它。",
+  "overlay.monitor": "显示器",
+  "overlay.monitorTip": "叠加层居中显示在哪块屏幕上。自动模式跟随 ReticleX 窗口。",
+  "overlay.monitorAuto": "自动",
+  "overlay.monitorLabel": "屏幕 {index} — {width}×{height}",
+  "overlay.monitorPrimary": "主显示器",
+  "overlay.offsetX": "水平偏移",
+  "overlay.offsetY": "垂直偏移",
+  "overlay.offsetTip": "以像素为单位，把叠加层从屏幕中心移开。",
+  "overlay.hotkey": "快捷键",
+  "overlay.hotkeyTip": "在任何地方显示或隐藏叠加层，即使焦点在其他窗口上。",
+  "overlay.hotkeyTaken": "Windows 没有把 {hotkey} 分配给 ReticleX，已有其他程序在使用它。请换一个快捷键。",
+  "overlay.hint": "随时按 {hotkey} 显示或隐藏叠加层。它不响应鼠标，点击会直接穿过。",
+  "overlay.toggle": "叠加层",
+  "overlay.toggleTip": "把这个准星画在屏幕之上，并随编辑实时更新。",
+  "overlay.unsupported": "叠加层需要 ReticleX 桌面应用；浏览器无法在其他窗口之上绘制。",
   "dialog.deleteTitle": "删除“{name}”？",
   "dialog.deleteBody": "此操作无法撤销。",
   "dialog.renameTitle": "重命名准星",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "放弃未保存的更改？",
   "dialog.discardBody": "当前准星有尚未保存的更改。",
   "dialog.discardConfirm": "放弃",
-
   "toast.saved": "准星已保存",
   "toast.savedAs": "已保存为“{name}”",
   "toast.renamed": "已重命名为“{name}”",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "已复制种子",
   "toast.startWithWindowsOn": "ReticleX 将随 Windows 启动",
   "toast.startWithWindowsOff": "ReticleX 将不再随 Windows 启动",
-
+  "toast.overlayOn": "叠加层已开启",
+  "toast.overlayOff": "叠加层已关闭",
+  "toast.overlayHotkeyTaken": "{hotkey} 已被其他程序占用",
   "import.errorEmpty": "该文件是空的",
   "import.errorJson": "该文件不是有效的 JSON",
   "import.errorShape": "该文件不是 ReticleX 准星",
@@ -330,7 +334,6 @@
   "import.warnClamped": "部分数值超出范围，已自动调整",
   "import.warnEmpty": "导入的准星不会绘制任何内容",
   "import.warnInvalidColor": "有一个颜色无法读取，已被替换",
-
   "error.title": "出了点问题",
   "error.retry": "重试",
   "error.hostUnavailable": "当前未连接桌面宿主程序，更改仅保存在此浏览器中。",
@@ -339,7 +342,7 @@
   "error.exportFailed": "导出失败",
   "error.coreFailed": "渲染内核加载失败",
   "error.coreFailedBody": "没有它，ReticleX 无法绘制准星。请尝试重新安装应用。",
-
+  "error.overlayFailed": "无法更改叠加层",
   "shortcuts.title": "键盘快捷键",
   "shortcuts.new": "新建准星",
   "shortcuts.save": "保存",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "重做",
   "shortcuts.help": "显示快捷键",
   "shortcuts.close": "关闭对话框",
-
   "units.px": "px",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "经典十字",
   "preset.classic-cross.description": "几乎所有人都从这个四臂准星开始。间隙均衡，描边利落。",
   "preset.precision-dot.name": "精准点",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "粗线条与强描边，在最明亮的画面中依然醒目。",
   "preset.dynamic-spread.name": "动态扩散",
   "preset.dynamic-spread.description": "随移动而张开。拖动移动滑块即可看到完全扩散的效果。",
-
   "a11y.sidebar": "主导航",
   "a11y.pageContent": "页面内容",
   "a11y.closeDialog": "关闭对话框",

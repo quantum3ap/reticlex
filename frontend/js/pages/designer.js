@@ -328,6 +328,22 @@ export function createDesignerPage(app) {
     app.saveSettings({ previewInfo: next });
   });
 
+  // The overlay draws the reticle being edited over everything else, so every
+  // change on this page lands on screen as it is made.
+  const overlayToggle = toolbarButton('monitor', 'overlay.toggleTip', async () => {
+    if (!app.overlay.supported) {
+      app.toasts.show({ messageKey: 'overlay.unsupported', type: 'info', duration: 4200 });
+      return;
+    }
+    const state = await app.toggleOverlay();
+    syncOverlayToggle(state);
+  }, 'overlay.toggle');
+
+  function syncOverlayToggle(state = app.overlay) {
+    overlayToggle.classList.toggle('is-active', state.enabled);
+    overlayToggle.classList.toggle('is-disabled', !state.supported);
+  }
+
   /**
    * @param {string} tipKey   the explanation shown on hover
    * @param {string} labelKey the short accessible name; defaults to the tip
@@ -354,6 +370,7 @@ export function createDesignerPage(app) {
       toolbarButton('reset', 'preview.resetZoom', () => setZoom(4))),
     h('div', { class: 'toolbar__group toolbar__group--grow' }, backgroundControl.element),
     h('div', { class: 'toolbar__group' },
+      overlayToggle,
       gridToggle,
       infoToggle,
       toolbarButton('image', 'preview.chooseImage', () => chooseBackgroundImage()),
@@ -434,6 +451,7 @@ export function createDesignerPage(app) {
       backgroundControl.set(app.settings.previewBackground);
       gridToggle.classList.toggle('is-active', app.settings.previewGrid);
       infoToggle.classList.toggle('is-active', app.settings.previewInfo);
+      syncOverlayToggle();
       zoomLabel.textContent = `${preview.zoom}×`;
       syncControls();
       preview.render();

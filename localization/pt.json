@@ -2,10 +2,8 @@
   "meta.name": "Portuguese",
   "meta.nativeName": "Português",
   "meta.dir": "ltr",
-
   "app.name": "ReticleX",
   "app.tagline": "Estúdio de design de miras",
-
   "common.save": "Guardar",
   "common.saveAs": "Guardar como",
   "common.cancel": "Cancelar",
@@ -40,7 +38,6 @@
   "common.copied": "Copiado",
   "common.optional": "Opcional",
   "common.more": "Mais",
-
   "nav.home": "Início",
   "nav.designer": "Editor",
   "nav.presets": "Predefinições",
@@ -48,12 +45,10 @@
   "nav.settings": "Definições",
   "nav.sectionMain": "Estúdio",
   "nav.sectionLibrary": "Biblioteca",
-
   "titlebar.minimize": "Minimizar",
   "titlebar.maximize": "Maximizar",
   "titlebar.restore": "Restaurar",
   "titlebar.close": "Fechar",
-
   "home.welcomeTitle": "Desenhe uma mira com que realmente queira apontar.",
   "home.welcomeBody": "Ajuste cada linha, espaço e contorno em tempo real, guarde as miras que quiser e alterne entre elas com um clique.",
   "home.createButton": "Criar mira",
@@ -75,7 +70,6 @@
   "home.statEdited": "Última edição",
   "home.viewAll": "Ver tudo",
   "home.modified": "Alterada em {date}",
-
   "designer.untitled": "Mira sem nome",
   "designer.sectionGeneral": "Geral",
   "designer.sectionShape": "Forma",
@@ -89,7 +83,6 @@
   "designer.tipLinkAxes": "Mantém os dois eixos iguais para que um só controlo os mova em conjunto.",
   "designer.resetSection": "Repor esta secção",
   "designer.newCrosshair": "Nova mira",
-
   "field.scale": "Tamanho geral",
   "field.rotation": "Rotação",
   "field.opacity": "Opacidade",
@@ -122,7 +115,6 @@
   "field.dynamicEnabled": "Mira dinâmica",
   "field.dynamicSpread": "Movimento",
   "field.dynamicGapBoost": "Abertura máxima",
-
   "tip.scale": "Redimensiona toda a mira de uma vez, mantendo as proporções.",
   "tip.rotation": "Roda a mira em torno do centro. Útil para desenhos em forma de X.",
   "tip.opacity": "Quão sólida a mira aparece. Valores baixos deixam ver mais da cena.",
@@ -152,13 +144,11 @@
   "tip.dynamicSpread": "Pré-visualize o quanto a mira está aberta neste momento.",
   "tip.dynamicGapBoost": "Quanto espaço extra é acrescentado com a mira totalmente aberta.",
   "tip.exportPng": "Guarda a mira como imagem PNG com fundo transparente.",
-
   "capStyle.flat": "Reta",
   "capStyle.round": "Redonda",
   "capStyle.tapered": "Afilada",
   "dotShape.square": "Quadrado",
   "dotShape.round": "Redondo",
-
   "color.hex": "HEX",
   "color.rgb": "RGB",
   "color.hsl": "HSL",
@@ -171,7 +161,6 @@
   "color.blue": "Azul",
   "color.swatches": "Amostras",
   "color.invalid": "Introduza uma cor como #00FF88",
-
   "preview.title": "Pré-visualização",
   "preview.zoomIn": "Aproximar",
   "preview.zoomOut": "Afastar",
@@ -191,7 +180,6 @@
   "preview.infoZoom": "Zoom",
   "preview.infoContrast": "Contraste",
   "preview.contrastLow": "Pouco contraste sobre este fundo",
-
   "presets.title": "Predefinições",
   "presets.subtitle": "Miras selecionadas mais tudo o que guardou",
   "presets.searchPlaceholder": "Pesquisar predefinições",
@@ -210,7 +198,6 @@
   "presets.count": "{count} predefinições",
   "presets.countOne": "1 predefinição",
   "presets.builtInReadOnly": "As predefinições incluídas não podem ser editadas. Duplique-a para criar a sua versão.",
-
   "randomizer.title": "Aleatório",
   "randomizer.subtitle": "Gere um design que valha a pena guardar, não apenas um qualquer",
   "randomizer.generate": "Gerar mira aleatória",
@@ -240,7 +227,6 @@
   "randomizer.selectNone": "Não selecionar nada",
   "randomizer.recent": "Resultados recentes",
   "randomizer.empty": "Carregue em gerar para a sua primeira mira.",
-
   "settings.title": "Definições",
   "settings.appearance": "Aspeto",
   "settings.theme": "Tema",
@@ -278,7 +264,24 @@
   "settings.runtime": "Ambiente",
   "settings.runtimeDesktop": "Ambiente de trabalho Windows",
   "settings.runtimeBrowser": "Pré-visualização no navegador",
-
+  "overlay.title": "Sobreposição no ecrã",
+  "overlay.enable": "Mostrar a sobreposição",
+  "overlay.enableTip": "Desenha a mira atual por cima de tudo o resto, para a poder usar fora do ReticleX.",
+  "overlay.monitor": "Monitor",
+  "overlay.monitorTip": "O ecrã em que a sobreposição fica centrada. Automático segue a janela do ReticleX.",
+  "overlay.monitorAuto": "Automático",
+  "overlay.monitorLabel": "Ecrã {index} — {width}×{height}",
+  "overlay.monitorPrimary": "principal",
+  "overlay.offsetX": "Deslocamento horizontal",
+  "overlay.offsetY": "Deslocamento vertical",
+  "overlay.offsetTip": "Afasta a sobreposição do centro do ecrã, em píxeis.",
+  "overlay.hotkey": "Atalho",
+  "overlay.hotkeyTip": "Mostra e oculta a sobreposição a partir de qualquer lado, mesmo com outra janela ativa.",
+  "overlay.hotkeyTaken": "O Windows não atribuiu {hotkey} ao ReticleX; outro programa já o usa. Escolha um atalho diferente.",
+  "overlay.hint": "Prima {hotkey} a qualquer momento para mostrar ou ocultar a sobreposição. Ignora o rato, por isso os cliques passam através dela.",
+  "overlay.toggle": "Sobreposição",
+  "overlay.toggleTip": "Desenhar esta mira por cima do ecrã, atualizando-a enquanto a edita.",
+  "overlay.unsupported": "A sobreposição precisa da aplicação de ambiente de trabalho ReticleX; um navegador não consegue desenhar por cima de outras janelas.",
   "dialog.deleteTitle": "Eliminar «{name}»?",
   "dialog.deleteBody": "Esta ação não pode ser anulada.",
   "dialog.renameTitle": "Renomear mira",
@@ -293,7 +296,6 @@
   "dialog.discardTitle": "Descartar as alterações por guardar?",
   "dialog.discardBody": "A mira atual tem alterações que ainda não foram guardadas.",
   "dialog.discardConfirm": "Descartar",
-
   "toast.saved": "Mira guardada",
   "toast.savedAs": "Guardada como «{name}»",
   "toast.renamed": "Renomeada para «{name}»",
@@ -318,7 +320,9 @@
   "toast.seedCopied": "Semente copiada",
   "toast.startWithWindowsOn": "O ReticleX vai iniciar com o Windows",
   "toast.startWithWindowsOff": "O ReticleX deixa de iniciar com o Windows",
-
+  "toast.overlayOn": "Sobreposição ativada",
+  "toast.overlayOff": "Sobreposição desativada",
+  "toast.overlayHotkeyTaken": "{hotkey} já está ocupado por outro programa",
   "import.errorEmpty": "Esse ficheiro está vazio",
   "import.errorJson": "Esse ficheiro não é JSON válido",
   "import.errorShape": "Esse ficheiro não é uma mira do ReticleX",
@@ -330,7 +334,6 @@
   "import.warnClamped": "Alguns valores estavam fora do intervalo e foram ajustados",
   "import.warnEmpty": "A mira importada não desenha nada",
   "import.warnInvalidColor": "Não foi possível ler uma cor e esta foi substituída",
-
   "error.title": "Algo correu mal",
   "error.retry": "Tentar de novo",
   "error.hostUnavailable": "A correr sem o anfitrião de ambiente de trabalho. As alterações ficam apenas neste navegador.",
@@ -339,7 +342,7 @@
   "error.exportFailed": "A exportação falhou",
   "error.coreFailed": "Não foi possível carregar o núcleo de renderização",
   "error.coreFailedBody": "Sem ele o ReticleX não consegue desenhar miras. Tente reinstalar a aplicação.",
-
+  "error.overlayFailed": "Não foi possível alterar a sobreposição",
   "shortcuts.title": "Atalhos de teclado",
   "shortcuts.new": "Nova mira",
   "shortcuts.save": "Guardar",
@@ -350,11 +353,9 @@
   "shortcuts.redo": "Refazer",
   "shortcuts.help": "Mostrar atalhos",
   "shortcuts.close": "Fechar a caixa de diálogo",
-
   "units.px": "px",
   "units.deg": "°",
   "units.percent": "%",
-
   "preset.classic-cross.name": "Cruz clássica",
   "preset.classic-cross.description": "A mira de quatro braços por onde quase toda a gente começa. Espaço equilibrado e contorno nítido.",
   "preset.precision-dot.name": "Ponto de precisão",
@@ -371,7 +372,6 @@
   "preset.heavy-duty.description": "Linhas grossas e um contorno forte que aguentam as cenas mais claras.",
   "preset.dynamic-spread.name": "Abertura dinâmica",
   "preset.dynamic-spread.description": "Abre-se quando se move. Arraste o controlo de movimento para ver a abertura total.",
-
   "a11y.sidebar": "Navegação principal",
   "a11y.pageContent": "Conteúdo da página",
   "a11y.closeDialog": "Fechar a caixa de diálogo",

@@ -518,6 +518,14 @@
 .settings__row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .settings__hint { font-size: var(--text-xs); color: var(--text-faint); }
 
+/* Something the user can act on — an overlay the host cannot provide, or a
+   shortcut another program already owns — rather than a passing note. */
+.settings__hint--warn {
+  color: var(--warning);
+  border-inline-start: 2px solid var(--warning);
+  padding-inline-start: var(--space-3);
+}
+
 .accents { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 .accents__swatch {
