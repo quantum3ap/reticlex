@@ -10,10 +10,10 @@ const core = await loadCore();
 
 test('reports a layout the marshalling code can rely on', () => {
   assert.equal(core.abiVersion, 1);
-  assert.equal(core.schemaVersion, 1);
+  assert.equal(core.schemaVersion, 2);
   assert.equal(core.configSize, core.fieldCount * 4);
-  assert.equal(core.fieldCount, 38);
-  assert.equal(core.maxShapes, 32);
+  assert.equal(core.fieldCount, 50);
+  assert.equal(core.maxShapes, 64);
 });
 
 test('exposes a field table with unique names and known types', () => {

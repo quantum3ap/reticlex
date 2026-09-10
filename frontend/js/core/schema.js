@@ -38,6 +38,12 @@ export const LIMITS = Object.freeze({
   dot_opacity: { min: 0, max: 1, step: 0.01, decimals: 2 },
   dynamic_spread: { min: 0, max: 1, step: 0.01, decimals: 2 },
   dynamic_gap_boost: { min: 0, max: 40, step: 0.5, decimals: 1 },
+  ring_radius: { min: 0, max: 160, step: 0.5, decimals: 1 },
+  ring_thickness: { min: 0.5, max: 20, step: 0.5, decimals: 1 },
+  ring_opacity: { min: 0, max: 1, step: 0.01, decimals: 2 },
+  x_length: { min: 0, max: 120, step: 0.5, decimals: 1 },
+  x_thickness: { min: 0.5, max: 20, step: 0.5, decimals: 1 },
+  x_gap: { min: 0, max: 60, step: 0.5, decimals: 1 },
 });
 
 const bool = (value, fallback) => (typeof value === 'boolean' ? value : Boolean(fallback));
@@ -99,6 +105,20 @@ export function crosshairToJson(config) {
       enabled: Boolean(config.dynamic_enabled),
       spread: config.dynamic_spread,
       gapBoost: config.dynamic_gap_boost,
+    },
+    ring: {
+      enabled: Boolean(config.ring_enabled),
+      radius: config.ring_radius,
+      thickness: config.ring_thickness,
+      opacity: config.ring_opacity,
+      inheritColor: Boolean(config.ring_inherit_color),
+      color: colour('ring_color_r', 'ring_color_g', 'ring_color_b'),
+    },
+    diagonal: {
+      enabled: Boolean(config.x_enabled),
+      length: config.x_length,
+      thickness: config.x_thickness,
+      gap: config.x_gap,
     },
   };
 }
@@ -179,6 +199,23 @@ export function jsonToCrosshair(input, defaults) {
   base.dynamic_enabled = bool(dynamic.enabled, base.dynamic_enabled) ? 1 : 0;
   base.dynamic_spread = num(dynamic.spread, base.dynamic_spread);
   base.dynamic_gap_boost = num(dynamic.gapBoost, base.dynamic_gap_boost);
+
+  // Absent in files written before rings existed, which is why every field
+  // here falls back to the default rather than to zero.
+  const ring = input.ring ?? {};
+  base.ring_enabled = bool(ring.enabled, base.ring_enabled) ? 1 : 0;
+  base.ring_radius = num(ring.radius, base.ring_radius);
+  base.ring_thickness = num(ring.thickness, base.ring_thickness);
+  base.ring_opacity = num(ring.opacity, base.ring_opacity);
+  base.ring_inherit_color = bool(ring.inheritColor, base.ring_inherit_color) ? 1 : 0;
+  applyColour(ring.color, ['ring_color_r', 'ring_color_g', 'ring_color_b'],
+    rgbToHex({ r: base.ring_color_r, g: base.ring_color_g, b: base.ring_color_b }));
+
+  const diagonal = input.diagonal ?? {};
+  base.x_enabled = bool(diagonal.enabled, base.x_enabled) ? 1 : 0;
+  base.x_length = num(diagonal.length, base.x_length);
+  base.x_thickness = num(diagonal.thickness, base.x_thickness);
+  base.x_gap = num(diagonal.gap, base.x_gap);
 
   return { config: base, warnings };
 }

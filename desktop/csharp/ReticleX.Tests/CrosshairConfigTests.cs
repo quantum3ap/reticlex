@@ -26,7 +26,7 @@ public class CrosshairConfigTests
             CrosshairConfig.FieldNames.Length,
             CrosshairConfig.FieldNames.Distinct().Count());
         Assert.Equal("schema_version", CrosshairConfig.FieldNames[0]);
-        Assert.Equal("dynamic_gap_boost", CrosshairConfig.FieldNames[^1]);
+        Assert.Equal("x_gap", CrosshairConfig.FieldNames[^1]);
         Assert.All(CrosshairConfig.FieldNames, name => Assert.Matches("^[a-z][a-z0-9_]*$", name));
     }
 
@@ -65,7 +65,7 @@ public class CrosshairConfigTests
     public void DefaultsDrawAFourArmCross()
     {
         var config = CrosshairConfig.CreateDefault();
-        Assert.Equal(1, config.SchemaVersion);
+        Assert.Equal(2, config.SchemaVersion);
         Assert.Equal(1f, config.Scale);
         Assert.Equal(1, config.HEnabled);
         Assert.Equal(1, config.VEnabled);
@@ -114,7 +114,7 @@ public class CrosshairConfigTests
     {
         var config = JsonSerializer.Deserialize<CrosshairConfig>(json, JsonStore.Options);
         Assert.Equal(CrosshairConfig.CreateDefault().HGap, config.HGap);
-        Assert.Equal(1, config.SchemaVersion);
+        Assert.Equal(2, config.SchemaVersion);
     }
 
     [Fact]

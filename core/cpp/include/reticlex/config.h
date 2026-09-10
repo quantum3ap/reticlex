@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-#define RX_CONFIG_SCHEMA 1
+#define RX_CONFIG_SCHEMA 2
 #define RX_ABI_VERSION   1
 
 /* Cap treatment for the four arms. */
@@ -55,6 +55,7 @@ enum rx_status {
 #define RX_MAX_OUTLINE     8.0f
 #define RX_MAX_DOT         24.0f
 #define RX_MAX_GAP_BOOST   40.0f
+#define RX_MAX_RING        160.0f
 #define RX_MAX_RASTER_DIM  1024
 
 typedef struct rx_config {
@@ -104,11 +105,30 @@ typedef struct rx_config {
     int32_t dynamic_enabled;
     float   dynamic_spread;    /* 0..1 simulated movement amount */
     float   dynamic_gap_boost; /* px added to both gaps at full spread */
+
+    /* --- Schema 2 ---------------------------------------------------------
+       Appended, never reordered: a file written by schema 1 reads back with
+       these at their defaults, which is why the ring starts switched off. */
+
+    /* Ring: a circular band centred on the reticle. */
+    int32_t ring_enabled;
+    float   ring_radius;       /* centre to the middle of the band, px */
+    float   ring_thickness;
+    float   ring_opacity;
+    int32_t ring_inherit_color;
+    rx_rgb  ring_color;
+
+    /* Diagonal arms, at 45 degrees to the horizontal pair. Independent of the
+       main arms, so a reticle can carry both and read as an eight-point star. */
+    int32_t x_enabled;
+    float   x_length;
+    float   x_thickness;
+    float   x_gap;
 } rx_config;
 
-/* 38 four-byte members. Asserted in config.cpp and mirrored by the JS and C#
+/* 50 four-byte members. Asserted in config.cpp and mirrored by the JS and C#
    field tables, both of which are covered by tests. */
-#define RX_CONFIG_FIELDS 38
+#define RX_CONFIG_FIELDS 50
 
 #ifdef __cplusplus
 }

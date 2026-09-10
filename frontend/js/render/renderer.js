@@ -11,10 +11,13 @@
 export const LAYER_OUTLINE = 0;
 export const LAYER_LINES = 1;
 export const LAYER_DOT = 2;
-const LAYER_ORDER = [LAYER_OUTLINE, LAYER_LINES, LAYER_DOT];
+export const LAYER_RING = 3;
+// The dot paints last so it stays legible over a ring that crosses it.
+const LAYER_ORDER = [LAYER_OUTLINE, LAYER_LINES, LAYER_RING, LAYER_DOT];
 
 const SHAPE_RECT = 0;
 const SHAPE_ELLIPSE = 1;
+const SHAPE_RING = 2;
 
 function toCss({ r, g, b }) {
   const channel = (v) => Math.round(Math.min(1, Math.max(0, v)) * 255);
@@ -84,6 +87,17 @@ export function drawGeometry(ctx, geometry, view) {
       );
       if (shape.kind === SHAPE_ELLIPSE) {
         ctx.ellipse(0, 0, Math.max(shape.hw, 0.01), Math.max(shape.hh, 0.01), 0, 0, Math.PI * 2);
+      } else if (shape.kind === SHAPE_RING) {
+        // The hole comes from winding the inner circle the other way: under
+        // non-zero winding the two cancel, leaving the band.
+        const outer = Math.max(shape.hw, 0.01);
+        const inner = Math.max(shape.radius, 0);
+        ctx.moveTo(outer, 0);
+        ctx.arc(0, 0, outer, 0, Math.PI * 2, false);
+        if (inner > 0) {
+          ctx.moveTo(inner, 0);
+          ctx.arc(0, 0, inner, 0, Math.PI * 2, true);
+        }
       } else {
         addRoundedRect(ctx, shape.hw, shape.hh, shape.radius);
       }

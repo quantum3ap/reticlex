@@ -31,9 +31,9 @@ public class NativeCoreTests
         // Throws with a precise message if any field name, type or offset moved.
         NativeCore.VerifyLayout();
         Assert.Equal(1, NativeCore.AbiVersion);
-        Assert.Equal(1, NativeCore.SchemaVersion);
+        Assert.Equal(2, NativeCore.SchemaVersion);
         Assert.Equal(48, NativeCore.ShapeSize);
-        Assert.Equal(32, NativeCore.MaxShapes);
+        Assert.Equal(64, NativeCore.MaxShapes);
     }
 
     [Fact]

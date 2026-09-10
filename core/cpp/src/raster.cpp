@@ -40,6 +40,16 @@ inline float sd_ellipse(Vec2 p, float hw, float hh) {
     return (k - 1.0f) * rx_minf(hw, hh);
 }
 
+/* Signed distance to a circular band. `outer` and `inner` are radii; the band
+   is the region between them, so the distance is measured from its midline. */
+inline float sd_ring(Vec2 p, float outer, float inner) {
+    if (outer <= 0.0f) return 1e9f;
+    const float mid = (outer + inner) * 0.5f;
+    const float half = (outer - inner) * 0.5f;
+    if (half <= 0.0f) return 1e9f;
+    return rx_absf(rx_sqrtf(p.x * p.x + p.y * p.y) - mid) - half;
+}
+
 struct DeviceShape {
     float cx, cy, hw, hh, radius;
     float cosA, sinA;
@@ -53,9 +63,10 @@ inline float coverage(const DeviceShape &s, float px, float py) {
     const float dy = py - s.cy;
     /* Rotate the sample into shape-local space (inverse rotation). */
     Vec2 local{ dx * s.cosA + dy * s.sinA, -dx * s.sinA + dy * s.cosA };
-    const float d = (s.kind == RX_SHAPE_ELLIPSE)
-                  ? sd_ellipse(local, s.hw, s.hh)
-                  : sd_round_box(local, s.hw, s.hh, s.radius);
+    float d;
+    if (s.kind == RX_SHAPE_ELLIPSE)   d = sd_ellipse(local, s.hw, s.hh);
+    else if (s.kind == RX_SHAPE_RING) d = sd_ring(local, s.hw, s.radius);
+    else                              d = sd_round_box(local, s.hw, s.hh, s.radius);
     return rx_clampf(0.5f - d, 0.0f, 1.0f);
 }
 
