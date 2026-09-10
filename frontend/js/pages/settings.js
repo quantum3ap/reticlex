@@ -59,6 +59,26 @@ export function createSettingsPage(app) {
     onChange: (checked) => app.saveSettings({ animations: checked }, { notify: true }),
   });
 
+  const introToggle = createToggle({
+    i18n,
+    labelKey: 'settings.intro',
+    tipKey: 'settings.introTip',
+    checked: app.settings.introEnabled,
+    onChange: (checked) => {
+      app.saveSettings({ introEnabled: checked });
+      introSoundToggle.setDisabled?.(!checked);
+      introSoundToggle.element.classList.toggle('is-disabled', !checked);
+    },
+  });
+
+  const introSoundToggle = createToggle({
+    i18n,
+    labelKey: 'settings.introSound',
+    tipKey: 'settings.introSoundTip',
+    checked: app.settings.introSound,
+    onChange: (checked) => app.saveSettings({ introSound: checked }),
+  });
+
   const scaleSlider = createSlider({
     i18n,
     labelKey: 'settings.uiScale',
@@ -218,6 +238,14 @@ export function createSettingsPage(app) {
       labelledBlock('settings.accent', 'settings.accentTip', accentRow),
       animationsToggle.element,
       scaleSlider.element,
+      introToggle.element,
+      introSoundToggle.element,
+      h('div', { class: 'settings__row' },
+        h('button', {
+          type: 'button', class: 'btn btn--ghost', 'data-tip': 'settings.introPreviewTip',
+          onClick: () => app.previewIntro(),
+        }, icon('sparkle', { size: 16 }),
+        h('span', { i18n: 'settings.introPreview' }, i18n.t('settings.introPreview')))),
     ]),
 
     settingsCard('settings.languageSection', 'globe', [
@@ -321,6 +349,9 @@ export function createSettingsPage(app) {
     onEnter() {
       themeControl.set(app.settings.theme);
       animationsToggle.set(app.settings.animations);
+      introToggle.set(app.settings.introEnabled);
+      introSoundToggle.set(app.settings.introSound);
+      introSoundToggle.element.classList.toggle('is-disabled', !app.settings.introEnabled);
       autoSaveToggle.set(app.settings.autoSave);
       startupToggle.set(app.settings.startWithWindows);
       scaleSlider.set(app.settings.uiScale);

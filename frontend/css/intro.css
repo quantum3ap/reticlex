@@ -1,0 +1,204 @@
+/*
+ * The start-up sequence.
+ *
+ * Every keyframe here is driven by the timeline in intro.js, so the two files
+ * have to move together: the audio cues land at 120ms, 780ms and 1180ms, which
+ * is where the arms arrive, the ring snaps and the dot punches in.
+ *
+ * Only transform and opacity are animated, so the whole sequence stays on the
+ * compositor and never blocks the front end loading behind it.
+ */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(120% 100% at 50% 45%, #0d1117 0%, #05070a 55%, #000 100%);
+  opacity: 1;
+  transition: opacity 420ms var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.intro.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro.is-leaving .intro__scene {
+  transform: scale(1.06);
+  transition: transform 420ms var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.intro__scene {
+  display: grid;
+  justify-items: center;
+  gap: 26px;
+  will-change: transform;
+}
+
+/* --- The mark ------------------------------------------------------------ */
+
+.intro__mark {
+  width: min(210px, 34vw);
+  height: min(210px, 34vw);
+  overflow: visible;
+}
+
+.intro__ring,
+.intro__pulse {
+  fill: none;
+  stroke: #00ff88;
+  transform-origin: 128px 128px;
+}
+
+.intro__ring {
+  stroke-width: 6;
+  stroke-dasharray: 490;
+  stroke-dashoffset: 490;
+  opacity: 0;
+}
+
+/* A second copy of the ring that expands away and fades: the shock of the snap. */
+.intro__pulse {
+  stroke-width: 3;
+  opacity: 0;
+}
+
+.intro__arm {
+  fill: #00ff88;
+  opacity: 0;
+}
+
+.intro__dot {
+  fill: #00ff88;
+  transform-origin: 128px 128px;
+  transform: scale(0);
+  opacity: 0;
+}
+
+.intro.is-running .intro__arm--top { animation: intro-arm-top 620ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both; }
+.intro.is-running .intro__arm--bottom { animation: intro-arm-bottom 620ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both; }
+.intro.is-running .intro__arm--left { animation: intro-arm-left 620ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both; }
+.intro.is-running .intro__arm--right { animation: intro-arm-right 620ms cubic-bezier(0.16, 1, 0.3, 1) 210ms both; }
+
+.intro.is-running .intro__ring { animation: intro-ring 700ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both; }
+.intro.is-running .intro__pulse { animation: intro-pulse 620ms ease-out 780ms both; }
+.intro.is-running .intro__dot { animation: intro-dot 520ms cubic-bezier(0.34, 1.56, 0.64, 1) 1120ms both; }
+
+/* The arms arrive from off the mark, overshooting slightly as they settle. */
+@keyframes intro-arm-top {
+  0% { opacity: 0; transform: translateY(-120px); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes intro-arm-bottom {
+  0% { opacity: 0; transform: translateY(120px); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes intro-arm-left {
+  0% { opacity: 0; transform: translateX(-120px); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes intro-arm-right {
+  0% { opacity: 0; transform: translateX(120px); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* The ring draws itself round, rather than fading in. */
+@keyframes intro-ring {
+  0% { opacity: 0; stroke-dashoffset: 490; transform: rotate(-90deg) scale(0.86); }
+  25% { opacity: 1; }
+  100% { opacity: 1; stroke-dashoffset: 0; transform: rotate(-90deg) scale(1); }
+}
+
+@keyframes intro-pulse {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+
+@keyframes intro-dot {
+  0% { opacity: 0; transform: scale(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Wordmark ------------------------------------------------------------ */
+
+.intro__wordmark {
+  display: flex;
+  font-size: clamp(30px, 6vw, 52px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #eef1f6;
+}
+
+.intro__letter {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.intro__letter--x { color: #00ff88; }
+
+.intro.is-running .intro__letter {
+  /* --i is set per letter in intro.js, so the stagger is one rule. */
+  animation: intro-letter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(1300ms + var(--i, 0) * 45ms);
+}
+
+@keyframes intro-letter {
+  0% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.intro__tagline {
+  margin: 0;
+  font-size: clamp(12px, 1.6vw, 15px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #67707f;
+  opacity: 0;
+}
+
+.intro.is-running .intro__tagline {
+  animation: intro-tagline 620ms ease-out 1800ms both;
+}
+
+@keyframes intro-tagline {
+  0% { opacity: 0; letter-spacing: 0.5em; }
+  100% { opacity: 1; letter-spacing: 0.24em; }
+}
+
+/* --- Flash --------------------------------------------------------------- */
+
+/* One frame of light at the moment the dot lands, to give it weight. */
+.intro__flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(40% 40% at 50% 42%, rgba(0, 255, 136, 0.5), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro.is-running .intro__flash {
+  animation: intro-flash 460ms ease-out 1140ms both;
+}
+
+@keyframes intro-flash {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Someone who has asked for less motion gets none of this; intro.js skips the
+   sequence outright, and this is the belt to that braces. */
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .intro * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

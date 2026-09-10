@@ -24,6 +24,7 @@ import {
 import { debounce, toFileStem } from './core/util.js';
 import { toPngDataUrl } from './render/renderer.js';
 
+import { playIntro } from './ui/intro.js';
 import { Toasts } from './ui/toast.js';
 import { Tooltips } from './ui/tooltip.js';
 import { Modals } from './ui/modal.js';
@@ -123,6 +124,11 @@ class App {
     this.router.navigate(startPage);
 
     document.getElementById('boot').hidden = true;
+
+    // Between the loader and the interface: the sequence covers the screen, so
+    // the application is revealed already laid out rather than mid-assembly.
+    await this.#playIntro();
+
     document.getElementById('app').hidden = false;
     document.getElementById('app-version').textContent = `v${this.appVersion}`;
 
@@ -650,6 +656,27 @@ class App {
       this.toasts.error('error.exportFailed', undefined, String(error.message ?? error));
       return false;
     }
+  }
+
+  /**
+   * Runs the start-up sequence. Wrapped so a failure anywhere in it costs the
+   * animation and nothing else — the application still has to open.
+   */
+  async #playIntro() {
+    try {
+      await playIntro({
+        enabled: this.settings.introEnabled && this.settings.animations,
+        sound: this.settings.introSound,
+        tagline: this.i18n.t('app.tagline'),
+      });
+    } catch (error) {
+      console.error('[app] the intro did not play', error);
+    }
+  }
+
+  /** Replays the sequence from Settings, so a change can be seen immediately. */
+  previewIntro() {
+    return this.#playIntro();
   }
 
   // --- Overlay ------------------------------------------------------------

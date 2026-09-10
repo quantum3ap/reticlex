@@ -169,3 +169,24 @@ test('a monitor identifier survives but a non-string does not', () => {
     '\\\\.\\DISPLAY2');
   assert.equal(normalizeSettings({ overlayMonitor: 7 }).settings.overlayMonitor, '');
 });
+
+// --- Start-up sequence ------------------------------------------------------
+
+test('the start-up sequence and its sound are on by default', () => {
+  const settings = defaultSettings();
+  assert.equal(settings.introEnabled, true);
+  assert.equal(settings.introSound, true);
+});
+
+test('only an explicit false switches the sequence off', () => {
+  // A settings file written before the sequence existed has no opinion, and
+  // should get it rather than be treated as having declined it.
+  assert.equal(normalizeSettings({}).settings.introEnabled, true);
+  assert.equal(normalizeSettings({}).settings.introSound, true);
+  assert.equal(normalizeSettings({ introEnabled: false }).settings.introEnabled, false);
+  assert.equal(normalizeSettings({ introSound: false }).settings.introSound, false);
+  for (const value of ['false', 0, null, 'no']) {
+    assert.equal(normalizeSettings({ introEnabled: value }).settings.introEnabled, true,
+      `${String(value)} is not a literal false`);
+  }
+});

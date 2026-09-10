@@ -35,6 +35,7 @@ public sealed class TrayIcon : IDisposable
 
     private const int MF_STRING = 0x0000, MF_CHECKED = 0x0008, MF_SEPARATOR = 0x0800;
     private const int TPM_RIGHTBUTTON = 0x0002, TPM_RETURNCMD = 0x0100;
+    private const int WS_EX_TOOLWINDOW = 0x00000080;
 
     private const int CmdToggleOverlay = 1;
     private const int CmdOpen = 2;
@@ -119,6 +120,7 @@ public sealed class TrayIcon : IDisposable
 
     private HwndSource? _source;
     private IntPtr _icon;
+    private bool _ownsIcon;
     private bool _added;
 
     private string _tooltip = "ReticleX";
@@ -146,7 +148,9 @@ public sealed class TrayIcon : IDisposable
         var source = EnsureSource();
         if (source is null) return;
 
-        _icon = LoadAppIcon();
+        // Only once: Show() runs again when Explorer restarts, and loading a
+        // second icon there would leak the first.
+        if (_icon == IntPtr.Zero) _icon = LoadAppIcon();
         var data = Describe(source.Handle);
         if (!Shell_NotifyIconW(NIM_ADD, ref data))
         {
@@ -211,13 +215,19 @@ public sealed class TrayIcon : IDisposable
             {
                 var icon = ExtractIconW(IntPtr.Zero, path, 0);
                 // ExtractIcon returns 1 rather than 0 when the file holds no icon.
-                if (icon != IntPtr.Zero && icon != new IntPtr(1)) return icon;
+                if (icon != IntPtr.Zero && icon != new IntPtr(1))
+                {
+                    _ownsIcon = true;
+                    return icon;
+                }
             }
         }
         catch (Exception error)
         {
             _log?.Invoke("The application icon could not be read for the tray.", error);
         }
+        // A shared system icon: it belongs to Windows and must not be destroyed.
+        _ownsIcon = false;
         return LoadIconW(IntPtr.Zero, new IntPtr(32512));   // IDI_APPLICATION
     }
 
@@ -234,6 +244,9 @@ public sealed class TrayIcon : IDisposable
                 Width = 0,
                 Height = 0,
                 WindowStyle = 0,
+                // Without this a zero-size top-level window can still appear in
+                // Alt-Tab as a nameless entry.
+                ExtendedWindowStyle = WS_EX_TOOLWINDOW,
             };
             _source = new HwndSource(parameters);
             _source.AddHook(OnMessage);
@@ -341,11 +354,12 @@ public sealed class TrayIcon : IDisposable
             Shell_NotifyIconW(NIM_DELETE, ref data);
             _added = false;
         }
-        if (_icon != IntPtr.Zero)
+        if (_icon != IntPtr.Zero && _ownsIcon)
         {
             DestroyIcon(_icon);
-            _icon = IntPtr.Zero;
         }
+        _icon = IntPtr.Zero;
+        _ownsIcon = false;
         _source?.RemoveHook(OnMessage);
         _source?.Dispose();
         _source = null;
