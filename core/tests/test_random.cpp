@@ -1,5 +1,6 @@
 #include "test_harness.h"
 #include "reticlex/api.h"
+#include "reticlex/rx_math.h"
 #include <cstring>
 
 RX_TEST(random_rejects_null_config) {
@@ -118,5 +119,81 @@ RX_TEST(random_colours_stay_readable) {
         if (lineContrast < 3.0f) { CHECK(lineContrast >= 3.0f); break; }
         const float dotContrast = rx_contrast_ratio(c.dot_color, rx_hex_to_rgb(0x0B0B0Fu));
         if (dotContrast < 3.0f) { CHECK(dotContrast >= 3.0f); break; }
+    }
+}
+
+RX_TEST(random_reaches_the_new_shapes_without_leaning_on_them) {
+    /* A shape the randomizer can never produce may as well not exist, but one
+       it produces every time stops being a style. Both ends are checked. */
+    rx_config base;
+    rx_config_defaults(&base);
+
+    int rings = 0, diagonals = 0;
+    const int kRolls = 600;
+    for (int seed = 1; seed <= kRolls; ++seed) {
+        rx_config c = base;
+        CHECK(rx_randomize(&c, (uint32_t)seed, RX_RAND_ALL, RX_STYLE_ANY) == RX_OK);
+        if (c.ring_enabled) ++rings;
+        if (c.x_enabled) ++diagonals;
+    }
+
+    CHECK(rings > kRolls / 20);          /* better than 5% */
+    CHECK(rings < (kRolls * 2) / 3);     /* not the default */
+    CHECK(diagonals > kRolls / 40);
+    CHECK(diagonals < kRolls / 2);
+}
+
+RX_TEST(random_rings_clear_the_arms_they_surround) {
+    /* A ring drawn through the arms reads as a mistake. It has to sit outside
+       the longest one, whatever the roll produced. */
+    rx_config base;
+    rx_config_defaults(&base);
+
+    for (int seed = 1; seed <= 600; ++seed) {
+        rx_config c = base;
+        CHECK(rx_randomize(&c, (uint32_t)seed, RX_RAND_ALL, RX_STYLE_ANY) == RX_OK);
+        if (!c.ring_enabled) continue;
+
+        const float reach = rx_maxf(c.h_gap + c.h_length, c.v_gap + c.v_length);
+        const float inner = c.ring_radius - c.ring_thickness * 0.5f;
+        CHECK(inner >= reach);
+    }
+}
+
+RX_TEST(random_new_shapes_stay_valid_and_visible) {
+    rx_config base;
+    rx_config_defaults(&base);
+
+    for (int seed = 1; seed <= 600; ++seed) {
+        rx_config c = base;
+        CHECK(rx_randomize(&c, (uint32_t)seed, RX_RAND_ALL, RX_STYLE_ANY) == RX_OK);
+        CHECK(rx_config_validate(&c) == RX_OK);
+
+        rx_geometry g;
+        CHECK(rx_build_geometry(&c, &g) == RX_OK);
+        CHECK(g.count > 0);
+        /* Even the busiest roll has to fit the shape budget. */
+        CHECK(g.count <= RX_MAX_SHAPES);
+    }
+}
+
+RX_TEST(random_shape_mask_still_gates_the_new_fields) {
+    /* Deselecting Shape in the randomizer must leave a ring the user turned on
+       exactly as it was. */
+    rx_config base;
+    rx_config_defaults(&base);
+    base.ring_enabled = 1;
+    base.ring_radius = 21.0f;
+    base.x_enabled = 1;
+    base.x_length = 9.0f;
+
+    for (int seed = 1; seed <= 100; ++seed) {
+        rx_config c = base;
+        CHECK(rx_randomize(&c, (uint32_t)seed, RX_RAND_COLOR | RX_RAND_OPACITY,
+                           RX_STYLE_ANY) == RX_OK);
+        CHECK(c.ring_enabled == 1);
+        CHECK(c.ring_radius == 21.0f);
+        CHECK(c.x_enabled == 1);
+        CHECK(c.x_length == 9.0f);
     }
 }
