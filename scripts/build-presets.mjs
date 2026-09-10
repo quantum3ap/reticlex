@@ -103,6 +103,90 @@ const DEFINITIONS = [
       dynamic: { enabled: true, spread: 0.35, gapBoost: 14 },
     },
   },
+
+  // --- The ringed set ----------------------------------------------------
+  // Six silhouettes that were impossible before schema 2 gave the core a ring
+  // and a diagonal pair. Colours are drawn from the same palette so the set
+  // reads as a family in the preset list.
+  {
+    id: 'halo-target',
+    accent: '#FFFFFF',
+    crosshair: {
+      color: '#FFFFFF',
+      horizontal: { enabled: true, length: 13, thickness: 2.5, gap: 0 },
+      vertical: { enabled: true, length: 13, thickness: 2.5, gap: 0 },
+      outline: { enabled: true, thickness: 1, opacity: 0.9, color: '#000000' },
+      dot: { enabled: true, size: 3.5, opacity: 1, inheritColor: true, shape: 'round' },
+      ring: { enabled: true, radius: 9, thickness: 2, opacity: 1, inheritColor: true },
+    },
+  },
+  {
+    id: 'ring-ticks',
+    accent: '#4FE9F0',
+    crosshair: {
+      color: '#4FE9F0',
+      horizontal: { enabled: true, length: 5, thickness: 1.8, gap: 3.5 },
+      vertical: { enabled: true, length: 5, thickness: 1.8, gap: 3.5 },
+      outline: { enabled: true, thickness: 1, opacity: 0.85, color: '#000000' },
+      dot: { enabled: true, size: 2, opacity: 1, inheritColor: true, shape: 'round' },
+      ring: { enabled: true, radius: 9.5, thickness: 1.8, opacity: 1, inheritColor: true },
+    },
+  },
+  {
+    id: 'quartered',
+    accent: '#4BE94B',
+    crosshair: {
+      color: '#4BE94B',
+      horizontal: { enabled: true, length: 11, thickness: 1.8, gap: 0 },
+      vertical: { enabled: true, length: 11, thickness: 1.8, gap: 0 },
+      outline: { enabled: true, thickness: 1, opacity: 0.85, color: '#000000' },
+      ring: { enabled: true, radius: 10, thickness: 1.8, opacity: 1, inheritColor: true },
+    },
+  },
+  {
+    id: 'ring-plus',
+    accent: '#FF5EE6',
+    crosshair: {
+      color: '#FF5EE6',
+      horizontal: { enabled: true, length: 5.5, thickness: 2.5, gap: 0 },
+      vertical: { enabled: true, length: 5.5, thickness: 2.5, gap: 0 },
+      outline: { enabled: true, thickness: 1, opacity: 0.85, color: '#000000' },
+      ring: { enabled: true, radius: 11, thickness: 3, opacity: 1, inheritColor: true },
+    },
+  },
+  {
+    id: 'plain-plus',
+    accent: '#FAFA96',
+    crosshair: {
+      color: '#FAFA96',
+      horizontal: { enabled: true, length: 8, thickness: 2.5, gap: 0 },
+      vertical: { enabled: true, length: 8, thickness: 2.5, gap: 0 },
+      outline: { enabled: true, thickness: 1, opacity: 0.9, color: '#000000' },
+    },
+  },
+  {
+    id: 'signal-dot',
+    accent: '#FF3B30',
+    crosshair: {
+      color: '#FF3B30',
+      horizontal: { enabled: false, length: 0, thickness: 1, gap: 0 },
+      vertical: { enabled: false, length: 0, thickness: 1, gap: 0 },
+      outline: { enabled: true, thickness: 1.25, opacity: 1, color: '#000000' },
+      dot: { enabled: true, size: 4, opacity: 1, inheritColor: true, shape: 'round' },
+    },
+  },
+  {
+    id: 'eight-point',
+    accent: '#5B5BE8',
+    crosshair: {
+      color: '#5B5BE8',
+      horizontal: { enabled: true, length: 7, thickness: 2, gap: 4 },
+      vertical: { enabled: true, length: 7, thickness: 2, gap: 4 },
+      outline: { enabled: true, thickness: 1, opacity: 0.85, color: '#000000' },
+      diagonal: { enabled: true, length: 4.5, thickness: 1.5, gap: 4 },
+      dot: { enabled: true, size: 2, opacity: 1, inheritColor: true, shape: 'round' },
+    },
+  },
 ];
 
 const wasm = await readFile(resolve(root, 'frontend/assets/reticlex_core.wasm'));

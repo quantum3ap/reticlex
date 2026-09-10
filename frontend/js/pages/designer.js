@@ -229,6 +229,28 @@ export function createDesignerPage(app) {
         toggle('t_shape', 'field.tShape', 'tip.tShape'),
         capStyle.element,
       ]),
+      section('designer.sectionRing', 'monitor', [
+        toggle('ring_enabled', 'field.ringEnabled', 'tip.ringEnabled', {
+          onChange: () => syncControls(),
+        }),
+        slider('ring_radius', 'field.ringRadius', 'tip.ringRadius'),
+        slider('ring_thickness', 'field.ringThickness', 'tip.ringThickness'),
+        slider('ring_opacity', 'field.ringOpacity', 'tip.ringOpacity', { unitKey: null }),
+        toggle('ring_inherit_color', 'field.ringInherit', 'tip.ringInherit', {
+          onChange: () => syncControls(),
+        }),
+        colour('ring_color', 'field.ringColor', 'tip.ringColor'),
+      ], { open: false }),
+
+      section('designer.sectionDiagonal', 'sparkle', [
+        toggle('x_enabled', 'field.xEnabled', 'tip.xEnabled', {
+          onChange: () => syncControls(),
+        }),
+        slider('x_length', 'field.xLength', 'tip.xLength'),
+        slider('x_thickness', 'field.xThickness', 'tip.xThickness'),
+        slider('x_gap', 'field.xGap', 'tip.xGap'),
+      ], { open: false }),
+
       section('designer.sectionOutline', 'copy', [
         toggle('outline_enabled', 'field.outlineEnabled', 'tip.outlineEnabled'),
         slider('outline_thickness', 'field.outlineThickness', 'tip.outlineThickness'),
@@ -427,6 +449,18 @@ export function createDesignerPage(app) {
       const dotOff = !config.dot_enabled;
       controls.get('dot_size')?.setDisabled?.(dotOff);
       controls.get('dot_opacity')?.setDisabled?.(dotOff);
+      const ringOff = !config.ring_enabled;
+      controls.get('ring_radius')?.setDisabled?.(ringOff);
+      controls.get('ring_thickness')?.setDisabled?.(ringOff);
+      controls.get('ring_opacity')?.setDisabled?.(ringOff);
+      // A ring that follows the line colour has no colour of its own to edit.
+      controls.get('ring_color_colour')?.element.classList.toggle(
+        'is-disabled', ringOff || Boolean(config.ring_inherit_color),
+      );
+      const xOff = !config.x_enabled;
+      controls.get('x_length')?.setDisabled?.(xOff);
+      controls.get('x_thickness')?.setDisabled?.(xOff);
+      controls.get('x_gap')?.setDisabled?.(xOff);
       element.querySelector('[data-role="vertical"]')?.classList.toggle('is-linked', linkAxes);
     } finally {
       syncing = false;
