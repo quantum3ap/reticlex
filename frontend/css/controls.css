@@ -72,6 +72,54 @@
   --btn-border: rgba(255, 95, 109, 0.32);
 }
 
+/* The overlay toggle. It has to read as on or off from across the room, so the
+   state is carried by fill and a pill rather than by a subtle border. */
+.btn--overlay {
+  --btn-bg: var(--surface-2);
+  --btn-fg: var(--text-muted);
+  --btn-border: var(--border);
+}
+
+.btn--overlay:hover { --btn-fg: var(--text); }
+
+.btn--overlay.is-active {
+  --btn-bg: var(--accent-soft);
+  --btn-fg: var(--accent);
+  --btn-border: var(--accent-line);
+  box-shadow: 0 0 0 1px var(--accent-line), 0 8px 24px -12px var(--accent-glow);
+}
+
+.btn--overlay.is-unavailable { opacity: 0.5; }
+
+.btn__state {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+.btn__state:empty { display: none; }
+
+.btn--overlay.is-active .btn__state {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* A quiet pulse while the overlay is live, so it is never forgotten about. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-animations="on"] .btn--overlay.is-active .btn__state {
+    animation: overlay-live 2.4s var(--ease) infinite;
+  }
+}
+
+@keyframes overlay-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
 .btn--lg { padding: 12px 20px; font-size: var(--text-md); border-radius: var(--radius-lg); }
 .btn--sm { padding: 6px 11px; font-size: var(--text-xs); border-radius: var(--radius-sm); }
 .btn--block { width: 100%; }

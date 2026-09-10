@@ -205,6 +205,7 @@ class LocalBridge {
           monitors: [],
         };
       case 'overlayConfig':
+      case 'configureTray':
         return { ok: false, unsupported: true };
       default:
         throw new BridgeError(`Unknown host method "${method}"`, method);

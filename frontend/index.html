@@ -102,6 +102,15 @@
           </p>
         </div>
         <div class="topbar__actions" id="topbar-actions">
+          <!-- On every page, not just the Designer: the overlay is the thing
+               you reach for while a game is running. -->
+          <button type="button" class="btn btn--overlay" data-action="overlay"
+                  data-tip="overlay.toggleTip" id="overlay-button">
+            <span data-icon="monitor"></span>
+            <span data-i18n="overlay.toggle" id="overlay-button-label">Overlay</span>
+            <span class="btn__state" id="overlay-button-state" aria-hidden="true"></span>
+          </button>
+          <span class="topbar__divider" aria-hidden="true"></span>
           <button type="button" class="icon-btn" data-action="undo" data-tip="shortcuts.undo" disabled>
             <span data-icon="undo"></span>
           </button>
