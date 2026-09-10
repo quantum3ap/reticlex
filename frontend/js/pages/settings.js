@@ -162,6 +162,7 @@ export function createSettingsPage(app) {
   });
 
   const overlayHint = h('p', { class: 'settings__hint' });
+  const overlayTrayHint = h('p', { class: 'settings__hint' });
   const overlayNotice = h('p', { class: 'settings__hint settings__hint--warn' });
 
   function renderOverlay() {
@@ -184,6 +185,9 @@ export function createSettingsPage(app) {
     ], state.monitor);
 
     overlayHint.textContent = i18n.t('overlay.hint', { hotkey: state.hotkey });
+    // Only true in the desktop build; a browser has no notification area.
+    overlayTrayHint.textContent = state.supported ? i18n.t('overlay.trayHint') : '';
+    overlayTrayHint.hidden = !state.supported;
 
     // Two different problems, and the user can act on both: an unsupported
     // host means the browser build, a refused hotkey means another program
@@ -244,6 +248,7 @@ export function createSettingsPage(app) {
       offsetY.element,
       hotkeySelect.element,
       overlayHint,
+      overlayTrayHint,
       overlayNotice,
     ]),
 

@@ -60,6 +60,9 @@ same frame.
 Draws the crosshair you are editing on top of everything else, so it is usable
 outside ReticleX.
 
+- An **Overlay button** in the top bar, on every page, showing ON or OFF
+- A **notification-area icon**: left click toggles the overlay, right click
+  opens a menu. Minimise ReticleX, play, and it is still one click away
 - Click-through and never focusable: the mouse behaves as though it is not there
 - A global shortcut shows and hides it, chosen from a short list of
   combinations, and works while another window has focus
@@ -69,11 +72,21 @@ outside ReticleX.
 - Rendered at each display's real pixel density, so it stays crisp on a
   high-DPI monitor
 
+### Shapes
+
+Beyond the four arms, a reticle can carry:
+
+- A **ring** — a circular band with its own radius, thickness, opacity and
+  colour, or following the line colour
+- **Diagonal arms** — a second, independent set at 45 degrees, so a reticle can
+  read as an eight-point star
+- A centre dot, per-arm visibility, the T shape, and flat, round or tapered caps
+
 ### Library
 
 - Save, rename, duplicate and delete, with auto-save for work in progress
 - Recent crosshairs on the home page, each with a rendered thumbnail
-- Eight built-in presets, plus anything you promote to a preset of your own
+- Fifteen built-in presets, plus anything you promote to a preset of your own
 - Search, filter and sort across the whole preset library
 
 ### Randomizer
@@ -110,7 +123,7 @@ result carries a seed you can copy and reproduce exactly.
 | Português | Türkçe | Русский | 简体中文 | 日本語 |
 
 Every string in the interface comes from `localization/*.json`; nothing is
-hard-coded. All ten catalogues carry the same 380 keys, and a test fails the
+hard-coded. All ten catalogues carry the same 422 keys, and a test fails the
 build if one falls behind or a placeholder stops matching. Selecting Arabic
 mirrors the layout without a restart. On first launch ReticleX follows the
 Windows display language when it has a catalogue for it, and English otherwise.
@@ -188,7 +201,7 @@ The managed tests find the native core in the build directory automatically,
 so build it first:
 
 ```bash
-./scripts/build-core.sh                                  # 70 core tests
+./scripts/build-core.sh                                  # 83 core tests
 cd frontend && node --test "tests/*.test.js"             # 115 front-end tests
 dotnet test desktop/csharp/ReticleX.Tests                 # 179 managed tests
 ```
@@ -198,14 +211,15 @@ randomizer's reproducibility and output quality, configuration validation and
 repair, JSON import and export against adversarial input, undo and redo,
 settings persistence, the storage layer's behaviour with corrupt files,
 translation completeness across all ten languages, overlay placement and
-shortcut parsing, and the ABI agreement
-between the C struct, the managed struct and the WebAssembly module.
+shortcut parsing, that the randomizer reaches the ring and the diagonals
+without leaning on them, and the ABI agreement between the C struct, the
+managed struct and the WebAssembly module.
 
 ### Cutting a release
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.2.0
+git push origin v1.2.0
 ```
 
 The [release workflow](.github/workflows/release.yml) then builds and tests the
@@ -275,7 +289,7 @@ reticlex/
 ├── core/
 │   ├── c/                    Freestanding maths, PRNG, colour, hashing
 │   ├── cpp/                  Config ABI, geometry, rasteriser, randomizer
-│   ├── tests/                70 tests and the golden fixture writer
+│   ├── tests/                83 tests and the golden fixture writer
 │   └── CMakeLists.txt
 ├── desktop/csharp/
 │   ├── ReticleX.Core/        Storage, serialization, interop (net8.0)
@@ -290,7 +304,7 @@ reticlex/
 │   │   └── pages/            Home, Designer, Presets, Randomizer, Settings
 │   ├── tests/                115 tests plus the golden fixtures
 │   └── index.html
-├── localization/             Ten catalogues, 380 keys each
+├── localization/             Ten catalogues, 422 keys each
 ├── presets/                  The built-in reticles
 ├── installer/                Inno Setup script
 ├── scripts/                  Build, package and generation scripts

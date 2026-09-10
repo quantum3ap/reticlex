@@ -81,6 +81,7 @@ public sealed class WebBridge
             ["overlayInfo"] = OverlayInfo,
             ["overlaySet"] = OverlaySet,
             ["overlayConfig"] = OverlayConfig,
+            ["configureTray"] = ConfigureTray,
         };
     }
 
@@ -484,6 +485,22 @@ public sealed class WebBridge
             ["maxOffset"] = OverlayOptions.MaxOffset,
             ["monitors"] = monitors,
         };
+    }
+
+    /// <summary>
+    /// Hands the notification-area icon its labels. They come from the front
+    /// end because that is where the translation catalogues live, so the tray
+    /// menu is in the same language as everything else.
+    /// </summary>
+    private JsonNode? ConfigureTray(JsonObject parameters)
+    {
+        string? Text(string key) => parameters[key] is JsonValue value
+            && value.TryGetValue<string>(out var text) ? text : null;
+
+        _window.Dispatcher.Invoke(() => _window.ConfigureTray(
+            Text("name"), Text("onSuffix"), Text("offSuffix"),
+            Text("toggle"), Text("open"), Text("exit")));
+        return new JsonObject { ["ok"] = true };
     }
 
     private static bool? Flag(JsonObject parameters, string key) =>

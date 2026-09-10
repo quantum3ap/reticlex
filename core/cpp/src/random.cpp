@@ -28,19 +28,21 @@ struct StyleProfile {
     float armDropChance;     /* an individual arm switched off */
     float roundCapChance;
     float rotationChance;
+    float ringChance;        /* a ring drawn around the reticle */
+    float diagonalChance;    /* a second set of arms at 45 degrees */
 };
 
 const StyleProfile kProfiles[RX_STYLE_COUNT] = {
     /* RX_STYLE_ANY is never sampled directly; it resolves to one of the rest. */
-    { {4,10,1}, {1,3,0.5f}, {2,6,1}, {0.5f,2,0.5f}, {2,4,1}, 0.35f, 0.85f, 0.10f, 0.20f, 0.10f, 0.20f, 0.05f },
+    { {4,10,1}, {1,3,0.5f}, {2,6,1}, {0.5f,2,0.5f}, {2,4,1}, 0.35f, 0.85f, 0.10f, 0.20f, 0.10f, 0.20f, 0.05f, 0.22f, 0.12f },
     /* PRECISION */
-    { {3, 8,1}, {1,2,0.5f}, {1,4,1}, {0.5f,1.5f,0.5f}, {1,3,0.5f}, 0.55f, 0.90f, 0.08f, 0.10f, 0.05f, 0.10f, 0.02f },
+    { {3, 8,1}, {1,2,0.5f}, {1,4,1}, {0.5f,1.5f,0.5f}, {1,3,0.5f}, 0.55f, 0.90f, 0.08f, 0.10f, 0.05f, 0.10f, 0.02f, 0.14f, 0.06f },
     /* CLASSIC */
-    { {6,14,1}, {2,4,0.5f}, {3,8,1}, {1,2,0.5f}, {2,4,1}, 0.30f, 0.95f, 0.15f, 0.15f, 0.10f, 0.15f, 0.03f },
+    { {6,14,1}, {2,4,0.5f}, {3,8,1}, {1,2,0.5f}, {2,4,1}, 0.30f, 0.95f, 0.15f, 0.15f, 0.10f, 0.15f, 0.03f, 0.30f, 0.10f },
     /* MINIMAL */
-    { {0, 5,1}, {1,3,0.5f}, {0,4,1}, {0.5f,1.5f,0.5f}, {2,6,1}, 0.90f, 0.75f, 0.05f, 0.10f, 0.30f, 0.45f, 0.02f },
+    { {0, 5,1}, {1,3,0.5f}, {0,4,1}, {0.5f,1.5f,0.5f}, {2,6,1}, 0.90f, 0.75f, 0.05f, 0.10f, 0.30f, 0.45f, 0.02f, 0.10f, 0.05f },
     /* BOLD */
-    { {10,22,1}, {4,8,0.5f}, {4,14,1}, {2,3,0.5f}, {4,9,1}, 0.35f, 1.00f, 0.20f, 0.25f, 0.10f, 0.25f, 0.10f }
+    { {10,22,1}, {4,8,0.5f}, {4,14,1}, {2,3,0.5f}, {4,9,1}, 0.35f, 1.00f, 0.20f, 0.25f, 0.10f, 0.25f, 0.10f, 0.26f, 0.18f }
 };
 
 /* Hue anchors that read clearly against both bright and dark game scenes.
@@ -166,6 +168,28 @@ int32_t rx_randomize(rx_config *cfg, uint32_t seed, int32_t field_mask, int32_t 
             cfg->cap_style = rx_rng_chance(&rng, 0.7f) ? RX_CAP_ROUND : RX_CAP_TAPERED;
         } else {
             cfg->cap_style = RX_CAP_FLAT;
+        }
+
+        cfg->ring_enabled = rx_rng_chance(&rng, p.ringChance);
+        if (cfg->ring_enabled) {
+            /* Sized off the arms so the ring frames the reticle rather than
+               landing on top of it: it clears the longest arm by a margin. */
+            const float reach = rx_maxf(cfg->h_gap + cfg->h_length,
+                                        cfg->v_gap + cfg->v_length);
+            cfg->ring_radius = rx_clampf(reach + rx_rng_quantized(&rng, 2.0f, 7.0f, 1.0f),
+                                         4.0f, RX_MAX_RING);
+            cfg->ring_thickness = rx_rng_quantized(&rng, 1.0f, 3.0f, 0.5f);
+            cfg->ring_opacity = rx_rng_quantized(&rng, 0.7f, 1.0f, 0.1f);
+            cfg->ring_inherit_color = 1;
+        }
+
+        cfg->x_enabled = rx_rng_chance(&rng, p.diagonalChance);
+        if (cfg->x_enabled) {
+            /* Shorter and thinner than the main arms, which is what keeps an
+               eight-point reticle readable instead of busy. */
+            cfg->x_length = rx_maxf(cfg->h_length * rx_rng_range(&rng, 0.4f, 0.7f), 2.0f);
+            cfg->x_thickness = rx_maxf(cfg->h_thickness * 0.75f, RX_MIN_THICKNESS);
+            cfg->x_gap = cfg->h_gap;
         }
     }
 

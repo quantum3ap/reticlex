@@ -29,9 +29,17 @@ public partial class MainWindow : Window
     private readonly CrosshairLibrary _library;
     private readonly ThumbnailService _thumbnails;
     private readonly OverlayController _overlay;
+    private readonly TrayIcon _tray;
 
     private WebBridge? _bridge;
     private bool _initialising;
+
+    private string _trayToggleLabel = "Show the overlay";
+    private string _trayOpenLabel = "Open ReticleX";
+    private string _trayExitLabel = "Exit";
+    private string _trayName = "ReticleX";
+    private string _trayOnSuffix = "overlay on";
+    private string _trayOffSuffix = "overlay off";
 
     public static string AppVersion { get; } =
         Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0";
@@ -45,6 +53,16 @@ public partial class MainWindow : Window
         _library = new CrosshairLibrary(_paths, _store);
         _thumbnails = new ThumbnailService(_paths, (message, error) => App.Log.Warn(message, error));
         _overlay = new OverlayController((message, error) => App.Log.Warn(message, error));
+        _tray = new TrayIcon(
+            onToggleOverlay: () => _overlay.Toggle(),
+            onOpen: RestoreAndFocus,
+            onExit: Close,
+            log: (message, error) => App.Log.Warn(message, error));
+        // The icon follows the overlay however it was switched: button, tray or
+        // shortcut all end up here.
+        _overlay.Changed += options => _tray.SetState(
+            options.Enabled, TrayTooltip(options.Enabled),
+            _trayToggleLabel, _trayOpenLabel, _trayExitLabel);
 
         // Set here rather than in XAML: the property is a System.Drawing colour
         // and the markup converter for it is not dependable.
@@ -54,7 +72,7 @@ public partial class MainWindow : Window
         Loaded += async (_, _) => await InitialiseWebViewAsync();
         // The overlay is a second top-level window; closing the main one has to
         // take it down too, or the process would stay alive with nothing shown.
-        Closed += (_, _) => _overlay.Dispose();
+        Closed += (_, _) => { _tray.Dispose(); _overlay.Dispose(); };
     }
 
     // --- Start-up -----------------------------------------------------------
@@ -233,6 +251,35 @@ public partial class MainWindow : Window
             ["fileName"] = Path.GetFileName(path),
             ["text"] = File.ReadAllText(path),
         });
+    }
+
+    private string TrayTooltip(bool overlayOn) =>
+        $"{_trayName} — {(overlayOn ? _trayOnSuffix : _trayOffSuffix)}";
+
+    /// <summary>Puts the tray icon up and gives it its first set of labels.</summary>
+    public void ConfigureTray(string? name, string? onSuffix, string? offSuffix,
+                              string? toggleLabel, string? openLabel, string? exitLabel)
+    {
+        if (!string.IsNullOrWhiteSpace(name)) _trayName = name;
+        if (!string.IsNullOrWhiteSpace(onSuffix)) _trayOnSuffix = onSuffix;
+        if (!string.IsNullOrWhiteSpace(offSuffix)) _trayOffSuffix = offSuffix;
+        if (!string.IsNullOrWhiteSpace(toggleLabel)) _trayToggleLabel = toggleLabel;
+        if (!string.IsNullOrWhiteSpace(openLabel)) _trayOpenLabel = openLabel;
+        if (!string.IsNullOrWhiteSpace(exitLabel)) _trayExitLabel = exitLabel;
+
+        _tray.Show();
+        _tray.SetState(_overlay.Options.Enabled, TrayTooltip(_overlay.Options.Enabled),
+                       _trayToggleLabel, _trayOpenLabel, _trayExitLabel);
+    }
+
+    /// <summary>Brings the window back from the tray or the task bar.</summary>
+    public void RestoreAndFocus()
+    {
+        if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+        Show();
+        Activate();
+        Topmost = true;
+        Topmost = false;
     }
 
     private void OnWebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)

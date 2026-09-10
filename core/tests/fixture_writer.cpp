@@ -87,6 +87,23 @@ int main(int argc, char **argv) {
     cases.push_back({ "translucent", make([](rx_config &c) {
         c.opacity = 0.45f; c.outline_opacity = 0.3f;
     }) });
+    cases.push_back({ "ring", make([](rx_config &c) {
+        c.ring_enabled = 1; c.ring_radius = 16.0f; c.ring_thickness = 2.5f;
+    }) });
+    cases.push_back({ "ring-tinted", make([](rx_config &c) {
+        c.ring_enabled = 1; c.ring_radius = 11.0f; c.ring_inherit_color = 0;
+        c.ring_color = rx_hex_to_rgb(0xFF3355u); c.ring_opacity = 0.6f;
+    }) });
+    cases.push_back({ "diagonal", make([](rx_config &c) {
+        c.x_enabled = 1; c.x_length = 7.0f; c.x_gap = 5.0f;
+    }) });
+    cases.push_back({ "diagonal-rotated", make([](rx_config &c) {
+        c.x_enabled = 1; c.x_length = 7.0f; c.rotation = 22.0f;
+    }) });
+    cases.push_back({ "ring-and-diagonal", make([](rx_config &c) {
+        c.ring_enabled = 1; c.ring_radius = 18.0f;
+        c.x_enabled = 1; c.x_length = 5.0f; c.dot_enabled = 1;
+    }) });
     cases.push_back({ "maxed", make([](rx_config &c) {
         c.scale = RX_MAX_SCALE; c.h_length = RX_MAX_LENGTH; c.v_length = RX_MAX_LENGTH;
         c.h_thickness = RX_MAX_THICKNESS; c.v_thickness = RX_MAX_THICKNESS;

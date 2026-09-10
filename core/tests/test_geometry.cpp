@@ -244,3 +244,211 @@ RX_TEST(geometry_never_overflows_the_shape_budget) {
     CHECK(g.count <= RX_MAX_SHAPES);
     CHECK(g.count == 26);   /* 12 arm segments + 1 dot, doubled by the outline */
 }
+
+/* --- Ring ---------------------------------------------------------------- */
+
+RX_TEST(geometry_ring_is_a_band_around_the_centre) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.ring_enabled = 1;
+    c.ring_radius = 20.0f;
+    c.ring_thickness = 4.0f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 1);
+
+    const rx_shape &s = g.shapes[0];
+    CHECK(s.kind == RX_SHAPE_RING);
+    CHECK(s.layer == RX_LAYER_RING);
+    CHECK(s.cx == 0.0f);
+    CHECK(s.cy == 0.0f);
+    /* The radius names the middle of the band, so the band straddles it. */
+    CHECK(rx_absf(s.hw - 22.0f) < 1e-4f);
+    CHECK(rx_absf(s.hh - 22.0f) < 1e-4f);
+    CHECK(rx_absf(s.radius - 18.0f) < 1e-4f);
+    CHECK(rx_absf(g.extent_w - 44.0f) < 1e-3f);
+}
+
+RX_TEST(geometry_ring_band_never_inverts) {
+    /* A band thicker than its radius would put the inner edge behind the
+       centre; it is clamped to a filled disc instead. */
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.ring_enabled = 1;
+    c.ring_radius = 1.0f;
+    c.ring_thickness = 20.0f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    for (int i = 0; i < g.count; ++i) {
+        if (g.shapes[i].kind != RX_SHAPE_RING) continue;
+        CHECK(g.shapes[i].radius >= 0.0f);
+        CHECK(g.shapes[i].radius <= g.shapes[i].hw);
+    }
+}
+
+RX_TEST(geometry_ring_scales_and_takes_its_own_colour) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.ring_enabled = 1;
+    c.ring_radius = 10.0f;
+    c.ring_thickness = 2.0f;
+    c.scale = 3.0f;
+    c.ring_inherit_color = 0;
+    c.ring_color = rx_hex_to_rgb(0xFF0000u);
+    c.ring_opacity = 0.5f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 1);
+    CHECK(rx_absf(g.shapes[0].hw - 33.0f) < 1e-4f);   /* (10 + 1) * 3 */
+    CHECK(rx_absf(g.shapes[0].radius - 27.0f) < 1e-4f);
+    CHECK(g.shapes[0].r == 1.0f);
+    CHECK(g.shapes[0].g == 0.0f);
+    CHECK(rx_absf(g.shapes[0].a - 0.5f) < 1e-6f);
+}
+
+RX_TEST(geometry_ring_inherits_the_line_colour_when_asked) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.ring_enabled = 1;
+    c.color = rx_hex_to_rgb(0x3366FFu);
+    c.ring_inherit_color = 1;
+    c.ring_color = rx_hex_to_rgb(0xFF0000u);   /* must be ignored */
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 1);
+    CHECK(g.shapes[0].r == c.color.r);
+    CHECK(g.shapes[0].g == c.color.g);
+    CHECK(g.shapes[0].b == c.color.b);
+}
+
+RX_TEST(geometry_ring_outline_grows_both_edges) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.ring_enabled = 1;
+    c.ring_radius = 20.0f;
+    c.ring_thickness = 4.0f;
+    c.outline_enabled = 1;
+    c.outline_thickness = 2.0f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 2);
+
+    /* The outline is emitted first and must straddle the band on both sides,
+       so its inner edge moves towards the centre rather than away from it. */
+    const rx_shape &outline = g.shapes[0];
+    const rx_shape &fill = g.shapes[1];
+    CHECK(outline.layer == RX_LAYER_OUTLINE);
+    CHECK(rx_absf(outline.hw - (fill.hw + 2.0f)) < 1e-4f);
+    CHECK(rx_absf(outline.radius - (fill.radius - 2.0f)) < 1e-4f);
+}
+
+/* --- Diagonal arms -------------------------------------------------------- */
+
+RX_TEST(geometry_diagonals_add_four_arms_at_45_degrees) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.x_enabled = 1;
+    c.x_length = 10.0f;
+    c.x_gap = 4.0f;
+    c.x_thickness = 2.0f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 4);
+
+    for (int i = 0; i < g.count; ++i) {
+        const rx_shape &s = g.shapes[i];
+        /* Every centre sits on a diagonal, so |cx| == |cy|. */
+        CHECK(rx_absf(rx_absf(s.cx) - rx_absf(s.cy)) < 1e-3f);
+        /* Distance from the centre is gap + half the arm. */
+        const float d = rx_sqrtf(s.cx * s.cx + s.cy * s.cy);
+        CHECK(rx_absf(d - 9.0f) < 1e-3f);
+        CHECK(rx_absf(s.hw - 5.0f) < 1e-4f);
+        CHECK(rx_absf(s.hh - 1.0f) < 1e-4f);
+        CHECK(s.layer == RX_LAYER_LINES);
+    }
+
+    /* All four quadrants are covered exactly once. */
+    int quadrants = 0;
+    for (int i = 0; i < g.count; ++i) {
+        const int qx = g.shapes[i].cx > 0.0f ? 1 : 0;
+        const int qy = g.shapes[i].cy > 0.0f ? 1 : 0;
+        quadrants |= 1 << (qy * 2 + qx);
+    }
+    CHECK(quadrants == 0xF);
+}
+
+RX_TEST(geometry_diagonals_are_independent_of_the_main_arms) {
+    /* The whole point of a separate pair: a reticle can carry both and read as
+       an eight-point star. */
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.x_enabled = 1;
+    c.x_length = 5.0f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 8);
+}
+
+RX_TEST(geometry_diagonals_compose_with_the_global_rotation) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.outline_enabled = 0;
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.x_enabled = 1;
+    c.x_length = 10.0f;
+    c.rotation = 45.0f;
+
+    rx_geometry g;
+    CHECK(rx_build_geometry(&c, &g) == RX_OK);
+    CHECK(g.count == 4);
+
+    /* Rotating the diagonals by 45 degrees lands them back on the axes. */
+    for (int i = 0; i < g.count; ++i) {
+        const rx_shape &s = g.shapes[i];
+        const bool onAxis = rx_absf(s.cx) < 1e-3f || rx_absf(s.cy) < 1e-3f;
+        CHECK(onAxis);
+    }
+}
+
+RX_TEST(geometry_diagonals_alone_are_a_valid_reticle) {
+    rx_config c;
+    rx_config_defaults(&c);
+    c.h_enabled = 0;
+    c.v_enabled = 0;
+    c.dot_enabled = 0;
+    c.x_enabled = 1;
+    CHECK(rx_config_validate(&c) == RX_OK);
+
+    /* And a ring alone is too. */
+    c.x_enabled = 0;
+    c.ring_enabled = 1;
+    CHECK(rx_config_validate(&c) == RX_OK);
+
+    /* With everything off it is still an empty reticle, not a broken one. */
+    c.ring_enabled = 0;
+    CHECK(rx_config_validate(&c) == RX_ERR_EMPTY);
+}

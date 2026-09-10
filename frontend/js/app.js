@@ -304,6 +304,7 @@ class App {
       undo: () => this.undo(),
       redo: () => this.redo(),
       shortcuts: () => this.showShortcuts(),
+      overlay: () => this.requestOverlayToggle(),
     };
     const handler = handlers[action];
     if (!handler) return;
@@ -672,6 +673,8 @@ class App {
       });
     });
 
+    await this.#configureTray();
+
     try {
       const state = await this.bridge.call('overlaySet', {
         enabled: this.settings.overlayEnabled,
@@ -712,6 +715,7 @@ class App {
       });
     }
     this.store.set({ overlayRevision: Date.now() });
+    this.#refreshOverlayButton();
     return this.overlay;
   }
 
@@ -743,6 +747,52 @@ class App {
   /** Flips the overlay from the interface, the same as the global hotkey does. */
   toggleOverlay() {
     return this.setOverlay({ enabled: !this.overlay.enabled });
+  }
+
+  /**
+   * What the Overlay button does. Separated from toggleOverlay so the button
+   * can say why nothing happened rather than appearing to be broken.
+   */
+  async requestOverlayToggle() {
+    if (!this.overlay.supported) {
+      this.toasts.show({ messageKey: 'overlay.unsupported', type: 'info', duration: 4600 });
+      return this.overlay;
+    }
+    const state = await this.toggleOverlay();
+    this.#refreshOverlayButton();
+    return state;
+  }
+
+  /**
+   * Hands the notification-area icon its labels. Called again on a language
+   * change, so the tray menu never lags behind the rest of the interface.
+   */
+  async #configureTray() {
+    if (!this.hasHost) return;
+    try {
+      await this.bridge.call('configureTray', {
+        name: 'ReticleX',
+        onSuffix: this.i18n.t('tray.overlayOn'),
+        offSuffix: this.i18n.t('tray.overlayOff'),
+        toggle: this.i18n.t('tray.toggle'),
+        open: this.i18n.t('tray.open'),
+        exit: this.i18n.t('tray.exit'),
+      });
+    } catch (error) {
+      console.error('[app] tray labels not applied', error);
+    }
+  }
+
+  /** Keeps the topbar button showing the overlay's real state. */
+  #refreshOverlayButton() {
+    const button = document.getElementById('overlay-button');
+    if (!button) return;
+    const { enabled, supported } = this.overlay;
+    button.classList.toggle('is-active', enabled);
+    button.classList.toggle('is-unavailable', !supported);
+    button.setAttribute('aria-pressed', String(enabled));
+    const state = document.getElementById('overlay-button-state');
+    if (state) state.textContent = supported ? (enabled ? 'ON' : 'OFF') : '';
   }
 
   /**
@@ -787,6 +837,8 @@ class App {
     this.saveSettings({ locale: resolved, localeChosen: true });
     applyLocale(resolved);
     applyTranslations(document.body, this.i18n);
+    this.#configureTray();
+    this.#refreshOverlayButton();
     document.getElementById('page-title').textContent = this.i18n.t(`nav.${this.router.current}`);
     this.router.refresh({ locale: resolved });
     this.#refreshDocumentLine();

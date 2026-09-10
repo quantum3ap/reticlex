@@ -7,14 +7,14 @@
 RX_TEST(config_abi_layout_is_stable) {
     /* The C# and JavaScript field tables are generated against these numbers.
        If one changes without the others, marshalling silently corrupts. */
-    CHECK(rx_config_size() == 152);
-    CHECK(rx_config_fields() == 38);
+    CHECK(rx_config_size() == 200);
+    CHECK(rx_config_fields() == 50);
     CHECK(rx_config_size() == rx_config_fields() * 4);
     CHECK(rx_shape_size() == 48);
-    CHECK(rx_max_shapes() == 32);
-    CHECK(rx_geometry_size() == 16 + 32 * 48);
+    CHECK(rx_max_shapes() == 64);
+    CHECK(rx_geometry_size() == 16 + 64 * 48);
     CHECK(rx_abi_version() == 1);
-    CHECK(rx_config_schema() == 1);
+    CHECK(rx_config_schema() == 2);
 }
 
 RX_TEST(config_defaults_are_valid_and_visible) {

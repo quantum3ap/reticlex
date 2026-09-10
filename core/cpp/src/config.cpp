@@ -98,7 +98,19 @@ const FieldInfo kFields[RX_CONFIG_FIELDS] = {
     { "dot_color_b",       RX_FIELD_FLOAT },
     { "dynamic_enabled",   RX_FIELD_INT   },
     { "dynamic_spread",    RX_FIELD_FLOAT },
-    { "dynamic_gap_boost", RX_FIELD_FLOAT }
+    { "dynamic_gap_boost", RX_FIELD_FLOAT },
+    { "ring_enabled",       RX_FIELD_INT   },
+    { "ring_radius",        RX_FIELD_FLOAT },
+    { "ring_thickness",     RX_FIELD_FLOAT },
+    { "ring_opacity",       RX_FIELD_FLOAT },
+    { "ring_inherit_color", RX_FIELD_INT   },
+    { "ring_color_r",       RX_FIELD_FLOAT },
+    { "ring_color_g",       RX_FIELD_FLOAT },
+    { "ring_color_b",       RX_FIELD_FLOAT },
+    { "x_enabled",          RX_FIELD_INT   },
+    { "x_length",           RX_FIELD_FLOAT },
+    { "x_thickness",        RX_FIELD_FLOAT },
+    { "x_gap",              RX_FIELD_FLOAT }
 };
 
 } // namespace
@@ -164,6 +176,20 @@ void rx_config_defaults(rx_config *out) {
     c.dynamic_spread    = 0.0f;
     c.dynamic_gap_boost = 8.0f;
 
+    /* Off by default: a schema 1 file has no opinion about either of these,
+       and both must read back as "not part of this reticle". */
+    c.ring_enabled       = 0;
+    c.ring_radius        = 14.0f;
+    c.ring_thickness     = 2.0f;
+    c.ring_opacity       = 1.0f;
+    c.ring_inherit_color = 1;
+    c.ring_color         = rx_hex_to_rgb(0x00FF88u);
+
+    c.x_enabled   = 0;
+    c.x_length    = 6.0f;
+    c.x_thickness = 2.0f;
+    c.x_gap       = 4.0f;
+
     *out = c;
 }
 
@@ -220,9 +246,23 @@ int32_t rx_config_normalize(rx_config *cfg) {
     cfg->dynamic_spread    = clean(cfg->dynamic_spread, 0.0f, 1.0f, &adjusted);
     cfg->dynamic_gap_boost = clean(cfg->dynamic_gap_boost, 0.0f, RX_MAX_GAP_BOOST, &adjusted);
 
-    /* The dot inherits the line colour, so keep the stored value in step and
-       avoid two configurations that render identically hashing differently. */
+    cfg->ring_enabled       = clean_flag(cfg->ring_enabled, &adjusted);
+    cfg->ring_radius        = clean(cfg->ring_radius, 0.0f, RX_MAX_RING, &adjusted);
+    cfg->ring_thickness     = clean(cfg->ring_thickness, RX_MIN_THICKNESS, RX_MAX_THICKNESS, &adjusted);
+    cfg->ring_opacity       = clean(cfg->ring_opacity, 0.0f, 1.0f, &adjusted);
+    cfg->ring_inherit_color = clean_flag(cfg->ring_inherit_color, &adjusted);
+    cfg->ring_color         = clean_color(cfg->ring_color, &adjusted);
+
+    cfg->x_enabled   = clean_flag(cfg->x_enabled, &adjusted);
+    cfg->x_length    = clean(cfg->x_length, 0.0f, RX_MAX_LENGTH, &adjusted);
+    cfg->x_thickness = clean(cfg->x_thickness, RX_MIN_THICKNESS, RX_MAX_THICKNESS, &adjusted);
+    cfg->x_gap       = clean(cfg->x_gap, 0.0f, RX_MAX_GAP, &adjusted);
+
+    /* The dot and the ring inherit the line colour, so keep the stored values
+       in step and avoid two configurations that render identically hashing
+       differently. */
     if (cfg->dot_inherit_color) cfg->dot_color = cfg->color;
+    if (cfg->ring_inherit_color) cfg->ring_color = cfg->color;
 
     return adjusted;
 }
@@ -242,7 +282,10 @@ int32_t rx_config_validate(const rx_config *cfg) {
         cfg->outline_color.r, cfg->outline_color.g, cfg->outline_color.b,
         cfg->dot_size, cfg->dot_opacity,
         cfg->dot_color.r, cfg->dot_color.g, cfg->dot_color.b,
-        cfg->dynamic_spread, cfg->dynamic_gap_boost
+        cfg->dynamic_spread, cfg->dynamic_gap_boost,
+        cfg->ring_radius, cfg->ring_thickness, cfg->ring_opacity,
+        cfg->ring_color.r, cfg->ring_color.g, cfg->ring_color.b,
+        cfg->x_length, cfg->x_thickness, cfg->x_gap
     };
     for (float v : checked) {
         if (!rx_is_finite(v)) return RX_ERR_NOT_FINITE;
@@ -262,6 +305,12 @@ int32_t rx_config_validate(const rx_config *cfg) {
     if (cfg->dynamic_gap_boost < 0.0f || cfg->dynamic_gap_boost > RX_MAX_GAP_BOOST) return RX_ERR_RANGE;
     if (cfg->cap_style < 0 || cfg->cap_style > RX_CAP_TAPERED) return RX_ERR_RANGE;
     if (cfg->dot_shape < 0 || cfg->dot_shape > RX_DOT_ROUND) return RX_ERR_RANGE;
+    if (cfg->ring_radius < 0.0f || cfg->ring_radius > RX_MAX_RING) return RX_ERR_RANGE;
+    if (cfg->ring_thickness < RX_MIN_THICKNESS || cfg->ring_thickness > RX_MAX_THICKNESS) return RX_ERR_RANGE;
+    if (cfg->ring_opacity < 0.0f || cfg->ring_opacity > 1.0f) return RX_ERR_RANGE;
+    if (cfg->x_length < 0.0f || cfg->x_length > RX_MAX_LENGTH) return RX_ERR_RANGE;
+    if (cfg->x_thickness < RX_MIN_THICKNESS || cfg->x_thickness > RX_MAX_THICKNESS) return RX_ERR_RANGE;
+    if (cfg->x_gap < 0.0f || cfg->x_gap > RX_MAX_GAP) return RX_ERR_RANGE;
 
     /* A crosshair that draws nothing is valid data but useless to a player, so
        it is reported separately from a malformed file. */

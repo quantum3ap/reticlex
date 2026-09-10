@@ -17,7 +17,10 @@ extern "C" {
 
 enum rx_shape_kind {
     RX_SHAPE_RECT    = 0,
-    RX_SHAPE_ELLIPSE = 1
+    RX_SHAPE_ELLIPSE = 1,
+    /* A circular band. hw and hh carry the outer radius and `radius` carries
+       the inner one, so no field had to be added to rx_shape for it. */
+    RX_SHAPE_RING    = 2
 };
 
 /* Paint groups. Every shape in a group shares one colour and one alpha, so a
@@ -27,7 +30,8 @@ enum rx_shape_layer {
     RX_LAYER_OUTLINE = 0,
     RX_LAYER_LINES   = 1,
     RX_LAYER_DOT     = 2,
-    RX_LAYER_COUNT   = 3
+    RX_LAYER_RING    = 3,
+    RX_LAYER_COUNT   = 4
 };
 
 /* An oriented, optionally rounded box or ellipse in crosshair-local pixels,
@@ -36,13 +40,15 @@ typedef struct rx_shape {
     float   cx, cy;      /* centre */
     float   hw, hh;      /* half extents */
     float   angle;       /* radians, already includes the global rotation */
-    float   radius;      /* corner radius; ignored for ellipses */
+    float   radius;      /* corner radius; inner radius for rings; unused for ellipses */
     float   r, g, b, a;  /* straight (non-premultiplied) colour */
     int32_t kind;        /* rx_shape_kind */
     int32_t layer;       /* rx_shape_layer: the paint group this shape belongs to */
 } rx_shape;
 
-#define RX_MAX_SHAPES 32
+/* Worst case is 2 horizontal + 2 vertical + 4 diagonal arms, each up to three
+   segments when tapered, plus a ring and a dot, doubled for the outline pass. */
+#define RX_MAX_SHAPES 64
 
 typedef struct rx_geometry {
     int32_t  count;

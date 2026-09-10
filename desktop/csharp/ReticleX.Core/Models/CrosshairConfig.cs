@@ -68,8 +68,24 @@ public struct CrosshairConfig
     public float DynamicSpread;
     public float DynamicGapBoost;
 
+    // Schema 2. Appended, never reordered, so a library written by schema 1
+    // still marshals correctly and reads these back at their defaults.
+    public int RingEnabled;
+    public float RingRadius;
+    public float RingThickness;
+    public float RingOpacity;
+    public int RingInheritColor;
+    public float RingColorR;
+    public float RingColorG;
+    public float RingColorB;
+
+    public int XEnabled;
+    public float XLength;
+    public float XThickness;
+    public float XGap;
+
     /// <summary>Number of four-byte members; mirrors <c>RX_CONFIG_FIELDS</c>.</summary>
-    public const int FieldCount = 38;
+    public const int FieldCount = 50;
 
     /// <summary>
     /// The ABI field names, in memory order. These are also the property names
@@ -89,6 +105,9 @@ public struct CrosshairConfig
         "dot_enabled", "dot_size", "dot_opacity", "dot_inherit_color", "dot_shape",
         "dot_color_r", "dot_color_g", "dot_color_b",
         "dynamic_enabled", "dynamic_spread", "dynamic_gap_boost",
+        "ring_enabled", "ring_radius", "ring_thickness", "ring_opacity",
+        "ring_inherit_color", "ring_color_r", "ring_color_g", "ring_color_b",
+        "x_enabled", "x_length", "x_thickness", "x_gap",
     ];
 
     /// <summary>True where the field at that index is an <c>int</c>.</summary>
@@ -105,6 +124,9 @@ public struct CrosshairConfig
         true, false, false, true, true,
         false, false, false,
         true, false, false,
+        true, false, false, false,
+        true, false, false, false,
+        true, false, false, false,
     ];
 
     /// <summary>Reads a field by ABI index, as a double for uniform handling.</summary>
@@ -123,6 +145,9 @@ public struct CrosshairConfig
         30 => DotInheritColor, 31 => DotShape,
         32 => DotColorR, 33 => DotColorG, 34 => DotColorB,
         35 => DynamicEnabled, 36 => DynamicSpread, 37 => DynamicGapBoost,
+        38 => RingEnabled, 39 => RingRadius, 40 => RingThickness, 41 => RingOpacity,
+        42 => RingInheritColor, 43 => RingColorR, 44 => RingColorG, 45 => RingColorB,
+        46 => XEnabled, 47 => XLength, 48 => XThickness, 49 => XGap,
         _ => throw new ArgumentOutOfRangeException(nameof(index)),
     };
 
@@ -175,6 +200,18 @@ public struct CrosshairConfig
             case 35: DynamicEnabled = asInt; break;
             case 36: DynamicSpread = asFloat; break;
             case 37: DynamicGapBoost = asFloat; break;
+            case 38: RingEnabled = asInt; break;
+            case 39: RingRadius = asFloat; break;
+            case 40: RingThickness = asFloat; break;
+            case 41: RingOpacity = asFloat; break;
+            case 42: RingInheritColor = asInt; break;
+            case 43: RingColorR = asFloat; break;
+            case 44: RingColorG = asFloat; break;
+            case 45: RingColorB = asFloat; break;
+            case 46: XEnabled = asInt; break;
+            case 47: XLength = asFloat; break;
+            case 48: XThickness = asFloat; break;
+            case 49: XGap = asFloat; break;
             default: throw new ArgumentOutOfRangeException(nameof(index));
         }
     }
@@ -185,7 +222,7 @@ public struct CrosshairConfig
     /// </summary>
     public static CrosshairConfig CreateDefault() => new()
     {
-        SchemaVersion = 1,
+        SchemaVersion = 2,
         Scale = 1f,
         Rotation = 0f,
         Opacity = 1f,
@@ -200,6 +237,10 @@ public struct CrosshairConfig
         DotInheritColor = 1, DotShape = 0,
         DotColorR = 0f, DotColorG = 1f, DotColorB = 136f / 255f,
         DynamicEnabled = 0, DynamicSpread = 0f, DynamicGapBoost = 8f,
+        RingEnabled = 0, RingRadius = 14f, RingThickness = 2f, RingOpacity = 1f,
+        RingInheritColor = 1,
+        RingColorR = 0f, RingColorG = 1f, RingColorB = 136f / 255f,
+        XEnabled = 0, XLength = 6f, XThickness = 2f, XGap = 4f,
     };
 }
 
