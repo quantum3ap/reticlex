@@ -79,6 +79,8 @@ export function defaultSettings() {
     overlayOffsetX: 0,
     overlayOffsetY: 0,
     overlayHotkey: DEFAULT_OVERLAY_HOTKEY,
+    introEnabled: true,
+    introSound: true,
   };
 }
 
@@ -155,6 +157,11 @@ export function normalizeSettings(raw) {
   settings.overlayOffsetY = clampOffset(raw.overlayOffsetY);
   settings.overlayHotkey = OVERLAY_HOTKEYS.includes(raw.overlayHotkey)
     ? raw.overlayHotkey : defaults.overlayHotkey;
+
+  // Both default to on, so only an explicit false switches them off. A file
+  // written before the sequence existed therefore gets it.
+  settings.introEnabled = raw.introEnabled !== false;
+  settings.introSound = raw.introSound !== false;
 
   if (raw.version !== SETTINGS_VERSION) repaired = true;
   settings.version = SETTINGS_VERSION;

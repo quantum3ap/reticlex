@@ -114,6 +114,11 @@ public partial class MainWindow : Window
                 options: new CoreWebView2EnvironmentOptions
                 {
                     Language = App.Strings.Locale,
+                    // The start-up sequence has a short sound, and a browser
+                    // would otherwise hold it back waiting for a click the user
+                    // has no reason to make. This is our own page playing our
+                    // own audio, and the interface has a switch to turn it off.
+                    AdditionalBrowserArguments = "--autoplay-policy=no-user-gesture-required",
                 });
 
             await WebView.EnsureCoreWebView2Async(environment);
