@@ -132,3 +132,49 @@ test('the scene carries the mark, the wordmark and the tagline', async () => {
   doc.fire('keydown');
   await pending;
 });
+
+/**
+ * The two guarantees start-up depends on. A view the host has not composited
+ * yet runs no animation frames, and the sequence used to wait on one before
+ * doing anything else — which left the interface hidden behind it for good.
+ */
+
+const withFrames = async (requestFrame, run) => {
+  const media = globalThis.matchMedia;
+  const raf = globalThis.requestAnimationFrame;
+  globalThis.matchMedia = () => ({ matches: false });
+  globalThis.requestAnimationFrame = requestFrame;
+  try {
+    return await run();
+  } finally {
+    globalThis.matchMedia = media;
+    globalThis.requestAnimationFrame = raf;
+  }
+};
+
+test('the sequence finishes even when no animation frame ever arrives', async () => {
+  const doc = fakeDocument();
+  const result = await withFrames(() => 0, () => playIntro({
+    enabled: true, sound: false, tagline: 'x', document: doc,
+  }));
+
+  assert.equal(result.played, true);
+  assert.equal(doc.body.children.length, 0, 'the overlay cleans itself up regardless');
+  assert.equal(doc.listenerCount(), 0);
+});
+
+test('the overlay is attached before the first await, so the interface can be revealed under it', async () => {
+  const doc = fakeDocument();
+  await withFrames((cb) => setTimeout(() => cb(0), 0), async () => {
+    const running = playIntro({ enabled: true, sound: false, tagline: 'x', document: doc });
+
+    // Nothing has been awaited yet. The cover has to be in place already, or
+    // revealing the application underneath it would flash it on screen first.
+    assert.equal(doc.body.children.length, 1);
+    assert.equal(doc.body.children[0].className, 'intro');
+
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+    doc.fire('keydown');
+    assert.equal((await running).skipped, true);
+  });
+});

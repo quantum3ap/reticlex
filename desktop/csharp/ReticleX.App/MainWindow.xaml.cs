@@ -108,18 +108,25 @@ public partial class MainWindow : Window
 
             // Keep the browser profile inside our own data directory rather than
             // scattering it through the user's profile.
-            var environment = await CoreWebView2Environment.CreateAsync(
-                browserExecutableFolder: null,
-                userDataFolder: Path.Combine(_paths.Root, "webview"),
-                options: new CoreWebView2EnvironmentOptions
-                {
-                    Language = App.Strings.Locale,
-                    // The start-up sequence has a short sound, and a browser
-                    // would otherwise hold it back waiting for a click the user
-                    // has no reason to make. This is our own page playing our
-                    // own audio, and the interface has a switch to turn it off.
-                    AdditionalBrowserArguments = "--autoplay-policy=no-user-gesture-required",
-                });
+            var profile = Path.Combine(_paths.Root, "webview");
+
+            // The autoplay argument buys one thing: the start-up sound plays
+            // without a click the user has no reason to make. It is not worth
+            // the application over, and a profile already open under a
+            // different command line will refuse it, so a refusal falls back
+            // to a plain environment and a silent sequence.
+            CoreWebView2Environment environment;
+            try
+            {
+                environment = await CreateEnvironmentAsync(profile, AutoplayArgument);
+            }
+            catch (Exception error) when (error is not WebView2RuntimeNotFoundException)
+            {
+                App.Log.Warn(
+                    $"WebView2 would not take the start-up audio argument, so the sequence "
+                    + $"will be silent: {error.Message}");
+                environment = await CreateEnvironmentAsync(profile, null);
+            }
 
             await WebView.EnsureCoreWebView2Async(environment);
             ConfigureWebView();
@@ -153,6 +160,23 @@ public partial class MainWindow : Window
         {
             _initialising = false;
         }
+    }
+
+    private const string AutoplayArgument = "--autoplay-policy=no-user-gesture-required";
+
+    private static Task<CoreWebView2Environment> CreateEnvironmentAsync(
+        string userDataFolder, string? browserArguments)
+    {
+        var options = new CoreWebView2EnvironmentOptions { Language = App.Strings.Locale };
+        if (browserArguments is not null)
+        {
+            options.AdditionalBrowserArguments = browserArguments;
+        }
+
+        return CoreWebView2Environment.CreateAsync(
+            browserExecutableFolder: null,
+            userDataFolder: userDataFolder,
+            options: options);
     }
 
     private void ConfigureWebView()
