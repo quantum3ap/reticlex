@@ -27,6 +27,35 @@ const CUES = [
   { at: 1180, play: impact },
 ];
 
+/** How long to wait on an audio context that may never agree to start. */
+const RESUME_TIMEOUT_MS = 400;
+
+/**
+ * Resolves on the next animation frame, or shortly after if there is not going
+ * to be one. A document that is hidden or in a view the host has not composited
+ * yet never runs an animation frame, and start-up must not hang on that.
+ */
+function nextFrame() {
+  return new Promise((resolve) => {
+    let settled = false;
+    const go = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    setTimeout(go, 50);
+    globalThis.requestAnimationFrame?.(go);
+  });
+}
+
+/** Settles with the promise, or rejects once the wait is up. */
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => { setTimeout(() => reject(new Error('timed out')), ms); }),
+  ]);
+}
+
 class Audio {
   #context = null;
   #master = null;
@@ -60,7 +89,10 @@ class Audio {
     const context = this.#ensure();
     if (!context) return false;
     if (context.state === 'suspended') {
-      try { await context.resume(); } catch { return false; }
+      // A browser that is refusing playback can leave this promise pending
+      // rather than rejecting it, so the wait is bounded and the real state
+      // of the context is what decides whether there is any sound.
+      try { await withTimeout(context.resume(), RESUME_TIMEOUT_MS); } catch { /* silent */ }
     }
     return context.state === 'running';
   }
@@ -230,7 +262,7 @@ export async function playIntro({ enabled, sound, tagline, document: doc = docum
   doc.body.append(host);
   // One frame before the class lands, so the keyframes always start from their
   // initial state rather than from wherever the layout happened to be.
-  await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+  await nextFrame();
   host.classList.add('is-running');
 
   const audio = new Audio();
@@ -250,6 +282,18 @@ export async function playIntro({ enabled, sound, tagline, document: doc = docum
 
   return new Promise((resolve) => {
     let done = false;
+    let torn = false;
+    let failsafe = 0;
+
+    /** Takes the overlay off the screen. Safe to call more than once. */
+    const teardown = (skipped) => {
+      if (torn) return;
+      torn = true;
+      clearTimeout(failsafe);
+      host.remove();
+      audio.close();
+      resolve({ played: true, skipped, heard });
+    };
 
     const finish = (skipped) => {
       if (done) return;
@@ -259,11 +303,7 @@ export async function playIntro({ enabled, sound, tagline, document: doc = docum
       doc.removeEventListener('pointerdown', onSkip, true);
 
       host.classList.add('is-leaving');
-      setTimeout(() => {
-        host.remove();
-        audio.close();
-        resolve({ played: true, skipped, heard });
-      }, FADE_MS);
+      setTimeout(() => teardown(skipped), FADE_MS);
     };
 
     const onSkip = () => finish(true);
@@ -272,5 +312,9 @@ export async function playIntro({ enabled, sound, tagline, document: doc = docum
     doc.addEventListener('pointerdown', onSkip, true);
 
     timers.push(setTimeout(() => finish(false), INTRO_DURATION_MS));
+
+    // The interface is already on screen behind this overlay, so the one thing
+    // that must not happen is the overlay outliving the sequence that owns it.
+    failsafe = setTimeout(() => teardown(false), INTRO_DURATION_MS + FADE_MS + 1500);
   });
 }

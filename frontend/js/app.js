@@ -123,14 +123,16 @@ class App {
     const startPage = this.router.has(this.settings.lastPage) ? this.settings.lastPage : 'home';
     this.router.navigate(startPage);
 
-    document.getElementById('boot').hidden = true;
-
-    // Between the loader and the interface: the sequence covers the screen, so
-    // the application is revealed already laid out rather than mid-assembly.
-    await this.#playIntro();
+    // The sequence attaches its overlay synchronously, so it covers the loader
+    // before the interface is revealed underneath it and then fades to expose
+    // it. The reveal deliberately does not wait on the sequence: a view that
+    // has not been composited yet runs no animation frames, and a sequence
+    // stalled on one must cost the animation and never the application.
+    this.#startIntro();
 
     document.getElementById('app').hidden = false;
     document.getElementById('app-version').textContent = `v${this.appVersion}`;
+    document.getElementById('boot').hidden = true;
 
     // After the interface is up: the overlay is the host's window, and a slow
     // or missing one must not hold back the first paint.
@@ -662,21 +664,30 @@ class App {
    * Runs the start-up sequence. Wrapped so a failure anywhere in it costs the
    * animation and nothing else — the application still has to open.
    */
-  async #playIntro() {
+  /**
+   * Starts the sequence and hands back a promise that always settles. The
+   * overlay is attached before this returns, so a caller can reveal the
+   * interface underneath it without waiting for the animation to finish.
+   */
+  #startIntro() {
     try {
-      await playIntro({
+      return playIntro({
         enabled: this.settings.introEnabled && this.settings.animations,
         sound: this.settings.introSound,
         tagline: this.i18n.t('app.tagline'),
+      }).catch((error) => {
+        console.error('[app] the intro did not play', error);
+        return { played: false, skipped: false, heard: false };
       });
     } catch (error) {
-      console.error('[app] the intro did not play', error);
+      console.error('[app] the intro did not start', error);
+      return Promise.resolve({ played: false, skipped: false, heard: false });
     }
   }
 
   /** Replays the sequence from Settings, so a change can be seen immediately. */
   previewIntro() {
-    return this.#playIntro();
+    return this.#startIntro();
   }
 
   // --- Overlay ------------------------------------------------------------
