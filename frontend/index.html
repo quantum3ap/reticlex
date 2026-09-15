@@ -137,6 +137,18 @@
 
   </div>
 
+  <!-- Shown only once a newer release has actually been published. -->
+  <div class="updatebar" id="updatebar" role="status" hidden>
+    <span class="updatebar__mark" data-icon="sparkle" aria-hidden="true"></span>
+    <p class="updatebar__text" id="updatebar-text"></p>
+    <div class="updatebar__actions">
+      <button type="button" class="btn btn--ghost btn--sm" data-update-action="skip"
+              data-i18n="update.later">Not now</button>
+      <button type="button" class="btn btn--primary btn--sm" data-update-action="open"
+              data-i18n="update.download">Download</button>
+    </div>
+  </div>
+
   <div class="toasts" id="toasts"></div>
 </div>
 

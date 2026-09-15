@@ -81,6 +81,8 @@ export function defaultSettings() {
     overlayHotkey: DEFAULT_OVERLAY_HOTKEY,
     introEnabled: true,
     introSound: true,
+    updateCheck: true,
+    updateSkipped: null,
   };
 }
 
@@ -162,6 +164,12 @@ export function normalizeSettings(raw) {
   // written before the sequence existed therefore gets it.
   settings.introEnabled = raw.introEnabled !== false;
   settings.introSound = raw.introSound !== false;
+
+  // On by default, so a file written before the check existed gets it. The
+  // dismissed version is remembered so the same notice is not shown twice;
+  // anything that is not a string means nothing has been dismissed.
+  settings.updateCheck = raw.updateCheck !== false;
+  settings.updateSkipped = typeof raw.updateSkipped === 'string' ? raw.updateSkipped : null;
 
   if (raw.version !== SETTINGS_VERSION) repaired = true;
   settings.version = SETTINGS_VERSION;

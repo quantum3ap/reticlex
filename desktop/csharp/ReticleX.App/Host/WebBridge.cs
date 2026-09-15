@@ -38,7 +38,9 @@ public sealed class WebBridge
     private readonly CrosshairLibrary _library;
     private readonly ThumbnailService _thumbnails;
     private readonly OverlayController _overlay;
+    private readonly UpdateCheck _updates = new();
     private readonly Dictionary<string, Func<JsonObject, JsonNode?>> _handlers;
+    private bool _updateAsked;
 
     public WebBridge(
         WebView2 webView,
@@ -82,6 +84,7 @@ public sealed class WebBridge
             ["overlaySet"] = OverlaySet,
             ["overlayConfig"] = OverlayConfig,
             ["configureTray"] = ConfigureTray,
+            ["checkUpdate"] = CheckUpdate,
         };
     }
 
@@ -386,6 +389,44 @@ public sealed class WebBridge
 
         Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
         return new JsonObject { ["ok"] = true };
+    }
+
+    /// <summary>
+    /// Starts the update check and answers immediately. The result arrives
+    /// later as an event, so a slow or unreachable network never holds up the
+    /// page that asked, and asking twice in one run does nothing.
+    /// </summary>
+    private JsonNode? CheckUpdate(JsonObject _)
+    {
+        if (_updateAsked) return new JsonObject { ["started"] = false };
+        _updateAsked = true;
+
+        // Deliberately not awaited: this handler answers the page now and the
+        // result is emitted whenever it arrives. (No discard here — the unused
+        // parameter is itself named _, and assigning to that is not a discard.)
+        Task.Run(async () =>
+        {
+            UpdateInfo? update;
+            try
+            {
+                update = await _updates.LatestAsync(MainWindow.AppVersion).ConfigureAwait(false);
+            }
+            catch (Exception error)
+            {
+                App.Log.Warn("The update check did not complete.", error);
+                return;
+            }
+
+            if (update is null) return;
+            App.Log.Info($"Version {update.Version} is available.");
+            await _webView.Dispatcher.InvokeAsync(() => Emit("update", new JsonObject
+            {
+                ["version"] = update.Version,
+                ["url"] = update.Url,
+            }));
+        });
+
+        return new JsonObject { ["started"] = true };
     }
 
     private JsonNode? OpenDataFolder(JsonObject _)

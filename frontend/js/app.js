@@ -44,6 +44,7 @@ const AUTOSAVE_DELAY = 1200;
 
 class App {
   #overlayPushQueued = false;
+  #update = null;
 
   constructor() {
     this.store = new Store({ page: 'home' });
@@ -110,6 +111,7 @@ class App {
     this.#wireShell();
     this.#wireSession();
     this.#wireShortcuts();
+    this.#wireUpdates();
 
     applyTranslations(document.body, this.i18n);
 
@@ -141,6 +143,10 @@ class App {
     if (!this.hasHost) {
       this.toasts.show({ messageKey: 'error.hostUnavailable', type: 'info', duration: 5200 });
     }
+
+    // Last, and never awaited: the answer arrives as an event whenever it
+    // arrives, and start-up has nothing to gain by waiting for the network.
+    this.#checkForUpdate();
   }
 
   async #bootstrapHost() {
@@ -933,6 +939,48 @@ class App {
       this.toasts.error('error.saveFailed', undefined, String(error.message ?? error));
       return false;
     }
+  }
+
+  // --- Updates ------------------------------------------------------------
+
+  #wireUpdates() {
+    const bar = document.getElementById('updatebar');
+    if (!bar) return;
+
+    bar.addEventListener('click', (event) => {
+      const action = event.target?.closest?.('[data-update-action]')?.dataset.updateAction;
+      if (!action) return;
+
+      if (action === 'open' && this.#update) this.openExternal(this.#update.url);
+
+      // Either way this notice is finished with. Remembering which version was
+      // dismissed is what stops the same release interrupting twice.
+      if (this.#update) this.saveSettings({ updateSkipped: this.#update.version });
+      this.#update = null;
+      bar.hidden = true;
+    });
+
+    this.bridge.on?.('update', (payload) => this.#showUpdate(payload));
+  }
+
+  /** Shows the notice, unless this exact version was already waved away. */
+  #showUpdate(payload) {
+    const version = typeof payload?.version === 'string' ? payload.version : '';
+    const url = typeof payload?.url === 'string' ? payload.url : '';
+    if (!version || !url) return;
+    if (this.settings.updateSkipped === version) return;
+
+    this.#update = { version, url };
+    const text = document.getElementById('updatebar-text');
+    if (text) text.textContent = this.i18n.t('update.available', { version });
+    const bar = document.getElementById('updatebar');
+    if (bar) bar.hidden = false;
+  }
+
+  #checkForUpdate() {
+    if (!this.settings.updateCheck || !this.hasHost) return;
+    // The host answers immediately and reports later, so nothing here waits.
+    this.bridge.call('checkUpdate', {}).catch(() => { /* older host, or refused */ });
   }
 
   openExternal(url) {

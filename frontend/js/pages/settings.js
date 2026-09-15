@@ -123,6 +123,16 @@ export function createSettingsPage(app) {
     onChange: (checked) => app.saveSettings({ autoSave: checked }, { notify: true }),
   });
 
+  const updateToggle = createToggle({
+    i18n,
+    labelKey: 'settings.updateCheck',
+    tipKey: 'settings.updateCheckTip',
+    checked: app.settings.updateCheck,
+    // Clearing the dismissed version too, so turning the check back on shows
+    // an update that was waved away rather than staying quiet about it.
+    onChange: (checked) => app.saveSettings({ updateCheck: checked, updateSkipped: null }),
+  });
+
   // --- Overlay -------------------------------------------------------------
 
   const overlayToggle = createToggle({
@@ -256,6 +266,7 @@ export function createSettingsPage(app) {
     settingsCard('settings.application', 'settings', [
       startupToggle.element,
       autoSaveToggle.element,
+      updateToggle.element,
       h('div', { class: 'settings__row' },
         h('button', {
           type: 'button', class: 'btn btn--ghost', 'data-tip': 'settings.resetSettingsTip',
@@ -353,6 +364,7 @@ export function createSettingsPage(app) {
       introSoundToggle.set(app.settings.introSound);
       introSoundToggle.element.classList.toggle('is-disabled', !app.settings.introEnabled);
       autoSaveToggle.set(app.settings.autoSave);
+      updateToggle.set(app.settings.updateCheck);
       startupToggle.set(app.settings.startWithWindows);
       scaleSlider.set(app.settings.uiScale);
       languageSelect.set(app.settings.locale);

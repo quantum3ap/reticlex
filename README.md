@@ -103,6 +103,21 @@ result carries a seed you can copy and reproduce exactly.
 - Ten languages including Arabic with a fully mirrored right-to-left layout
 - Themes, accent colours, interface scale, and an animation switch
 - Keyboard shortcuts throughout, listed in Settings and in a dialog
+- An update check that tells you when a newer release exists
+
+## What ReticleX sends
+
+Nothing about you, anywhere.
+
+Your crosshairs, settings and logs stay in `%APPDATA%\ReticleX` and are never
+uploaded. There is no telemetry, no analytics and no account.
+
+The one network request ReticleX makes is the update check: an unauthenticated
+`GET` to the GitHub releases API at start-up, carrying nothing but a user
+agent, to find out whether a newer version has been published. It exists
+because 1.3.0 shipped a bug that stopped the application opening, the fix was
+out days later, and nobody running it had any way to find out. Turn it off in
+**Settings → Application** and ReticleX touches the network never.
 
 ## Screenshots
 
