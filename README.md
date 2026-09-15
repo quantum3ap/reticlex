@@ -54,6 +54,10 @@ same frame.
 - Dark, light, high-contrast and a drawn FPS scene, or your own image
 - Optional pixel grid and a live read-out of size, shape count and the WCAG
   contrast ratio against the current background
+- Load a screenshot of the game you actually play and the read-out measures
+  the pixels the reticle covers, reporting the **worst** of them as well as the
+  typical one — the bright patch your crosshair vanishes on is the one that
+  matters, and an average hides it
 
 ### On-screen overlay
 
