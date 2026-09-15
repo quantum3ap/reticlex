@@ -52,16 +52,30 @@ export class Modals {
         resolve(value);
       };
 
+      // Actions that are still running, so a second click while one is away
+      // cannot fire it twice.
+      const pending = new Set();
+
       const buttons = actions.map((action) => h(
         'button',
         {
           type: 'button',
           class: ['btn', `btn--${action.variant ?? 'ghost'}`],
-          onClick: () => {
-            const result = action.onSelect ? action.onSelect() : action.value ?? null;
-            // An action may veto closing by returning the symbol below.
-            if (result === Modals.KEEP_OPEN) return;
-            finish(result);
+          onClick: async () => {
+            // Awaited, because an action may need to go away and check
+            // something before it knows whether it is finished — validating a
+            // pasted share code has to go through the core. An unawaited
+            // promise is never the symbol below, so it would always close.
+            if (pending.has(action)) return;
+            pending.add(action);
+            try {
+              const result = action.onSelect ? await action.onSelect() : action.value ?? null;
+              // An action may veto closing by returning the symbol below.
+              if (result === Modals.KEEP_OPEN) return;
+              finish(result);
+            } finally {
+              pending.delete(action);
+            }
           },
         },
         action.icon ? icon(action.icon, { size: 16 }) : null,

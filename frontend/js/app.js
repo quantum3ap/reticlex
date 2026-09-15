@@ -21,6 +21,9 @@ import {
 import {
   documentToJson, parseImport, toPresetPack, createDocument,
 } from './core/schema.js';
+import {
+  ShareCodeError, decodeShareCode, encodeShareCode,
+} from './core/sharecode.js';
 import { debounce, toFileStem } from './core/util.js';
 import { toPngDataUrl } from './render/renderer.js';
 
@@ -319,6 +322,7 @@ class App {
       redo: () => this.redo(),
       shortcuts: () => this.showShortcuts(),
       overlay: () => this.requestOverlayToggle(),
+      share: () => this.shareCrosshair(),
     };
     const handler = handlers[action];
     if (!handler) return;
@@ -595,6 +599,100 @@ class App {
       this.router.navigate(presets.length > crosshairs.length ? 'presets' : 'home');
     }
     return documents;
+  }
+
+  /**
+   * Both directions of sharing in one dialog: the crosshair on screen as a
+   * code to hand out, and a box to paste one you were sent. They belong
+   * together because that is how they get used — you paste someone's code,
+   * then send yours back.
+   */
+  async shareCrosshair() {
+    const code = await encodeShareCode(this.core, this.session.config);
+
+    const codeInput = h('input', {
+      class: 'field__input field__input--code',
+      type: 'text',
+      readonly: 'readonly',
+      spellcheck: 'false',
+      value: code,
+    });
+    const pasteInput = h('input', {
+      class: 'field__input field__input--code',
+      type: 'text',
+      placeholder: 'RX1-…',
+      autocomplete: 'off',
+      spellcheck: 'false',
+    });
+    const message = h('p', { class: 'field__error' }, '');
+
+    const copy = async () => {
+      try {
+        await navigator.clipboard.writeText(code);
+        this.toasts.success('share.copied');
+      } catch {
+        // No clipboard permission: select it so it can be copied by hand.
+        codeInput.focus();
+        codeInput.select();
+      }
+      return Modals.KEEP_OPEN;
+    };
+
+    const body = h('div', { class: 'stack' },
+      h('label', { class: 'field' },
+        h('span', { class: 'field__label' }, this.i18n.t('share.yours')),
+        codeInput),
+      h('p', { class: 'field__hint' }, this.i18n.t('share.yoursHint')),
+      h('label', { class: 'field' },
+        h('span', { class: 'field__label' }, this.i18n.t('share.paste')),
+        pasteInput),
+      message);
+
+    const apply = async () => {
+      message.textContent = '';
+      try {
+        const config = await decodeShareCode(this.core, pasteInput.value);
+        return { config };
+      } catch (error) {
+        const key = error instanceof ShareCodeError ? error.reasonKey : 'share.errorInvalid';
+        message.textContent = this.i18n.t(key);
+        pasteInput.classList.add('field__input--invalid');
+        pasteInput.focus();
+        return Modals.KEEP_OPEN;
+      }
+    };
+
+    const result = await this.modals.open({
+      title: this.i18n.t('share.title'),
+      body,
+      actions: [
+        { label: this.i18n.t('common.close'), value: null, variant: 'ghost' },
+        { label: this.i18n.t('common.copy'), variant: 'ghost', icon: 'copy', onSelect: copy },
+        { label: this.i18n.t('share.apply'), variant: 'primary', onSelect: apply },
+      ],
+      onMount: () => {
+        pasteInput.addEventListener('input', () => {
+          pasteInput.classList.remove('field__input--invalid');
+          message.textContent = '';
+        });
+        requestAnimationFrame(() => {
+          codeInput.focus();
+          codeInput.select();
+        });
+      },
+    });
+
+    if (!result?.config) return;
+
+    // Loaded, not saved: the Designer is the preview, and it is one undo away
+    // from wherever they were.
+    this.session.load(createDocument({
+      name: this.i18n.t('share.importedName'),
+      config: result.config,
+    }));
+    this.saveSettings({ lastDocumentId: null });
+    this.router.navigate('designer');
+    this.toasts.success('share.applied');
   }
 
   async exportCurrent() {

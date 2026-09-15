@@ -100,6 +100,7 @@ result carries a seed you can copy and reproduce exactly.
 
 - Full undo and redo, with a slider drag collapsing into one step
 - Import and export as JSON, with clear errors for anything malformed
+- Share codes: one crosshair as a short `RX1-…` string to paste into a chat
 - Ten languages including Arabic with a fully mirrored right-to-left layout
 - Themes, accent colours, interface scale, and an animation switch
 - Keyboard shortcuts throughout, listed in Settings and in a dialog
