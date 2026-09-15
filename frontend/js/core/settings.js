@@ -49,6 +49,9 @@ export const OVERLAY_HOTKEYS = Object.freeze([
   'Alt+F10',
 ]);
 
+/** How many crosshairs the overlay can be told to cycle between. */
+export const OVERLAY_SLOTS = 4;
+
 /** A custom preview background larger than this is dropped rather than saved. */
 const MAX_BACKGROUND_BYTES = 2_000_000;
 
@@ -79,6 +82,11 @@ export function defaultSettings() {
     overlayOffsetX: 0,
     overlayOffsetY: 0,
     overlayHotkey: DEFAULT_OVERLAY_HOTKEY,
+    overlayCycleHotkey: '',
+    overlaySlots: Array.from({ length: OVERLAY_SLOTS }, () => null),
+    // -1 is "no slot has been activated yet", so the first press of the cycle
+    // hotkey lands on the first filled slot rather than stepping past it.
+    overlaySlot: -1,
     introEnabled: true,
     introSound: true,
     updateCheck: true,
@@ -159,6 +167,20 @@ export function normalizeSettings(raw) {
   settings.overlayOffsetY = clampOffset(raw.overlayOffsetY);
   settings.overlayHotkey = OVERLAY_HOTKEYS.includes(raw.overlayHotkey)
     ? raw.overlayHotkey : defaults.overlayHotkey;
+
+  // Empty is a real answer here and the default one: no second hotkey.
+  settings.overlayCycleHotkey = OVERLAY_HOTKEYS.includes(raw.overlayCycleHotkey)
+    ? raw.overlayCycleHotkey : '';
+
+  // A slot holds the id of a saved crosshair. Whether that crosshair still
+  // exists is the library's business, checked when the slot is used, so a
+  // deleted one leaves a hole rather than breaking the file.
+  const slots = Array.isArray(raw.overlaySlots) ? raw.overlaySlots : [];
+  settings.overlaySlots = Array.from({ length: OVERLAY_SLOTS }, (_, index) =>
+    (typeof slots[index] === 'string' && slots[index] ? slots[index] : null));
+  settings.overlaySlot = Number.isInteger(raw.overlaySlot)
+    && raw.overlaySlot >= -1 && raw.overlaySlot < OVERLAY_SLOTS
+    ? raw.overlaySlot : -1;
 
   // Both default to on, so only an explicit false switches them off. A file
   // written before the sequence existed therefore gets it.

@@ -66,6 +66,8 @@ outside ReticleX.
 - Click-through and never focusable: the mouse behaves as though it is not there
 - A global shortcut shows and hides it, chosen from a short list of
   combinations, and works while another window has focus
+- **Four profile slots** holding saved crosshairs, and a second shortcut that
+  steps between the filled ones without leaving your game
 - Monitor picker and pixel offsets for multi-monitor and letterboxed setups
 - Drawn by the same rasteriser as the designer at 1:1, so what you designed is
   what appears — and edits land on screen as you make them

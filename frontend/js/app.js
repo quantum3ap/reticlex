@@ -63,6 +63,8 @@ class App {
       offsetY: 0,
       hotkey: DEFAULT_OVERLAY_HOTKEY,
       hotkeyRegistered: false,
+      cycleHotkey: '',
+      cycleHotkeyRegistered: true,
       maxOffset: OVERLAY_OFFSET.max,
       monitors: [],
     };
@@ -815,6 +817,10 @@ class App {
       });
     });
 
+    // The host reports the key and nothing else: which reticle comes next
+    // depends on the library and the slots, both of which live here.
+    this.bridge.on('overlayCycle', () => this.cycleOverlayProfile());
+
     await this.#configureTray();
 
     try {
@@ -824,6 +830,7 @@ class App {
         offsetX: this.settings.overlayOffsetX,
         offsetY: this.settings.overlayOffsetY,
         hotkey: this.settings.overlayHotkey,
+        cycleHotkey: this.settings.overlayCycleHotkey,
         config: this.session.config,
       });
       this.#applyOverlayState(state);
@@ -843,6 +850,8 @@ class App {
       offsetY: Number(state.offsetY) || 0,
       hotkey: typeof state.hotkey === 'string' ? state.hotkey : DEFAULT_OVERLAY_HOTKEY,
       hotkeyRegistered: Boolean(state.hotkeyRegistered),
+      cycleHotkey: typeof state.cycleHotkey === 'string' ? state.cycleHotkey : '',
+      cycleHotkeyRegistered: state.cycleHotkeyRegistered !== false,
       maxOffset: Number(state.maxOffset) || OVERLAY_OFFSET.max,
       monitors: Array.isArray(state.monitors) ? state.monitors : [],
     };
@@ -854,6 +863,7 @@ class App {
         overlayOffsetX: this.overlay.offsetX,
         overlayOffsetY: this.overlay.offsetY,
         overlayHotkey: this.overlay.hotkey,
+        overlayCycleHotkey: this.overlay.cycleHotkey,
       });
     }
     this.store.set({ overlayRevision: Date.now() });
@@ -879,11 +889,51 @@ class App {
       if (patch.hotkey && applied.supported && !applied.hotkeyRegistered) {
         this.toasts.error('toast.overlayHotkeyTaken', { hotkey: applied.hotkey });
       }
+      if (patch.cycleHotkey && applied.supported && !applied.cycleHotkeyRegistered) {
+        this.toasts.error('toast.overlayHotkeyTaken', { hotkey: applied.cycleHotkey });
+      }
       return applied;
     } catch (error) {
       this.toasts.error('error.overlayFailed', undefined, String(error.message ?? error));
       return this.overlay;
     }
+  }
+
+  /**
+   * Steps the overlay on to the next profile, which is what the cycle hotkey
+   * does. It runs while the user is in a game and cannot see any of this, so
+   * it has to behave with no slots filled and with slots pointing at
+   * crosshairs that have since been deleted.
+   *
+   * Cycling loads the crosshair rather than only pushing it to the overlay, so
+   * what is on screen and what is in the Designer never disagree — and so the
+   * next slider move does not quietly undo the switch.
+   */
+  cycleOverlayProfile() {
+    const slots = this.settings.overlaySlots ?? [];
+    const filled = slots
+      .map((id, index) => ({ index, doc: id ? this.library.crosshair(id) : null }))
+      .filter((entry) => entry.doc);
+
+    if (filled.length === 0) {
+      this.toasts.show({ messageKey: 'overlay.noProfiles', type: 'info', duration: 3600 });
+      return null;
+    }
+
+    const current = this.settings.overlaySlot ?? -1;
+    const next = filled.find((entry) => entry.index > current) ?? filled[0];
+
+    this.session.load(next.doc);
+    this.saveSettings({ overlaySlot: next.index, lastDocumentId: next.doc.id });
+    this.#pushOverlayConfig();
+    this.router.refresh();
+    this.toasts.show({
+      messageKey: 'overlay.switched',
+      params: { name: next.doc.name },
+      type: 'success',
+      duration: 2000,
+    });
+    return next.doc;
   }
 
   /** Flips the overlay from the interface, the same as the global hotkey does. */

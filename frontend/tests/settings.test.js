@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  ACCENTS, DEFAULT_OVERLAY_HOTKEY, OVERLAY_HOTKEYS, OVERLAY_OFFSET,
+  ACCENTS, DEFAULT_OVERLAY_HOTKEY, OVERLAY_HOTKEYS, OVERLAY_OFFSET, OVERLAY_SLOTS,
   PREVIEW_BACKGROUNDS, SETTINGS_VERSION, THEMES, UI_SCALE,
   canPersistBackground, defaultSettings, normalizeSettings,
 } from '../js/core/settings.js';
@@ -188,5 +188,31 @@ test('only an explicit false switches the sequence off', () => {
   for (const value of ['false', 0, null, 'no']) {
     assert.equal(normalizeSettings({ introEnabled: value }).settings.introEnabled, true,
       `${String(value)} is not a literal false`);
+  }
+});
+
+test('overlay profile slots survive a settings file that predates them', () => {
+  const { settings } = normalizeSettings({ theme: 'dark' });
+
+  assert.equal(settings.overlaySlots.length, OVERLAY_SLOTS);
+  assert.ok(settings.overlaySlots.every((slot) => slot === null));
+  assert.equal(settings.overlaySlot, -1, 'no slot has been activated yet');
+  assert.equal(settings.overlayCycleHotkey, '', 'the second hotkey stays unset unless asked for');
+});
+
+test('a slot list of the wrong shape is repaired rather than trusted', () => {
+  const { settings } = normalizeSettings({
+    overlaySlots: ['keep-me', 42, '', null, 'past-the-end', 'and-another'],
+    overlaySlot: 99,
+  });
+
+  assert.deepEqual(settings.overlaySlots, ['keep-me', null, null, null]);
+  assert.equal(settings.overlaySlot, -1, 'an index outside the slots falls back to unset');
+});
+
+test('the cycle hotkey only accepts a combination the overlay offers', () => {
+  assert.equal(normalizeSettings({ overlayCycleHotkey: 'Ctrl+F9' }).settings.overlayCycleHotkey, 'Ctrl+F9');
+  for (const bad of ['Ctrl+Q', 'nonsense', 7, null]) {
+    assert.equal(normalizeSettings({ overlayCycleHotkey: bad }).settings.overlayCycleHotkey, '');
   }
 });

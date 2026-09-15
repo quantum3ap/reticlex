@@ -63,6 +63,10 @@ public sealed class WebBridge
         // visible, so the page is told rather than left to guess.
         _overlay.Changed += options => Emit("overlayChanged", OverlayState(options));
 
+        // Which reticle comes next is the front end's to decide: it owns the
+        // library and the profile slots. The host only says the key was hit.
+        _overlay.CycleRequested += () => Emit("overlayCycle", null);
+
         _handlers = new Dictionary<string, Func<JsonObject, JsonNode?>>(StringComparer.Ordinal)
         {
             ["bootstrap"] = Bootstrap,
@@ -466,7 +470,8 @@ public sealed class WebBridge
                 monitor: parameters["monitor"]?.GetValue<string>(),
                 offsetX: Whole(parameters, "offsetX"),
                 offsetY: Whole(parameters, "offsetY"),
-                hotkey: parameters["hotkey"]?.GetValue<string>()));
+                hotkey: parameters["hotkey"]?.GetValue<string>(),
+                cycleHotkey: parameters["cycleHotkey"]?.GetValue<string>()));
 
             return OverlayState(applied);
         });
@@ -523,6 +528,8 @@ public sealed class WebBridge
             ["offsetY"] = options.OffsetY,
             ["hotkey"] = options.Hotkey,
             ["hotkeyRegistered"] = _overlay.HotkeyRegistered,
+            ["cycleHotkey"] = options.CycleHotkey,
+            ["cycleHotkeyRegistered"] = _overlay.CycleHotkeyRegistered,
             ["maxOffset"] = OverlayOptions.MaxOffset,
             ["monitors"] = monitors,
         };

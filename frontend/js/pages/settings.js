@@ -9,7 +9,8 @@
 import { h, clear } from '../ui/dom.js';
 import { icon } from '../ui/icons.js';
 import { createToggle, createSegmented, createSlider, createSelect } from '../ui/controls.js';
-import { OVERLAY_HOTKEYS, UI_SCALE } from '../core/settings.js';
+import { OVERLAY_HOTKEYS, UI_SCALE, OVERLAY_SLOTS
+} from '../core/settings.js';
 import { SHORTCUTS } from '../shortcuts.js';
 
 const REPOSITORY_URL = 'https://github.com/quantum3ap/reticlex';
@@ -195,12 +196,59 @@ export function createSettingsPage(app) {
   const overlayTrayHint = h('p', { class: 'settings__hint' });
   const overlayNotice = h('p', { class: 'settings__hint settings__hint--warn' });
 
+  // One picker per slot. A slot holds a saved crosshair; the cycle hotkey
+  // steps between the ones that are filled, in order.
+  const slotSelects = Array.from({ length: OVERLAY_SLOTS }, (_, index) => createSelect({
+    i18n,
+    labelKey: 'overlay.slot',
+    labelParams: { index: String(index + 1) },
+    tipKey: 'overlay.slotTip',
+    options: [{ value: '', label: i18n.t('overlay.slotEmpty') }],
+    value: app.settings.overlaySlots?.[index] ?? '',
+    onChange: (value) => {
+      const slots = [...(app.settings.overlaySlots ?? [])];
+      slots[index] = value || null;
+      app.saveSettings({ overlaySlots: slots });
+    },
+  }));
+
+  const cycleSelect = createSelect({
+    i18n,
+    labelKey: 'overlay.cycleHotkey',
+    tipKey: 'overlay.cycleHotkeyTip',
+    options: [{ value: '', label: i18n.t('overlay.cycleHotkeyNone') }],
+    value: app.overlay.cycleHotkey,
+    onChange: (value) => app.setOverlay({ cycleHotkey: value }),
+  });
+
   function renderOverlay() {
     const state = app.overlay;
     overlayToggle.set(state.enabled);
     offsetX.set(state.offsetX);
     offsetY.set(state.offsetY);
     hotkeySelect.set(state.hotkey);
+
+    // The toggle hotkey is left out of the cycle list: Windows hands a
+    // combination to one owner, so offering the same one twice only produces a
+    // refusal the user has to work out for themselves.
+    cycleSelect.setOptions([
+      { value: '', label: i18n.t('overlay.cycleHotkeyNone') },
+      ...OVERLAY_HOTKEYS.filter((key) => key !== state.hotkey).map((key) => ({ value: key, label: key })),
+    ]);
+    cycleSelect.set(state.cycleHotkey);
+
+    const saved = app.library.recentCrosshairs(200);
+    const exists = new Set(saved.map((doc) => doc.id));
+    for (const [index, select] of slotSelects.entries()) {
+      select.setOptions([
+        { value: '', label: i18n.t('overlay.slotEmpty') },
+        ...saved.map((doc) => ({ value: doc.id, label: doc.name })),
+      ]);
+      // A slot can outlive the crosshair it names. Showing it as empty is both
+      // true and selectable; leaving the stale id shows a blank picker.
+      const assigned = app.settings.overlaySlots?.[index];
+      select.set(assigned && exists.has(assigned) ? assigned : '');
+    }
 
     monitorSelect.setOptions([
       { value: '', label: i18n.t('overlay.monitorAuto') },
@@ -286,6 +334,8 @@ export function createSettingsPage(app) {
       offsetX.element,
       offsetY.element,
       hotkeySelect.element,
+      cycleSelect.element,
+      ...slotSelects.map((select) => select.element),
       overlayHint,
       overlayTrayHint,
       overlayNotice,
