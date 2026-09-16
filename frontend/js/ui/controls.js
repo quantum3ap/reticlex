@@ -278,7 +278,7 @@ export function createTextField({ labelKey, value = '', placeholderKey, onInput,
 }
 
 /** Native select, restyled. Used for language and other long option lists. */
-export function createSelect({ labelKey, tipKey, options, value, onChange, i18n }) {
+export function createSelect({ labelKey, labelParams, tipKey, options, value, onChange, i18n }) {
   const select = h('select', { class: 'select__control' });
   for (const option of options) {
     const node = h('option', { value: String(option.value) }, option.label);
@@ -290,7 +290,13 @@ export function createSelect({ labelKey, tipKey, options, value, onChange, i18n 
   const element = h(
     'div',
     { class: 'select' },
-    labelKey ? h('span', { class: 'select__label', i18n: labelKey }, i18n.t(labelKey)) : null,
+    labelKey
+      ? h('span', {
+        class: 'select__label',
+        i18n: labelKey,
+        ...(labelParams ? { i18nParams: labelParams } : {}),
+      }, i18n.t(labelKey, labelParams))
+      : null,
     h('div', { class: 'select__shell' }, select, icon('chevronDown', { size: 16, className: 'select__chevron' })),
   );
   if (tipKey) element.dataset.tip = tipKey;

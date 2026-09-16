@@ -36,6 +36,13 @@ public sealed class OverlayOptions
 
     public string Hotkey { get; init; } = HotkeyBinding.Default;
 
+    /// <summary>
+    /// Steps the overlay to the next assigned profile. Empty means unset,
+    /// which is the default: a second global hotkey is worth having only if
+    /// someone has actually filled in the slots it moves between.
+    /// </summary>
+    public string CycleHotkey { get; init; } = string.Empty;
+
     public static OverlayOptions Defaults() => new();
 
     /// <summary>Clamps every field into a range the overlay can actually use.</summary>
@@ -46,6 +53,9 @@ public sealed class OverlayOptions
         OffsetX = Math.Clamp(OffsetX, -MaxOffset, MaxOffset),
         OffsetY = Math.Clamp(OffsetY, -MaxOffset, MaxOffset),
         Hotkey = HotkeyBinding.Resolve(Hotkey).Text,
+        CycleHotkey = string.IsNullOrWhiteSpace(CycleHotkey)
+            ? string.Empty
+            : HotkeyBinding.Resolve(CycleHotkey).Text,
     };
 
     public OverlayOptions With(
@@ -53,13 +63,15 @@ public sealed class OverlayOptions
         string? monitor = null,
         int? offsetX = null,
         int? offsetY = null,
-        string? hotkey = null) => new OverlayOptions
+        string? hotkey = null,
+        string? cycleHotkey = null) => new OverlayOptions
         {
             Enabled = enabled ?? Enabled,
             Monitor = monitor ?? Monitor,
             OffsetX = offsetX ?? OffsetX,
             OffsetY = offsetY ?? OffsetY,
             Hotkey = hotkey ?? Hotkey,
+            CycleHotkey = cycleHotkey ?? CycleHotkey,
         }.Sanitized();
 
     /// <summary>

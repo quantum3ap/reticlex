@@ -38,7 +38,9 @@ public sealed class WebBridge
     private readonly CrosshairLibrary _library;
     private readonly ThumbnailService _thumbnails;
     private readonly OverlayController _overlay;
+    private readonly UpdateCheck _updates = new();
     private readonly Dictionary<string, Func<JsonObject, JsonNode?>> _handlers;
+    private bool _updateAsked;
 
     public WebBridge(
         WebView2 webView,
@@ -61,6 +63,10 @@ public sealed class WebBridge
         // visible, so the page is told rather than left to guess.
         _overlay.Changed += options => Emit("overlayChanged", OverlayState(options));
 
+        // Which reticle comes next is the front end's to decide: it owns the
+        // library and the profile slots. The host only says the key was hit.
+        _overlay.CycleRequested += () => Emit("overlayCycle", null);
+
         _handlers = new Dictionary<string, Func<JsonObject, JsonNode?>>(StringComparer.Ordinal)
         {
             ["bootstrap"] = Bootstrap,
@@ -82,6 +88,7 @@ public sealed class WebBridge
             ["overlaySet"] = OverlaySet,
             ["overlayConfig"] = OverlayConfig,
             ["configureTray"] = ConfigureTray,
+            ["checkUpdate"] = CheckUpdate,
         };
     }
 
@@ -388,6 +395,44 @@ public sealed class WebBridge
         return new JsonObject { ["ok"] = true };
     }
 
+    /// <summary>
+    /// Starts the update check and answers immediately. The result arrives
+    /// later as an event, so a slow or unreachable network never holds up the
+    /// page that asked, and asking twice in one run does nothing.
+    /// </summary>
+    private JsonNode? CheckUpdate(JsonObject _)
+    {
+        if (_updateAsked) return new JsonObject { ["started"] = false };
+        _updateAsked = true;
+
+        // Deliberately not awaited: this handler answers the page now and the
+        // result is emitted whenever it arrives. (No discard here — the unused
+        // parameter is itself named _, and assigning to that is not a discard.)
+        Task.Run(async () =>
+        {
+            UpdateInfo? update;
+            try
+            {
+                update = await _updates.LatestAsync(MainWindow.AppVersion).ConfigureAwait(false);
+            }
+            catch (Exception error)
+            {
+                App.Log.Warn("The update check did not complete.", error);
+                return;
+            }
+
+            if (update is null) return;
+            App.Log.Info($"Version {update.Version} is available.");
+            await _webView.Dispatcher.InvokeAsync(() => Emit("update", new JsonObject
+            {
+                ["version"] = update.Version,
+                ["url"] = update.Url,
+            }));
+        });
+
+        return new JsonObject { ["started"] = true };
+    }
+
     private JsonNode? OpenDataFolder(JsonObject _)
     {
         _paths.EnsureCreated();
@@ -425,7 +470,8 @@ public sealed class WebBridge
                 monitor: parameters["monitor"]?.GetValue<string>(),
                 offsetX: Whole(parameters, "offsetX"),
                 offsetY: Whole(parameters, "offsetY"),
-                hotkey: parameters["hotkey"]?.GetValue<string>()));
+                hotkey: parameters["hotkey"]?.GetValue<string>(),
+                cycleHotkey: parameters["cycleHotkey"]?.GetValue<string>()));
 
             return OverlayState(applied);
         });
@@ -482,6 +528,8 @@ public sealed class WebBridge
             ["offsetY"] = options.OffsetY,
             ["hotkey"] = options.Hotkey,
             ["hotkeyRegistered"] = _overlay.HotkeyRegistered,
+            ["cycleHotkey"] = options.CycleHotkey,
+            ["cycleHotkeyRegistered"] = _overlay.CycleHotkeyRegistered,
             ["maxOffset"] = OverlayOptions.MaxOffset,
             ["monitors"] = monitors,
         };

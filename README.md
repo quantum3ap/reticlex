@@ -54,6 +54,10 @@ same frame.
 - Dark, light, high-contrast and a drawn FPS scene, or your own image
 - Optional pixel grid and a live read-out of size, shape count and the WCAG
   contrast ratio against the current background
+- Load a screenshot of the game you actually play and the read-out measures
+  the pixels the reticle covers, reporting the **worst** of them as well as the
+  typical one — the bright patch your crosshair vanishes on is the one that
+  matters, and an average hides it
 
 ### On-screen overlay
 
@@ -66,6 +70,8 @@ outside ReticleX.
 - Click-through and never focusable: the mouse behaves as though it is not there
 - A global shortcut shows and hides it, chosen from a short list of
   combinations, and works while another window has focus
+- **Four profile slots** holding saved crosshairs, and a second shortcut that
+  steps between the filled ones without leaving your game
 - Monitor picker and pixel offsets for multi-monitor and letterboxed setups
 - Drawn by the same rasteriser as the designer at 1:1, so what you designed is
   what appears — and edits land on screen as you make them
@@ -100,9 +106,25 @@ result carries a seed you can copy and reproduce exactly.
 
 - Full undo and redo, with a slider drag collapsing into one step
 - Import and export as JSON, with clear errors for anything malformed
+- Share codes: one crosshair as a short `RX1-…` string to paste into a chat
 - Ten languages including Arabic with a fully mirrored right-to-left layout
 - Themes, accent colours, interface scale, and an animation switch
 - Keyboard shortcuts throughout, listed in Settings and in a dialog
+- An update check that tells you when a newer release exists
+
+## What ReticleX sends
+
+Nothing about you, anywhere.
+
+Your crosshairs, settings and logs stay in `%APPDATA%\ReticleX` and are never
+uploaded. There is no telemetry, no analytics and no account.
+
+The one network request ReticleX makes is the update check: an unauthenticated
+`GET` to the GitHub releases API at start-up, carrying nothing but a user
+agent, to find out whether a newer version has been published. It exists
+because 1.3.0 shipped a bug that stopped the application opening, the fix was
+out days later, and nobody running it had any way to find out. Turn it off in
+**Settings → Application** and ReticleX touches the network never.
 
 ## Screenshots
 

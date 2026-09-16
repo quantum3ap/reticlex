@@ -21,6 +21,9 @@ import {
 import {
   documentToJson, parseImport, toPresetPack, createDocument,
 } from './core/schema.js';
+import {
+  ShareCodeError, decodeShareCode, encodeShareCode,
+} from './core/sharecode.js';
 import { debounce, toFileStem } from './core/util.js';
 import { toPngDataUrl } from './render/renderer.js';
 
@@ -44,6 +47,7 @@ const AUTOSAVE_DELAY = 1200;
 
 class App {
   #overlayPushQueued = false;
+  #update = null;
 
   constructor() {
     this.store = new Store({ page: 'home' });
@@ -59,6 +63,8 @@ class App {
       offsetY: 0,
       hotkey: DEFAULT_OVERLAY_HOTKEY,
       hotkeyRegistered: false,
+      cycleHotkey: '',
+      cycleHotkeyRegistered: true,
       maxOffset: OVERLAY_OFFSET.max,
       monitors: [],
     };
@@ -110,6 +116,7 @@ class App {
     this.#wireShell();
     this.#wireSession();
     this.#wireShortcuts();
+    this.#wireUpdates();
 
     applyTranslations(document.body, this.i18n);
 
@@ -141,6 +148,10 @@ class App {
     if (!this.hasHost) {
       this.toasts.show({ messageKey: 'error.hostUnavailable', type: 'info', duration: 5200 });
     }
+
+    // Last, and never awaited: the answer arrives as an event whenever it
+    // arrives, and start-up has nothing to gain by waiting for the network.
+    this.#checkForUpdate();
   }
 
   async #bootstrapHost() {
@@ -313,6 +324,7 @@ class App {
       redo: () => this.redo(),
       shortcuts: () => this.showShortcuts(),
       overlay: () => this.requestOverlayToggle(),
+      share: () => this.shareCrosshair(),
     };
     const handler = handlers[action];
     if (!handler) return;
@@ -591,6 +603,100 @@ class App {
     return documents;
   }
 
+  /**
+   * Both directions of sharing in one dialog: the crosshair on screen as a
+   * code to hand out, and a box to paste one you were sent. They belong
+   * together because that is how they get used — you paste someone's code,
+   * then send yours back.
+   */
+  async shareCrosshair() {
+    const code = await encodeShareCode(this.core, this.session.config);
+
+    const codeInput = h('input', {
+      class: 'field__input field__input--code',
+      type: 'text',
+      readonly: 'readonly',
+      spellcheck: 'false',
+      value: code,
+    });
+    const pasteInput = h('input', {
+      class: 'field__input field__input--code',
+      type: 'text',
+      placeholder: 'RX1-…',
+      autocomplete: 'off',
+      spellcheck: 'false',
+    });
+    const message = h('p', { class: 'field__error' }, '');
+
+    const copy = async () => {
+      try {
+        await navigator.clipboard.writeText(code);
+        this.toasts.success('share.copied');
+      } catch {
+        // No clipboard permission: select it so it can be copied by hand.
+        codeInput.focus();
+        codeInput.select();
+      }
+      return Modals.KEEP_OPEN;
+    };
+
+    const body = h('div', { class: 'stack' },
+      h('label', { class: 'field' },
+        h('span', { class: 'field__label' }, this.i18n.t('share.yours')),
+        codeInput),
+      h('p', { class: 'field__hint' }, this.i18n.t('share.yoursHint')),
+      h('label', { class: 'field' },
+        h('span', { class: 'field__label' }, this.i18n.t('share.paste')),
+        pasteInput),
+      message);
+
+    const apply = async () => {
+      message.textContent = '';
+      try {
+        const config = await decodeShareCode(this.core, pasteInput.value);
+        return { config };
+      } catch (error) {
+        const key = error instanceof ShareCodeError ? error.reasonKey : 'share.errorInvalid';
+        message.textContent = this.i18n.t(key);
+        pasteInput.classList.add('field__input--invalid');
+        pasteInput.focus();
+        return Modals.KEEP_OPEN;
+      }
+    };
+
+    const result = await this.modals.open({
+      title: this.i18n.t('share.title'),
+      body,
+      actions: [
+        { label: this.i18n.t('common.close'), value: null, variant: 'ghost' },
+        { label: this.i18n.t('common.copy'), variant: 'ghost', icon: 'copy', onSelect: copy },
+        { label: this.i18n.t('share.apply'), variant: 'primary', onSelect: apply },
+      ],
+      onMount: () => {
+        pasteInput.addEventListener('input', () => {
+          pasteInput.classList.remove('field__input--invalid');
+          message.textContent = '';
+        });
+        requestAnimationFrame(() => {
+          codeInput.focus();
+          codeInput.select();
+        });
+      },
+    });
+
+    if (!result?.config) return;
+
+    // Loaded, not saved: the Designer is the preview, and it is one undo away
+    // from wherever they were.
+    this.session.load(createDocument({
+      name: this.i18n.t('share.importedName'),
+      config: result.config,
+    }));
+    this.saveSettings({ lastDocumentId: null });
+    this.router.navigate('designer');
+    this.toasts.success('share.applied');
+  }
+
   async exportCurrent() {
     const name = this.session.name.trim() || this.i18n.t('designer.untitled');
     const payload = documentToJson(
@@ -711,6 +817,10 @@ class App {
       });
     });
 
+    // The host reports the key and nothing else: which reticle comes next
+    // depends on the library and the slots, both of which live here.
+    this.bridge.on('overlayCycle', () => this.cycleOverlayProfile());
+
     await this.#configureTray();
 
     try {
@@ -720,6 +830,7 @@ class App {
         offsetX: this.settings.overlayOffsetX,
         offsetY: this.settings.overlayOffsetY,
         hotkey: this.settings.overlayHotkey,
+        cycleHotkey: this.settings.overlayCycleHotkey,
         config: this.session.config,
       });
       this.#applyOverlayState(state);
@@ -739,6 +850,8 @@ class App {
       offsetY: Number(state.offsetY) || 0,
       hotkey: typeof state.hotkey === 'string' ? state.hotkey : DEFAULT_OVERLAY_HOTKEY,
       hotkeyRegistered: Boolean(state.hotkeyRegistered),
+      cycleHotkey: typeof state.cycleHotkey === 'string' ? state.cycleHotkey : '',
+      cycleHotkeyRegistered: state.cycleHotkeyRegistered !== false,
       maxOffset: Number(state.maxOffset) || OVERLAY_OFFSET.max,
       monitors: Array.isArray(state.monitors) ? state.monitors : [],
     };
@@ -750,6 +863,7 @@ class App {
         overlayOffsetX: this.overlay.offsetX,
         overlayOffsetY: this.overlay.offsetY,
         overlayHotkey: this.overlay.hotkey,
+        overlayCycleHotkey: this.overlay.cycleHotkey,
       });
     }
     this.store.set({ overlayRevision: Date.now() });
@@ -775,11 +889,51 @@ class App {
       if (patch.hotkey && applied.supported && !applied.hotkeyRegistered) {
         this.toasts.error('toast.overlayHotkeyTaken', { hotkey: applied.hotkey });
       }
+      if (patch.cycleHotkey && applied.supported && !applied.cycleHotkeyRegistered) {
+        this.toasts.error('toast.overlayHotkeyTaken', { hotkey: applied.cycleHotkey });
+      }
       return applied;
     } catch (error) {
       this.toasts.error('error.overlayFailed', undefined, String(error.message ?? error));
       return this.overlay;
     }
+  }
+
+  /**
+   * Steps the overlay on to the next profile, which is what the cycle hotkey
+   * does. It runs while the user is in a game and cannot see any of this, so
+   * it has to behave with no slots filled and with slots pointing at
+   * crosshairs that have since been deleted.
+   *
+   * Cycling loads the crosshair rather than only pushing it to the overlay, so
+   * what is on screen and what is in the Designer never disagree — and so the
+   * next slider move does not quietly undo the switch.
+   */
+  cycleOverlayProfile() {
+    const slots = this.settings.overlaySlots ?? [];
+    const filled = slots
+      .map((id, index) => ({ index, doc: id ? this.library.crosshair(id) : null }))
+      .filter((entry) => entry.doc);
+
+    if (filled.length === 0) {
+      this.toasts.show({ messageKey: 'overlay.noProfiles', type: 'info', duration: 3600 });
+      return null;
+    }
+
+    const current = this.settings.overlaySlot ?? -1;
+    const next = filled.find((entry) => entry.index > current) ?? filled[0];
+
+    this.session.load(next.doc);
+    this.saveSettings({ overlaySlot: next.index, lastDocumentId: next.doc.id });
+    this.#pushOverlayConfig();
+    this.router.refresh();
+    this.toasts.show({
+      messageKey: 'overlay.switched',
+      params: { name: next.doc.name },
+      type: 'success',
+      duration: 2000,
+    });
+    return next.doc;
   }
 
   /** Flips the overlay from the interface, the same as the global hotkey does. */
@@ -933,6 +1087,48 @@ class App {
       this.toasts.error('error.saveFailed', undefined, String(error.message ?? error));
       return false;
     }
+  }
+
+  // --- Updates ------------------------------------------------------------
+
+  #wireUpdates() {
+    const bar = document.getElementById('updatebar');
+    if (!bar) return;
+
+    bar.addEventListener('click', (event) => {
+      const action = event.target?.closest?.('[data-update-action]')?.dataset.updateAction;
+      if (!action) return;
+
+      if (action === 'open' && this.#update) this.openExternal(this.#update.url);
+
+      // Either way this notice is finished with. Remembering which version was
+      // dismissed is what stops the same release interrupting twice.
+      if (this.#update) this.saveSettings({ updateSkipped: this.#update.version });
+      this.#update = null;
+      bar.hidden = true;
+    });
+
+    this.bridge.on?.('update', (payload) => this.#showUpdate(payload));
+  }
+
+  /** Shows the notice, unless this exact version was already waved away. */
+  #showUpdate(payload) {
+    const version = typeof payload?.version === 'string' ? payload.version : '';
+    const url = typeof payload?.url === 'string' ? payload.url : '';
+    if (!version || !url) return;
+    if (this.settings.updateSkipped === version) return;
+
+    this.#update = { version, url };
+    const text = document.getElementById('updatebar-text');
+    if (text) text.textContent = this.i18n.t('update.available', { version });
+    const bar = document.getElementById('updatebar');
+    if (bar) bar.hidden = false;
+  }
+
+  #checkForUpdate() {
+    if (!this.settings.updateCheck || !this.hasHost) return;
+    // The host answers immediately and reports later, so nothing here waits.
+    this.bridge.call('checkUpdate', {}).catch(() => { /* older host, or refused */ });
   }
 
   openExternal(url) {

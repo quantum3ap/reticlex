@@ -22,15 +22,27 @@ public sealed class OverlayController : IDisposable
     private CrosshairConfig _config;
     private bool _hasConfig;
     private bool _hotkeyRegistered;
+    private bool _cycleHotkeyRegistered = true;
+
+    /// <summary>Hotkey slots. Windows is told about these as distinct ids.</summary>
+    private const int ToggleSlot = 0;
+    private const int CycleSlot = 1;
 
     public OverlayController(Action<string, Exception?>? log = null)
     {
         _log = log;
-        _hotkey = new HotkeyService(() => Toggle(), log);
+        _hotkey = new HotkeyService(OnHotkey, log);
     }
 
     /// <summary>Raised whenever the overlay turns on or off by any route.</summary>
     public event Action<OverlayOptions>? Changed;
+
+    /// <summary>
+    /// Raised when the cycle hotkey is pressed. Which reticle comes next is
+    /// not decided here: the profiles live with the library, in the front end,
+    /// and the host only reports the key.
+    /// </summary>
+    public event Action? CycleRequested;
 
     public OverlayOptions Options { get; private set; } = OverlayOptions.Defaults();
 
@@ -39,6 +51,12 @@ public sealed class OverlayController : IDisposable
 
     /// <summary>False when Windows refused the chosen hotkey to another owner.</summary>
     public bool HotkeyRegistered => _hotkeyRegistered;
+
+    /// <summary>
+    /// False when the cycle hotkey was asked for and Windows refused it. An
+    /// unset cycle hotkey reports true: nothing was refused.
+    /// </summary>
+    public bool CycleHotkeyRegistered => _cycleHotkeyRegistered;
 
     /// <summary>
     /// Applies a change requested by the interface. This is also how stored
@@ -81,6 +99,7 @@ public sealed class OverlayController : IDisposable
         Options = options;
 
         SyncHotkey(options.Hotkey);
+        SyncCycleHotkey(options.CycleHotkey);
 
         if (options.Enabled && Supported) Show();
         else Hide();
@@ -89,11 +108,32 @@ public sealed class OverlayController : IDisposable
         return Options;
     }
 
+    private void OnHotkey(int slot)
+    {
+        if (slot == ToggleSlot) Toggle();
+        else if (slot == CycleSlot) CycleRequested?.Invoke();
+    }
+
     private void SyncHotkey(string text)
     {
         var binding = HotkeyBinding.TryParse(text);
-        if (binding is not null && binding.Text == _hotkey.Current?.Text) return;
-        _hotkeyRegistered = _hotkey.Apply(binding);
+        if (binding is not null && binding.Text == _hotkey.Current(ToggleSlot)?.Text) return;
+        _hotkeyRegistered = _hotkey.Apply(ToggleSlot, binding);
+    }
+
+    private void SyncCycleHotkey(string text)
+    {
+        // Unset is the default and is not a failure, so it reports registered.
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            _hotkey.Release(CycleSlot);
+            _cycleHotkeyRegistered = true;
+            return;
+        }
+
+        var binding = HotkeyBinding.TryParse(text);
+        if (binding is not null && binding.Text == _hotkey.Current(CycleSlot)?.Text) return;
+        _cycleHotkeyRegistered = _hotkey.Apply(CycleSlot, binding);
     }
 
     private void Show()

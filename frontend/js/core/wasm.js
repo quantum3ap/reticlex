@@ -162,6 +162,28 @@ export class ReticleCore {
     return this.readConfig();
   }
 
+  /**
+   * A config as its ABI bytes — exactly what the native side would see. Used
+   * by share codes, so the wire format is the core's layout rather than a
+   * second description of it that could drift.
+   */
+  configToBytes(config) {
+    this.writeConfig(config, this.configPtr);
+    return new Uint8Array(this.#memory.buffer, this.configPtr, this.configSize).slice();
+  }
+
+  /**
+   * Reads a config back out of ABI bytes. Anything the bytes do not reach is
+   * left at its default, so a config written by an older schema with fewer
+   * fields still loads, with the fields it never knew about unset.
+   */
+  configFromBytes(bytes) {
+    this.#exports.rx_config_defaults(this.configPtr);
+    const target = new Uint8Array(this.#memory.buffer, this.configPtr, this.configSize);
+    target.set(bytes.subarray(0, Math.min(bytes.length, this.configSize)));
+    return this.readConfig();
+  }
+
   /** Always succeeds: returns the repaired config and how much was changed. */
   normalize(config) {
     this.writeConfig(config);

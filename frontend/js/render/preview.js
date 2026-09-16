@@ -30,6 +30,9 @@ export class Preview {
   #geometry = null;
   #image = null;
   #imageUrl = null;
+  #sampler = null;
+  #layoutWaits = 0;
+  #imageWaits = 0;
   #observer = null;
 
   /**
@@ -106,16 +109,43 @@ export class Preview {
       return;
     }
     this.#scene.style.setProperty('--preview-image', `url("${dataUrl}")`);
+
+    // Dropped now rather than when the replacement arrives. Whatever is drawn
+    // in between is the new background, and measuring the reticle against the
+    // old one would report a contrast for an image no longer on screen.
+    this.#image = null;
+    this.#imageWaits = 0;
+
     const image = new Image();
-    image.onload = () => {
+
+    const settle = () => {
+      // Ignore an image that finished after a different one was asked for.
+      if (this.#imageUrl !== dataUrl) return;
       this.#image = image;
-      this.render();
+      // A fresh budget for the layout retry: this is the draw that matters,
+      // and it must not inherit one an earlier navigation already spent.
+      this.#layoutWaits = 0;
+      this.#imageWaits = 0;
+      // Directly, for the same reason the waits above are: this is the draw
+      // that turns the contrast readout from a placeholder into a measurement,
+      // and it must not be left waiting on an animation frame that a view
+      // which is not on screen yet may not get.
+      this.#draw();
     };
+
+    image.onload = settle;
     image.onerror = () => {
+      if (this.#imageUrl !== dataUrl) return;
       this.#image = null;
       this.#scene.style.removeProperty('--preview-image');
+      this.render();
     };
     image.src = dataUrl;
+
+    // A data URL the browser has already decoded can be complete before the
+    // load event would fire, and then it never fires at all. Without this the
+    // contrast readout goes quiet the second time a background is reused.
+    if (image.complete && image.naturalWidth > 0) settle();
   }
 
   setGrid(enabled) {
@@ -143,13 +173,176 @@ export class Preview {
     return SCENES[this.background]?.base ?? '#0B0D10';
   }
 
+  /** Side of the square the sampler works in. Small: this runs on every draw. */
+  static #SAMPLE_SIZE = 96;
+
+  /** Below this the pixel is background showing through, not reticle. */
+  static #COVERAGE_FLOOR = 96;
+
+  /**
+   * Contrast against a loaded screenshot, measured where the reticle actually
+   * sits rather than against a single colour standing in for the whole image.
+   *
+   * One average is the wrong answer twice over. A reticle that averages well
+   * can still vanish against the one bright patch it crosses, and averaging
+   * the whole bounding box counts the empty middle, which nothing is drawn on.
+   * So the reticle is rendered to a mask, only the covered pixels are read,
+   * and the worst of them is what gets reported — that is the pixel that
+   * decides whether you can see your crosshair against a sand wall.
+   *
+   * A reticle with an outline presents two colours to the background, and it
+   * is visible if either of them separates — a black outline on a black wall
+   * costs nothing while the line itself still reads. So each pixel is scored
+   * on whichever of the two stands out more, not on the outline alone.
+   *
+   * @returns {{worst:number, median:number, samples:number}|null}
+   */
+  #measureAgainstImage(geometry) {
+    if (this.background !== 'custom') return null;
+
+    const image = this.#image;
+    if (!image || !image.complete || !image.naturalWidth || !image.naturalHeight) {
+      // The background has been asked for but has not arrived. Come back for
+      // it rather than quietly settling on a figure for an image that is about
+      // to replace it.
+      //
+      if (this.#imageUrl && this.#imageWaits < Preview.#WAIT_TRIES) {
+        this.#imageWaits += 1;
+        setTimeout(() => this.#draw(), Preview.#WAIT_MS);
+      }
+      return null;
+    }
+
+    const rect = this.#scene.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return null;
+
+    const extent = Math.max(geometry.extentW, geometry.extentH, 1);
+    const side = extent * this.zoom;            // the reticle's square, in CSS px
+    if (side <= 0) return null;
+
+    const size = Preview.#SAMPLE_SIZE;
+    if (!this.#sampler) {
+      this.#sampler = document.createElement('canvas');
+      this.#sampler.width = size;
+      this.#sampler.height = size;
+    }
+    const ctx = this.#sampler.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+
+    // The scene paints the image with background-size: cover and centred, so
+    // the same mapping is repeated here to read the pixels actually on screen.
+    const scale = Math.max(rect.width / image.naturalWidth, rect.height / image.naturalHeight);
+    const drawnW = image.naturalWidth * scale;
+    const drawnH = image.naturalHeight * scale;
+    const originX = (rect.width - drawnW) / 2;
+    const originY = (rect.height - drawnH) / 2;
+
+    const left = (rect.width - side) / 2;
+    const top = (rect.height - side) / 2;
+    const sx = clamp((left - originX) / scale, 0, image.naturalWidth);
+    const sy = clamp((top - originY) / scale, 0, image.naturalHeight);
+    const sw = clamp(side / scale, 1, image.naturalWidth - sx);
+    const sh = clamp(side / scale, 1, image.naturalHeight - sy);
+
+    let background;
+    let mask;
+    try {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+      ctx.drawImage(image, sx, sy, sw, sh, 0, 0, size, size);
+      background = ctx.getImageData(0, 0, size, size).data;
+
+      // The same reticle, at the same scale, as a coverage mask.
+      ctx.clearRect(0, 0, size, size);
+      drawGeometry(ctx, geometry, {
+        zoom: size / extent,
+        originX: size / 2,
+        originY: size / 2,
+      });
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      mask = ctx.getImageData(0, 0, size, size).data;
+    } catch {
+      // A cross-origin image taints the canvas. Nothing here is worth an
+      // exception escaping into the draw loop over.
+      return null;
+    }
+
+    const inks = [rgbToHex({
+      r: this.#config.color_r, g: this.#config.color_g, b: this.#config.color_b,
+    })];
+    if (this.#config.outline_enabled) {
+      inks.push(rgbToHex({
+        r: this.#config.outline_color_r,
+        g: this.#config.outline_color_g,
+        b: this.#config.outline_color_b,
+      }));
+    }
+
+    // Repeated colours are common — a screenshot has large flat regions — and
+    // the contrast of a pair only has to be worked out once.
+    const cache = new Map();
+    const ratioAt = (hex) => {
+      let ratio = cache.get(hex);
+      if (ratio === undefined) {
+        ratio = Math.max(...inks.map((ink) => this.core.contrast(ink, hex)));
+        cache.set(hex, ratio);
+      }
+      return ratio;
+    };
+
+    const ratios = [];
+    for (let i = 0; i < mask.length; i += 4) {
+      if (mask[i + 3] < Preview.#COVERAGE_FLOOR) continue;
+      // getImageData is bytes; the core's colours, and so rgbToHex, are 0..1.
+      ratios.push(ratioAt(rgbToHex({
+        r: background[i] / 255,
+        g: background[i + 1] / 255,
+        b: background[i + 2] / 255,
+      })));
+    }
+    if (ratios.length === 0) return null;
+
+    ratios.sort((a, b) => a - b);
+    return {
+      worst: ratios[0],
+      median: ratios[Math.floor(ratios.length / 2)],
+      samples: ratios.length,
+    };
+  }
+
   destroy() {
     this.#observer?.disconnect();
   }
 
+  /**
+   * How long to keep coming back for something that has not arrived yet, and
+   * how many times. Used for two waits: a scene that has no size because the
+   * page is still being laid out, and a background that is still decoding.
+   *
+   * Both are timed rather than counted in animation frames. A draw asked for
+   * while either is outstanding would otherwise be dropped, taking with it
+   * whatever prompted it, and a frame clock the browser is free to throttle —
+   * which it does precisely while an element is not yet on screen — is the
+   * wrong one to count either wait on. Bounded, so a preview sitting on
+   * another page, or an image that never loads, stops asking.
+   */
+  static #WAIT_MS = 50;
+
+  static #WAIT_TRIES = 40;
+
   #draw() {
     const rect = this.#scene.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
+    if (rect.width === 0 || rect.height === 0) {
+      if (this.#layoutWaits < Preview.#WAIT_TRIES) {
+        this.#layoutWaits += 1;
+        // Straight to the draw, not through render(): render() is throttled to
+        // an animation frame, and an animation frame is exactly what a view
+        // that is not on screen yet does not reliably get.
+        setTimeout(() => this.#draw(), Preview.#WAIT_MS);
+      }
+      return;
+    }
+    this.#layoutWaits = 0;
     const { width, height, dpr } = resizeCanvas(this.#canvas, rect.width, rect.height);
 
     this.#ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -224,20 +417,33 @@ export class Preview {
     const lineHex = rgbToHex({
       r: this.#config.color_r, g: this.#config.color_g, b: this.#config.color_b,
     });
-    const contrast = this.core.contrast(lineHex, this.backgroundHex());
-    const low = contrast < 2;
+    // Against a screenshot the figure is the worst pixel the reticle covers,
+    // and a worst case earns a higher bar than an average does: 3:1 is the
+    // readable floor the randomizer already works to. A flat background keeps
+    // the threshold it has always had.
+    const measured = this.#measureAgainstImage(geometry);
+    const contrast = measured ? measured.worst : this.core.contrast(lineHex, this.backgroundHex());
+    const low = measured ? contrast < 3 : contrast < 2;
 
     const rows = [
       infoRow(this.i18n.t('preview.infoSize'),
         `${round1(geometry.extentW)} × ${round1(geometry.extentH)} ${this.i18n.t('units.px')}`),
       infoRow(this.i18n.t('preview.infoShapes'), String(geometry.shapes.length)),
       infoRow(this.i18n.t('preview.infoZoom'), `${this.zoom}×`),
-      infoRow(this.i18n.t('preview.infoContrast'), `${contrast.toFixed(1)}:1`, low),
+      infoRow(
+        this.i18n.t(measured ? 'preview.infoContrastWorst' : 'preview.infoContrast'),
+        `${contrast.toFixed(1)}:1`,
+        low,
+      ),
     ];
+    if (measured) {
+      rows.push(infoRow(this.i18n.t('preview.infoContrastTypical'),
+        `${measured.median.toFixed(1)}:1`));
+    }
     if (low) {
       rows.push(h('p', { class: 'preview__warning' },
         icon('warning', { size: 14 }),
-        h('span', null, this.i18n.t('preview.contrastLow'))));
+        h('span', null, this.i18n.t(measured ? 'preview.contrastLowImage' : 'preview.contrastLow'))));
     }
     // replaceChildren stringifies anything that is not a node, so the list is
     // built first rather than passing a conditional straight in.

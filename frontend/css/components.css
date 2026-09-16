@@ -403,3 +403,49 @@
   font-size: 11px;
   white-space: nowrap;
 }
+
+/* --- Update notice -------------------------------------------------------
+   Opposite corner to the toasts, so a release notice and a save confirmation
+   never land on top of one another. Logical properties, so it moves to the
+   other side under Arabic along with everything else. */
+
+.updatebar {
+  position: fixed;
+  inset-block-end: var(--space-5);
+  inset-inline-start: var(--space-5);
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: min(420px, calc(100vw - var(--space-5) * 2));
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--accent);
+  overflow-wrap: anywhere;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-raised) 94%, transparent);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+}
+
+.updatebar__mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--accent);
+}
+
+.updatebar__text {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.updatebar__actions {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+}

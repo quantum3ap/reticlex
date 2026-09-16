@@ -21,6 +21,7 @@ const SVG_TAGS = new Set(['svg', 'path', 'circle', 'rect', 'g', 'line', 'polylin
  *   dataset             object copied onto element.dataset
  *   on<Event>           listener, e.g. onClick, onPointerDown
  *   i18n                shorthand for data-i18n
+ *   i18nParams          shorthand for data-i18n-params, as a JSON object
  *   i18nAttr            shorthand for data-i18n-attr
  *   anything else       set as an attribute (or property for value/checked)
  */
@@ -47,6 +48,10 @@ export function h(tag, props = null, ...children) {
         }
       } else if (key === 'i18n') {
         element.dataset.i18n = value;
+      } else if (key === 'i18nParams') {
+        // Kept on the element so a language change can re-fill the same
+        // placeholders, rather than translating once and losing them.
+        element.dataset.i18nParams = JSON.stringify(value);
       } else if (key === 'i18nAttr') {
         element.dataset.i18nAttr = value;
       } else if (key.startsWith('on') && typeof value === 'function') {

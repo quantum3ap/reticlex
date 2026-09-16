@@ -5,7 +5,7 @@ using ReticleX.Core.Models;
 namespace ReticleX.App.Host;
 
 /// <summary>
-/// Registers one system-wide hotkey and reports when it is pressed.
+/// Registers system-wide hotkeys by slot and reports which one was pressed.
 /// </summary>
 /// <remarks>
 /// A global hotkey needs a window to deliver WM_HOTKEY to, but not a visible
@@ -22,7 +22,9 @@ public sealed class HotkeyService : IDisposable
 {
     private const int WM_HOTKEY = 0x0312;
     private const int HWND_MESSAGE = -3;
-    private const int HotkeyId = 0xB19;
+
+    /// <summary>Ids handed to Windows. A slot is an offset from this.</summary>
+    private const int FirstHotkeyId = 0xB19;
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool RegisterHotKey(IntPtr hwnd, int id, uint modifiers, uint virtualKey);
@@ -30,54 +32,60 @@ public sealed class HotkeyService : IDisposable
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool UnregisterHotKey(IntPtr hwnd, int id);
 
-    private readonly Action _onPressed;
+    private readonly Action<int> _onPressed;
     private readonly Action<string, Exception?>? _log;
+    private readonly Dictionary<int, HotkeyBinding> _bindings = new();
     private HwndSource? _source;
-    private bool _registered;
 
-    public HotkeyService(Action onPressed, Action<string, Exception?>? log = null)
+    /// <param name="onPressed">Called with the slot whose combination was pressed.</param>
+    public HotkeyService(Action<int> onPressed, Action<string, Exception?>? log = null)
     {
         _onPressed = onPressed;
         _log = log;
     }
 
-    /// <summary>The binding currently registered, or null when none is.</summary>
-    public HotkeyBinding? Current { get; private set; }
+    /// <summary>The binding registered in a slot, or null when none is.</summary>
+    public HotkeyBinding? Current(int slot) =>
+        _bindings.TryGetValue(slot, out var binding) ? binding : null;
 
     /// <summary>
-    /// Registers <paramref name="binding"/>, replacing whatever was registered
-    /// before. Returns false when Windows refuses it — almost always because
-    /// another application already owns that combination.
+    /// Registers <paramref name="binding"/> in <paramref name="slot"/>,
+    /// replacing whatever was there. Returns false when Windows refuses it —
+    /// almost always because another application already owns that
+    /// combination, and sometimes because another slot here does.
     /// </summary>
-    public bool Apply(HotkeyBinding? binding)
+    public bool Apply(int slot, HotkeyBinding? binding)
     {
-        Release();
+        Release(slot);
         if (binding is null) return false;
 
         var source = EnsureSource();
         if (source is null) return false;
 
-        if (!RegisterHotKey(source.Handle, HotkeyId, (uint)binding.Modifiers, binding.VirtualKey))
+        if (!RegisterHotKey(source.Handle, FirstHotkeyId + slot, (uint)binding.Modifiers, binding.VirtualKey))
         {
             var error = Marshal.GetLastWin32Error();
             _log?.Invoke($"Windows refused the hotkey {binding.Text} (error {error}).", null);
             return false;
         }
 
-        _registered = true;
-        Current = binding;
+        _bindings[slot] = binding;
         return true;
     }
 
-    /// <summary>Gives up the hotkey, leaving the combination to other applications.</summary>
-    public void Release()
+    /// <summary>Gives up one slot, leaving the combination to other applications.</summary>
+    public void Release(int slot)
     {
-        if (_registered && _source is not null)
+        if (_bindings.Remove(slot) && _source is not null)
         {
-            UnregisterHotKey(_source.Handle, HotkeyId);
+            UnregisterHotKey(_source.Handle, FirstHotkeyId + slot);
         }
-        _registered = false;
-        Current = null;
+    }
+
+    /// <summary>Gives up every slot.</summary>
+    public void ReleaseAll()
+    {
+        foreach (var slot in _bindings.Keys.ToArray()) Release(slot);
     }
 
     private HwndSource? EnsureSource()
@@ -107,12 +115,15 @@ public sealed class HotkeyService : IDisposable
 
     private IntPtr OnMessage(IntPtr hwnd, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        if (message != WM_HOTKEY || wParam.ToInt32() != HotkeyId) return IntPtr.Zero;
+        if (message != WM_HOTKEY) return IntPtr.Zero;
+
+        var slot = wParam.ToInt32() - FirstHotkeyId;
+        if (!_bindings.ContainsKey(slot)) return IntPtr.Zero;
 
         handled = true;
         try
         {
-            _onPressed();
+            _onPressed(slot);
         }
         catch (Exception error)
         {
@@ -123,7 +134,7 @@ public sealed class HotkeyService : IDisposable
 
     public void Dispose()
     {
-        Release();
+        ReleaseAll();
         _source?.RemoveHook(OnMessage);
         _source?.Dispose();
         _source = null;
