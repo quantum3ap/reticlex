@@ -173,6 +173,11 @@ up-to-date Windows 10; the installer offers to fetch it if it is missing.
 Your crosshairs, presets and settings live in `%APPDATA%\ReticleX`. ReticleX
 never writes outside your own profile and never asks for administrator rights.
 
+**Upgrading.** Run the new installer over the old version; it clears the
+previous build out of the install folder first, so nothing from an older
+release is left behind. Your crosshairs, overlay profiles and settings are in
+`%APPDATA%\ReticleX` and are never touched by setup.
+
 ## Building from source
 
 ### What you need

@@ -42,6 +42,7 @@ export function localeInfo(code) {
 
 export class I18n {
   #catalogues = new Map();
+  #pending = new Map();
   #locale = DEFAULT_LOCALE;
   #listeners = new Set();
   #missing = new Set();
@@ -63,16 +64,34 @@ export class I18n {
   async preload(code) {
     const resolved = resolveLocale(code);
     if (this.#catalogues.has(resolved)) return this.#catalogues.get(resolved);
-    const catalogue = await this.loader(resolved);
-    this.#catalogues.set(resolved, catalogue);
-    return catalogue;
+
+    // The request is cached, not just its result. use() asks for two
+    // catalogues at once and they can be the same one, which must not become
+    // two downloads of the same file.
+    let inflight = this.#pending.get(resolved);
+    if (!inflight) {
+      inflight = Promise.resolve(this.loader(resolved))
+        .then((catalogue) => {
+          this.#catalogues.set(resolved, catalogue);
+          this.#pending.delete(resolved);
+          return catalogue;
+        })
+        .catch((error) => {
+          this.#pending.delete(resolved);
+          throw error;
+        });
+      this.#pending.set(resolved, inflight);
+    }
+    return inflight;
   }
 
   /** Loads a catalogue and switches to it. English is always kept resident. */
   async use(code) {
     const resolved = resolveLocale(code);
-    await this.preload(DEFAULT_LOCALE);
-    await this.preload(resolved);
+    // Together, not one after the other: English is the fallback behind every
+    // lookup and is needed whichever language was chosen, so waiting for it
+    // before asking for the other buys nothing but a round trip.
+    await Promise.all([this.preload(DEFAULT_LOCALE), this.preload(resolved)]);
     this.#locale = resolved;
     this.#emit();
     return resolved;

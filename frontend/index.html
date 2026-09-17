@@ -17,6 +17,55 @@
   <link rel="stylesheet" href="css/pages.css">
   <link rel="stylesheet" href="css/intro.css">
   <link rel="stylesheet" href="css/rtl.css">
+
+  <!--
+    Start-up begins here rather than at the bottom of the page.
+
+    preload.js runs the moment it lands and puts the core, the English
+    catalogue and the preset pack in flight straight away; app.js imports the
+    same module and so inherits those requests already running. Without it the
+    four things start-up needs are discovered one at a time, each waiting on
+    the one before.
+
+    The modulepreload list is the rest of the graph. A browser otherwise
+    discovers imports a level at a time — open a file, read its imports, fetch
+    those, repeat — which for thirty modules is a long stack of round trips for
+    files it could have asked for all at once. A module missing from this list
+    still loads; it just is not hurried.
+  -->
+  <script type="module" src="js/preload.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+  <link rel="modulepreload" href="js/app.js">
+  <link rel="modulepreload" href="js/core/bridge.js">
+  <link rel="modulepreload" href="js/core/history.js">
+  <link rel="modulepreload" href="js/core/i18n.js">
+  <link rel="modulepreload" href="js/core/library.js">
+  <link rel="modulepreload" href="js/core/schema.js">
+  <link rel="modulepreload" href="js/core/session.js">
+  <link rel="modulepreload" href="js/core/settings.js">
+  <link rel="modulepreload" href="js/core/sharecode.js">
+  <link rel="modulepreload" href="js/core/store.js">
+  <link rel="modulepreload" href="js/core/util.js">
+  <link rel="modulepreload" href="js/core/wasm.js">
+  <link rel="modulepreload" href="js/pages/designer.js">
+  <link rel="modulepreload" href="js/pages/home.js">
+  <link rel="modulepreload" href="js/pages/presets.js">
+  <link rel="modulepreload" href="js/pages/randomizer.js">
+  <link rel="modulepreload" href="js/pages/settings.js">
+  <link rel="modulepreload" href="js/render/preview.js">
+  <link rel="modulepreload" href="js/render/renderer.js">
+  <link rel="modulepreload" href="js/shortcuts.js">
+  <link rel="modulepreload" href="js/ui/cards.js">
+  <link rel="modulepreload" href="js/ui/colorpicker.js">
+  <link rel="modulepreload" href="js/ui/controls.js">
+  <link rel="modulepreload" href="js/ui/dom.js">
+  <link rel="modulepreload" href="js/ui/icons.js">
+  <link rel="modulepreload" href="js/ui/intro.js">
+  <link rel="modulepreload" href="js/ui/modal.js">
+  <link rel="modulepreload" href="js/ui/router.js">
+  <link rel="modulepreload" href="js/ui/toast.js">
+  <link rel="modulepreload" href="js/ui/tooltip.js">
 </head>
 <body>
 
@@ -155,6 +204,5 @@
   <div class="toasts" id="toasts"></div>
 </div>
 
-<script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -109,11 +109,28 @@ export class ReticleCore {
     return new ReticleCore(instance);
   }
 
-  static async load(url = 'assets/reticlex_core.wasm') {
-    const response = await fetch(url);
-    if (!response.ok) throw new CoreError(`Failed to fetch ${url}: ${response.status}`);
-    const bytes = await response.arrayBuffer();
-    return ReticleCore.instantiate(bytes);
+  /**
+   * @param {string|Promise<Response>|Response} source a URL, or a response
+   *        already in flight — preload.js starts one before this module has
+   *        even finished downloading.
+   */
+  static async load(source = 'assets/reticlex_core.wasm') {
+    const response = await (typeof source === 'string' ? fetch(source) : source);
+    if (!response.ok) throw new CoreError(`Failed to fetch the core: ${response.status}`);
+
+    // Streaming compiles the module while its bytes are still arriving, but it
+    // insists on an application/wasm content type and not every server sets
+    // one. The buffered path stays as the fallback rather than being assumed
+    // unnecessary; the clone is what leaves a body for it to read.
+    if (typeof WebAssembly.instantiateStreaming === 'function') {
+      try {
+        const { instance } = await WebAssembly.instantiateStreaming(response.clone(), {});
+        return new ReticleCore(instance);
+      } catch {
+        /* falls through to the buffered path */
+      }
+    }
+    return ReticleCore.instantiate(await response.arrayBuffer());
   }
 
   /* The buffer is detached and replaced whenever the module grows its memory,
