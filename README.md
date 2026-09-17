@@ -159,7 +159,9 @@ Adding a language is one file:
 
 ## Installation
 
-Grab the latest build from [**Releases**](https://github.com/quantum3ap/reticlex/releases).
+Grab the latest build from [**Releases**](https://github.com/quantum3ap/reticlex/releases),
+or from the site at **[quantum3ap.github.io/reticlex](https://quantum3ap.github.io/reticlex/)**,
+which runs the crosshair designer in your browser before you download anything.
 
 | Download | Use it when |
 |---|---|
