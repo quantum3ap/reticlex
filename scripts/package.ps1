@@ -75,6 +75,10 @@ $common = @(
     "-p:AssemblyVersion=$numericVersion",
     "-p:ReticleXNativeDll=$NativeDll",
     '-p:DebugType=none',
+    # Precompiled to native alongside the IL. The alternative is jitting the
+    # whole start-up path on every launch, which is the single largest cost
+    # between double-clicking the icon and seeing a window. It costs disk.
+    '-p:PublishReadyToRun=true',
     '--nologo'
 )
 
@@ -88,13 +92,17 @@ if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed ($LASTEXITCODE)." }
 # on disk for WebView2 to serve it, so without it the single file would start
 # and then find nothing to show. With it, the content is unpacked beside the
 # extracted binaries and AppContext.BaseDirectory points at them.
+#
+# Deliberately not compressed. Compression makes the download smaller and every
+# launch slower, because the bundle is decompressed before anything runs. This
+# is the build people keep on a USB stick and open when they want a crosshair
+# now, so the seconds go to them and the megabytes go to the download.
 Write-Host "==> Publishing the portable build" -ForegroundColor Cyan
 dotnet publish $appProject @common `
     --self-contained true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:IncludeAllContentForSelfExtract=true `
-    -p:EnableCompressionInSingleFile=true `
     -o $portableDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish (portable) failed ($LASTEXITCODE)." }
 

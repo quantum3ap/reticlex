@@ -76,6 +76,22 @@ Name: "japanese";   MessagesFile: "compiler:Languages\Japanese.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
+[InstallDelete]
+; Replace the previous version wholesale rather than writing over the top of
+; it. Copying only overwrites what the new version happens to have a file for,
+; so anything that shipped once and then stopped shipping stays in the install
+; folder for good — and for the web front end a leftover module is not merely
+; clutter, it is a file the interface could still be asked to load.
+;
+; None of this is the user's: crosshairs, overlay profiles and settings live in
+; %APPDATA%\ReticleX, which setup never touches. These four patterns are the
+; payload and nothing else — deliberately not a blanket wipe of {app}, which
+; would take the uninstaller with it.
+Type: filesandordirs; Name: "{app}\app"
+Type: files;          Name: "{app}\*.dll"
+Type: files;          Name: "{app}\*.pdb"
+Type: files;          Name: "{app}\*.json"
+
 [Files]
 ; The staged publish output: the executable, the native core, the web front
 ; end, the translation catalogues and the built-in presets.

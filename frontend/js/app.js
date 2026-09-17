@@ -7,6 +7,7 @@
  * off that object, so no page reaches for a global.
  */
 
+import { builtInPresets, coreResponse, englishCatalogue } from './preload.js';
 import { ReticleCore } from './core/wasm.js';
 import { createBridge } from './core/bridge.js';
 import { I18n, LOCALES, applyTranslations, localeInfo, resolveLocale } from './core/i18n.js';
@@ -74,17 +75,27 @@ class App {
     this.bridge = createBridge();
     this.hasHost = this.bridge.hasHost;
 
-    this.core = await ReticleCore.load('assets/reticlex_core.wasm');
+    // Three things start-up needs that have nothing to do with each other, so
+    // they run together rather than in a line. Two of the fetches were already
+    // put in flight by preload.js before this module finished downloading; the
+    // host call is the only one starting here.
+    const corePromise = ReticleCore.load(coreResponse);
+    const presetsPromise = this.#loadBuiltInPresets();
+    const bootPromise = this.#bootstrapHost();
 
     this.i18n = new I18n({
+      // English is already on its way, so it is taken rather than asked for
+      // again. Every other catalogue is fetched when it is chosen.
       loader: async (code) => {
+        if (code === 'en') return englishCatalogue;
         const response = await fetch(`../localization/${code}.json`);
         if (!response.ok) throw new Error(`Missing catalogue for ${code}`);
         return response.json();
       },
     });
 
-    const boot = await this.#bootstrapHost();
+    this.core = await corePromise;
+    const boot = await bootPromise;
     const { settings } = normalizeSettings(boot.settings);
     this.settings = settings;
     this.appVersion = boot.appVersion ?? '1.0.0';
@@ -105,7 +116,7 @@ class App {
 
     this.session = new Session(this.core);
     this.library = new Library(this.bridge, this.core);
-    this.library.hydrate(boot.crosshairs ?? [], boot.presets ?? [], await this.#loadBuiltInPresets());
+    this.library.hydrate(boot.crosshairs ?? [], boot.presets ?? [], await presetsPromise);
 
     this.toasts = new Toasts(document.getElementById('toasts'), this.i18n);
     this.modals = new Modals(document.body, this.i18n);
@@ -165,9 +176,7 @@ class App {
 
   async #loadBuiltInPresets() {
     try {
-      const response = await fetch('../presets/builtin.json');
-      if (!response.ok) throw new Error(String(response.status));
-      return await response.json();
+      return await builtInPresets;
     } catch (error) {
       // Missing built-ins degrade the Presets page but must not stop start-up.
       console.error('[app] built-in presets unavailable', error);
