@@ -1,46 +1,48 @@
 <title>ReticleX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 
 <style>
 /*
- * ReticleX — the product's own palette, not a new one. These values are
+ * ReticleX — the product's own palette, not a new one. These values come from
  * frontend/css/tokens.css, because the site and the application should not
  * disagree about what ReticleX looks like.
  *
- * Deliberately one theme. ReticleX is a dark studio for a dark game; a
- * light-mode version of this page would be describing a different product.
- * Every colour is therefore painted explicitly, including the body ground, so
- * the page holds whatever the host paints behind it.
+ * Deliberately one theme. ReticleX is a dark studio for a dark game, and a
+ * light-mode version of this page would be describing a different product, so
+ * every colour is painted explicitly and the page holds on any host ground.
  */
 :root {
   color-scheme: dark;
 
-  --ground: #08090c;
-  --deep: #050608;
-  --panel: #151922;
-  --panel-2: #1b2029;
-  --line: rgba(255, 255, 255, 0.075);
-  --line-strong: rgba(255, 255, 255, 0.16);
+  --ground: #07080b;
+  --deep: #040507;
+  --panel: #10141b;
+  --raised: #171c25;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.15);
 
   --mint: #00ff88;
-  --mint-dim: #0e7c4a;
-  --mint-soft: rgba(0, 255, 136, 0.13);
+  --mint-dim: #0f7f4c;
+  --mint-soft: rgba(0, 255, 136, 0.11);
   --mint-ink: #04120b;
 
-  /* Semantic, not decorative: the only other hue on the page marks the one
-     measurement that can fail — a reticle you will not be able to see. */
+  /* The only hue that is not the accent, and it has a job: the one
+     measurement on the page that can fail. */
   --warn: #ffc747;
-  --warn-soft: rgba(255, 199, 71, 0.12);
+  --warn-soft: rgba(255, 199, 71, 0.1);
 
-  --text: #eef1f6;
-  --muted: #98a2b3;
-  --faint: #67707f;
+  --text: #f2f5f9;
+  --muted: #9aa5b5;
+  --faint: #626c7b;
 
   --display: "Saira Condensed", "Arial Narrow", Arial, sans-serif;
   --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
   --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --gutter: 24px;
+  --radius: 5px;
 }
 
 * { box-sizing: border-box; }
@@ -51,390 +53,443 @@ body {
   color: var(--text);
   font-family: var(--body);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.62;
   -webkit-font-smoothing: antialiased;
-  padding-inline: 20px;
+  padding-inline: var(--gutter);
+  overflow-x: hidden;
 }
 
-.wrap { max-width: 1120px; margin: 0 auto; }
-.narrow { max-width: 62ch; }
+.wrap { max-width: 1140px; margin: 0 auto; }
+.measure { max-width: 60ch; }
 
 /* --- type ---------------------------------------------------------------- */
 
-h1, h2, h3, .eyebrow, .tile__name, .spec__value { font-family: var(--display); }
+h1, h2, h3, .eyebrow, .tile__name, .stat__value, .btn { font-family: var(--display); }
 
 h1 {
-  font-size: clamp(42px, 7.4vw, 78px);
+  font-size: clamp(44px, 6.4vw, 72px);
   font-weight: 700;
-  line-height: 0.96;
-  letter-spacing: -0.005em;
-  margin: 0 0 20px;
+  line-height: 0.98;
+  letter-spacing: -0.008em;
+  margin: 0 0 18px;
+  max-width: 17ch;
   text-wrap: balance;
 }
 h1 em { font-style: normal; color: var(--mint); }
 
 h2 {
-  font-size: clamp(27px, 4.2vw, 38px);
+  font-size: clamp(28px, 3.8vw, 40px);
   font-weight: 600;
-  line-height: 1.06;
+  line-height: 1.04;
   margin: 0 0 12px;
+  max-width: 20ch;
   text-wrap: balance;
 }
 
-h3 {
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: 0.005em;
-  margin: 0 0 6px;
-}
+h3 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
 
 .eyebrow {
   font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
+  font-size: 11px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--faint);
-  margin: 0 0 16px;
+  color: var(--mint);
+  margin: 0 0 14px;
 }
+.eyebrow--quiet { color: var(--faint); }
 
 p { margin: 0 0 16px; }
 p:last-child { margin-bottom: 0; }
-.lede { font-size: clamp(17px, 2.1vw, 19px); color: var(--muted); }
+.lede { font-size: clamp(17px, 1.9vw, 19.5px); color: var(--muted); }
 strong { font-weight: 600; color: var(--text); }
 code, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 a { color: var(--mint); text-underline-offset: 3px; }
-a:focus-visible, button:focus-visible, input:focus-visible {
-  outline: 2px solid var(--mint);
-  outline-offset: 3px;
-}
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 2px; }
 
 /* --- masthead ------------------------------------------------------------ */
 
 .masthead {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding-block: 22px 0;
+  gap: 13px;
+  padding-block: 20px;
 }
-.masthead__mark { width: 30px; height: 30px; flex: none; }
-.masthead__name {
-  font-family: var(--display);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
+.masthead__mark { width: 28px; height: 28px; flex: none; }
+.masthead__name { font-family: var(--display); font-size: 21px; font-weight: 700; letter-spacing: 0.01em; }
 .masthead__name span { color: var(--mint); }
 .masthead__spacer { flex: 1; }
-.masthead__link {
-  font-family: var(--mono);
-  font-size: 12.5px;
-  color: var(--muted);
-  text-decoration: none;
-}
-.masthead__link:hover { color: var(--text); }
+.masthead__link { font-family: var(--mono); font-size: 12px; color: var(--muted); text-decoration: none; }
+.masthead__link:hover { color: var(--mint); }
 
 /* --- hero ---------------------------------------------------------------- */
 
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 52px;
-  align-items: center;
-  padding-block: 62px 76px;
-}
+.hero { padding-block: 54px 40px; position: relative; }
 
-.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 26px 14px; }
+/* One light source on the page, behind the instrument. Everything else is
+   flat on purpose so this is the thing the eye goes to. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -180px;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  /* Never wider than the viewport: a decorative glow must not be the thing
+     that gives the page a horizontal scrollbar. */
+  width: min(1100px, 100vw);
+  height: 620px;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 255, 136, 0.11), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero > * { position: relative; z-index: 1; }
+
+.cta { display: flex; flex-wrap: wrap; gap: 11px; margin-block: 26px 12px; }
 
 .btn {
   display: inline-flex;
   align-items: baseline;
   gap: 9px;
-  padding: 13px 19px;
-  border-radius: 3px;
+  padding: 14px 22px;
+  border-radius: var(--radius);
   border: 1px solid transparent;
-  font-family: var(--display);
-  font-size: 17px;
+  font-size: 17.5px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  transition: background 150ms ease, border-color 150ms ease, translate 150ms ease;
 }
-.btn__size { font-family: var(--mono); font-size: 11.5px; font-weight: 400; opacity: 0.72; }
-
-.btn--primary { background: var(--mint); color: var(--mint-ink); }
-.btn--primary:hover { background: #57ffab; }
-
-.btn--quiet {
-  background: transparent;
-  border-color: var(--line-strong);
-  color: var(--text);
-}
+.btn__size { font-family: var(--mono); font-size: 11.5px; font-weight: 400; opacity: 0.7; }
+.btn--primary { background: var(--mint); color: var(--mint-ink); box-shadow: 0 8px 30px -12px var(--mint); }
+.btn--primary:hover { background: #5cffb0; translate: 0 -1px; }
+.btn--quiet { border-color: var(--line-strong); color: var(--text); }
 .btn--quiet:hover { border-color: var(--mint-dim); background: var(--mint-soft); }
 
 .requires { font-family: var(--mono); font-size: 12px; color: var(--faint); margin: 0; }
 
-/* --- the instrument: live preview + controls ----------------------------- */
+/* --- the instrument ------------------------------------------------------ */
 
 .rig {
-  border: 1px solid var(--line);
-  border-radius: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
   background: var(--panel);
   overflow: hidden;
+  box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9);
+  margin-top: 46px;
 }
 
-.rig__label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 14px;
-  border-bottom: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--faint);
-  background: var(--deep);
-}
-.rig__dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--mint);
-  box-shadow: 0 0 0 3px var(--mint-soft);
-  flex: none;
-}
-
-/* A range card: the grid a shooter sights against, which is also the only
-   honest ground to judge a reticle on. */
-.stage {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  max-width: 100%;
-  background:
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 32px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 32px),
-    radial-gradient(120% 120% at 50% 42%, #10161f 0%, #0a0d13 60%, var(--deep) 100%);
-}
+.stage { position: relative; min-height: 360px; background: var(--deep); }
 .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-.readout {
-  display: flex;
-  flex-wrap: wrap;
+.stage__tag {
+  position: absolute;
+  inset-block-start: 14px;
+  inset-inline-start: 16px;
+  z-index: 2;
+  display: inline-flex;
   align-items: center;
-  gap: 6px 16px;
-  padding: 10px 14px;
-  border-top: 1px solid var(--line);
+  gap: 7px;
   font-family: var(--mono);
-  font-size: 11.5px;
-  color: var(--faint);
-}
-.readout b { color: var(--muted); font-weight: 500; }
-
-.controls { display: grid; gap: 14px; padding: 16px 14px 18px; }
-
-.dial { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; }
-.dial__name {
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.05em;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
-.dial__value { font-family: var(--mono); font-size: 12.5px; color: var(--text); font-variant-numeric: tabular-nums; }
+.stage__pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 3px var(--mint-soft);
+}
+
+.readout {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  padding: 11px 16px;
+  border-top: 1px solid var(--line);
+  background: linear-gradient(180deg, transparent, rgba(4, 5, 7, 0.92) 40%);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+.readout b { color: var(--text); font-weight: 500; }
+
+.deck {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  padding: 22px 22px 24px;
+  border-inline-start: 1px solid var(--line);
+  background: var(--raised);
+}
+
+.dial { display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; align-items: center; }
+.dial__name {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dial__value { font-family: var(--mono); font-size: 13px; color: var(--mint); font-variant-numeric: tabular-nums; }
+
+/* Native range controls look like a form; these are instrument dials. */
 .dial input[type="range"] {
   grid-column: 1 / -1;
   width: 100%;
+  height: 18px;
   margin: 0;
-  accent-color: var(--mint);
   background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.dial input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--mint) var(--fill, 0%), rgba(255, 255, 255, 0.11) var(--fill, 0%));
+}
+.dial input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px; height: 13px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--mint);
+  border: 3px solid var(--raised);
+  box-shadow: 0 0 0 1px var(--mint), 0 0 12px -2px var(--mint);
+}
+.dial input[type="range"]::-moz-range-track { height: 3px; border-radius: 3px; background: rgba(255, 255, 255, 0.11); }
+.dial input[type="range"]::-moz-range-progress { height: 3px; border-radius: 3px; background: var(--mint); }
+.dial input[type="range"]::-moz-range-thumb {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--mint); border: 3px solid var(--raised);
+  box-shadow: 0 0 0 1px var(--mint);
 }
 
-.swatches { display: flex; gap: 8px; align-items: center; }
+.swatches { display: flex; gap: 9px; grid-column: 1 / -1; }
 .swatch {
-  width: 24px; height: 24px;
+  width: 26px; height: 26px;
   border-radius: 50%;
-  border: 1px solid var(--line-strong);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   padding: 0;
   cursor: pointer;
+  transition: transform 140ms ease;
 }
-.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--mint); }
-
-/* --- share code ---------------------------------------------------------- */
+.swatch:hover { transform: scale(1.12); }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--raised), 0 0 0 4px var(--mint); }
 
 .code {
   display: flex;
-  align-items: stretch;
-  gap: 0;
-  margin-top: 18px;
   border: 1px solid var(--line-strong);
-  border-radius: 3px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--deep);
 }
 .code__value {
   flex: 1;
   min-width: 0;
-  padding: 11px 13px;
+  padding: 12px 13px;
   font-family: var(--mono);
   font-size: 12.5px;
   color: var(--mint);
-  white-space: nowrap;
-  overflow-x: auto;
   border: 0;
   background: transparent;
+  text-overflow: ellipsis;
 }
 .code__copy {
   flex: none;
-  padding: 0 16px;
+  padding: 0 17px;
   border: 0;
   border-inline-start: 1px solid var(--line-strong);
   background: transparent;
   color: var(--text);
   font-family: var(--display);
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 600;
   cursor: pointer;
 }
 .code__copy:hover { background: var(--mint-soft); color: var(--mint); }
-.code__hint { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin: 8px 0 0; }
+.code__hint { font-family: var(--mono); font-size: 11px; color: var(--faint); margin: 9px 0 0; line-height: 1.5; }
 
 /* --- sections ------------------------------------------------------------ */
 
-section { padding-block: 66px; border-top: 1px solid var(--line); }
+section { padding-block: 84px; }
+section + section { border-top: 1px solid var(--line); }
 
-.section__head { margin-bottom: 30px; }
+/* A heading and the paragraph that qualifies it, side by side. One column of
+   text down the left of a 1140px page leaves half the page doing nothing, and
+   a paragraph run to the full width is too wide to read. */
+.section__head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 0 56px;
+  align-items: start;
+  margin-bottom: 32px;
+}
+.section__head h2 { margin-bottom: 0; }
+.section__head p { max-width: 58ch; }
 
-/* --- preset rack --------------------------------------------------------- */
+/* --- the rack: the best-looking thing ReticleX has, so it gets the room --- */
 
 .rack {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .tile {
   display: grid;
-  gap: 0;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 6px;
   background: var(--panel);
   color: inherit;
   text-align: start;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color 140ms ease, transform 140ms ease;
+  transition: border-color 160ms ease, translate 160ms ease, box-shadow 160ms ease;
 }
-.tile:hover { border-color: var(--mint-dim); transform: translateY(-2px); }
-.tile[aria-pressed="true"] { border-color: var(--mint); }
+.tile:hover {
+  border-color: var(--mint-dim);
+  translate: 0 -3px;
+  box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 1);
+}
+.tile[aria-pressed="true"] { border-color: var(--mint); box-shadow: 0 0 0 1px var(--mint); }
 
 .tile__art {
   aspect-ratio: 1 / 1;
   background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 24px),
+    radial-gradient(70% 70% at 50% 45%, rgba(255, 255, 255, 0.035), transparent 70%),
     var(--deep);
 }
 .tile__art canvas { display: block; width: 100%; height: 100%; }
 
-.tile__foot { padding: 9px 11px 11px; border-top: 1px solid var(--line); display: grid; gap: 2px; }
-.tile__name { font-size: 15.5px; font-weight: 600; }
+.tile__foot { padding: 11px 13px 13px; border-top: 1px solid var(--line); display: grid; gap: 3px; }
+.tile__name { font-size: 16px; font-weight: 600; letter-spacing: 0.005em; }
 .tile__code {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--faint);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* --- features ------------------------------------------------------------ */
+/* --- features: text at a readable width, pictures at full width ---------- */
 
-.features { display: grid; gap: 40px; }
-.feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 4fr); gap: 34px; align-items: center; }
-.feature:nth-child(even) .feature__body { order: 2; }
+.feature + .feature { margin-top: 76px; }
 
-.facts { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
-.facts li { position: relative; padding-inline-start: 18px; color: var(--muted); font-size: 15px; }
+.facts { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.facts li { position: relative; padding-inline-start: 20px; color: var(--muted); font-size: 15.5px; }
 .facts li::before {
   content: "";
   position: absolute;
   inset-inline-start: 0;
-  top: 0.66em;
-  width: 8px; height: 1px;
+  top: 0.68em;
+  width: 10px; height: 1px;
   background: var(--mint-dim);
 }
 
 figure { margin: 0; }
-figure img { display: block; width: 100%; border: 1px solid var(--line); border-radius: 4px; }
-figcaption { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin-top: 9px; }
+figure img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: 0 40px 80px -50px rgba(0, 0, 0, 1);
+}
+figcaption { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin-top: 12px; }
 
-/* The contrast panel: a real measurement, so it gets real numbers. */
-.gauge {
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--panel);
+/* The contrast demonstration: a real measurement, so it gets real numbers. */
+.gauge { position: relative; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+.gauge__art {
+  position: relative;
+  aspect-ratio: 24 / 9;
+  background: linear-gradient(180deg, #22303f 0%, #151c24 58%, #414d36 58%, #333d2b 100%);
 }
-.gauge__art { position: relative; aspect-ratio: 16 / 10; background: linear-gradient(180deg, #223040 0%, #141b22 62%, #3f4a35 62%, #333d2b 100%); }
-.gauge__wall { position: absolute; top: 0; bottom: 0; left: 41%; width: 13%; background: #d6cdae; }
+.gauge__wall { position: absolute; top: 0; bottom: 0; left: 43%; width: 11%; background: #d6cdae; }
 .gauge__art canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.gauge__rows { display: grid; gap: 0; }
-.gauge__row {
+
+.chips {
+  position: absolute;
+  inset-block-end: 14px;
+  inset-inline-start: 14px;
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px;
-  border-top: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 12.5px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.gauge__row span { color: var(--faint); }
-.gauge__row b { font-weight: 500; font-variant-numeric: tabular-nums; }
-.gauge__row--bad b { color: var(--warn); }
-.gauge__row--good b { color: var(--mint); }
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(4, 5, 7, 0.86);
+  backdrop-filter: blur(8px);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.chip span { color: var(--faint); }
+.chip b { font-weight: 500; font-variant-numeric: tabular-nums; }
+.chip--bad { border-color: rgba(255, 199, 71, 0.4); }
+.chip--bad b { color: var(--warn); }
+.chip--good b { color: var(--mint); }
+
 .gauge__note {
   display: flex;
-  gap: 9px;
-  padding: 11px 14px;
-  border-top: 1px solid var(--line);
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line-strong);
   background: var(--warn-soft);
-  font-size: 13.5px;
-  color: var(--text);
+  font-size: 14px;
+  margin: 0;
 }
 .gauge__note::before { content: "!"; font-family: var(--mono); color: var(--warn); font-weight: 500; }
 
-/* --- spec sheet ---------------------------------------------------------- */
+/* --- spec: six facts, three across, never one stranded on a row ---------- */
 
 .spec {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
 }
-.spec > div { background: var(--ground); padding: 17px 18px; display: grid; gap: 3px; }
-.spec__value { font-size: 25px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.spec__name { font-family: var(--mono); font-size: 11.5px; color: var(--faint); letter-spacing: 0.04em; }
+.stat { background: var(--panel); padding: 22px 22px 24px; display: grid; gap: 4px; align-content: start; }
+.stat__value { font-size: 34px; font-weight: 600; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+.stat__value em { font-style: normal; font-size: 19px; color: var(--muted); }
+.stat__name { font-family: var(--mono); font-size: 11.5px; color: var(--faint); letter-spacing: 0.03em; }
 
 /* --- trust --------------------------------------------------------------- */
 
 .trust {
+  border: 1px solid var(--line);
   border-inline-start: 2px solid var(--mint-dim);
-  padding: 2px 0 2px 20px;
+  border-radius: var(--radius);
+  padding: 26px 28px;
+  background: var(--panel);
   color: var(--muted);
 }
-.trust p { max-width: 62ch; }
+.trust p { max-width: 68ch; }
 
 /* --- footer -------------------------------------------------------------- */
 
 footer {
   border-top: 1px solid var(--line);
-  padding-block: 26px 44px;
+  padding-block: 26px 48px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 22px;
+  gap: 10px 24px;
   align-items: baseline;
   font-family: var(--mono);
   font-size: 12px;
@@ -444,15 +499,31 @@ footer a { color: var(--muted); text-decoration: none; }
 footer a:hover { color: var(--mint); }
 footer .grow { flex: 1; }
 
+/* --- narrower ------------------------------------------------------------ */
+
+@media (max-width: 1000px) {
+  .rack { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 @media (max-width: 880px) {
-  .hero { grid-template-columns: 1fr; gap: 36px; padding-block: 40px 52px; }
-  .feature { grid-template-columns: 1fr; gap: 20px; }
-  .feature:nth-child(even) .feature__body { order: 0; }
-  section { padding-block: 50px; }
+  .rig { grid-template-columns: 1fr; }
+  .stage { min-height: 320px; }
+  .deck { border-inline-start: 0; border-top: 1px solid var(--line); }
+  section { padding-block: 60px; }
+  .feature + .feature { margin-top: 56px; }
+  .spec { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section__head { grid-template-columns: 1fr; gap: 14px; }
+}
+
+@media (max-width: 560px) {
+  :root { --gutter: 18px; }
+  .rack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gauge__art { aspect-ratio: 4 / 3; }
+  .chips { position: static; padding: 12px 14px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  *, *::before { transition: none !important; animation: none !important; }
 }
 </style>
 
@@ -477,171 +548,188 @@ footer .grow { flex: 1; }
   </header>
 
   <div class="hero">
-    <div>
-      <p class="eyebrow">Windows · MIT licensed · v1.4.1</p>
-      <h1>Your crosshair, drawn to the <em>pixel</em>.</h1>
-      <p class="lede">A crosshair design studio for Windows. Build a reticle, judge it at 1:1,
-        then draw it over any game with one key. No account, no telemetry, no cost.</p>
+    <p class="eyebrow">Windows · MIT licensed · v1.4.1</p>
+    <h1>Your crosshair, drawn to the <em>pixel</em>.</h1>
+    <p class="lede measure">A crosshair design studio for Windows. Build a reticle, judge it at
+      1:1, then draw it over any game with one key. No account, no telemetry, no cost.</p>
 
-      <div class="cta">
-        <a class="btn btn--primary" href="https://github.com/quantum3ap/reticlex/releases/latest">
-          Download for Windows <span class="btn__size">Setup · 2.8 MB</span>
-        </a>
-        <a class="btn btn--quiet" href="https://github.com/quantum3ap/reticlex/releases/latest">
-          Portable <span class="btn__size">157 MB</span>
-        </a>
-      </div>
-      <p class="requires">Windows 10 1809 or newer, 64-bit. Needs the Edge WebView2 runtime,
-        which Windows 11 already has.</p>
+    <div class="cta">
+      <a class="btn btn--primary" href="https://github.com/quantum3ap/reticlex/releases/latest">
+        Download for Windows <span class="btn__size">Setup · 2.8 MB</span>
+      </a>
+      <a class="btn btn--quiet" href="https://github.com/quantum3ap/reticlex/releases/latest">
+        Portable <span class="btn__size">157 MB</span>
+      </a>
     </div>
+    <p class="requires">Windows 10 1809 or newer, 64-bit. Needs the Edge WebView2 runtime,
+      which Windows 11 already has.</p>
 
-    <div>
-      <div class="rig">
-        <div class="rig__label"><span class="rig__dot"></span>Live — the real core, in your browser</div>
-        <div class="stage"><canvas id="stage" width="640" height="480"></canvas></div>
+    <div class="rig">
+      <div class="stage">
+        <span class="stage__tag"><span class="stage__pulse"></span>Live · the real core, in your browser</span>
+        <canvas id="stage" width="960" height="720"></canvas>
         <div class="readout">
           <span><b id="r-size">—</b> px</span>
           <span><b id="r-shapes">—</b> shapes</span>
           <span><b id="r-zoom">4</b>× zoom</span>
           <span>contrast <b id="r-contrast">—</b></span>
         </div>
-        <div class="controls">
-          <label class="dial" for="d-length">
-            <span class="dial__name">Arm length</span>
-            <span class="dial__value"><span id="v-length">8</span> px</span>
-            <input type="range" id="d-length" min="1" max="30" step="0.5" value="8">
-          </label>
-          <label class="dial" for="d-gap">
-            <span class="dial__name">Centre gap</span>
-            <span class="dial__value"><span id="v-gap">4</span> px</span>
-            <input type="range" id="d-gap" min="0" max="20" step="0.5" value="4">
-          </label>
-          <label class="dial" for="d-thickness">
-            <span class="dial__name">Thickness</span>
-            <span class="dial__value"><span id="v-thickness">2</span> px</span>
-            <input type="range" id="d-thickness" min="1" max="8" step="0.5" value="2">
-          </label>
-          <div class="dial">
-            <span class="dial__name">Colour</span>
-            <span></span>
-            <div class="swatches" id="swatches" role="group" aria-label="Crosshair colour"></div>
-          </div>
-        </div>
       </div>
 
-      <div class="code">
-        <input class="code__value mono" id="code" readonly value="RX1-…" aria-label="Share code for this crosshair">
-        <button class="code__copy" id="copy" type="button">Copy</button>
+      <div class="deck">
+        <label class="dial" for="d-length">
+          <span class="dial__name">Arm length</span>
+          <span class="dial__value"><span id="v-length">8</span> px</span>
+          <input type="range" id="d-length" min="1" max="30" step="0.5" value="8">
+        </label>
+        <label class="dial" for="d-gap">
+          <span class="dial__name">Centre gap</span>
+          <span class="dial__value"><span id="v-gap">4</span> px</span>
+          <input type="range" id="d-gap" min="0" max="20" step="0.5" value="4">
+        </label>
+        <label class="dial" for="d-thickness">
+          <span class="dial__name">Thickness</span>
+          <span class="dial__value"><span id="v-thickness">2</span> px</span>
+          <input type="range" id="d-thickness" min="1" max="8" step="0.5" value="2">
+        </label>
+        <div class="dial">
+          <span class="dial__name">Colour</span>
+          <span></span>
+          <div class="swatches" id="swatches" role="group" aria-label="Crosshair colour"></div>
+        </div>
+
+        <div>
+          <div class="code">
+            <input class="code__value mono" id="code" readonly value="RX1-…" aria-label="Share code for this crosshair">
+            <button class="code__copy" id="copy" type="button">Copy</button>
+          </div>
+          <p class="code__hint" id="code-hint">Paste that into ReticleX and you get exactly this reticle.</p>
+        </div>
       </div>
-      <p class="code__hint" id="code-hint">Paste that into ReticleX and you get exactly this reticle.</p>
     </div>
   </div>
 
   <section id="presets">
     <div class="section__head">
-      <p class="eyebrow">Fifteen built in</p>
-      <h2>Start from one of these.</h2>
-      <p class="lede narrow">Every tile below is drawn by the same core that draws them in the
-        application, from the share code printed under it. Pick one to load it above.</p>
+      <div>
+        <p class="eyebrow">Fifteen built in</p>
+        <h2>Start from one of these.</h2>
+      </div>
+      <p class="lede">Every tile is drawn by the same core that draws it in the application,
+        decoded from the share code printed underneath it. Pick one to load it into the
+        instrument above, then take the code it gives you back.</p>
     </div>
     <div class="rack" id="rack"></div>
   </section>
 
   <section id="what">
-    <div class="features">
 
-      <div class="feature">
-        <div class="feature__body">
+    <div class="feature">
+      <div class="section__head">
+        <div>
           <p class="eyebrow">Overlay</p>
           <h2>One key, and it is on top of the game.</h2>
-          <p>The reticle you designed, drawn over whatever is on screen, by the same rasteriser
-            that drew it in the designer — so what you approved is what you get.</p>
-          <ul class="facts">
-            <li>Click-through and never focusable: the mouse behaves as though it is not there</li>
-            <li>A global shortcut shows and hides it while another window has focus</li>
-            <li>Monitor picker and pixel offsets for multi-monitor and letterboxed setups</li>
-            <li>Four profile slots and a second shortcut that steps between them mid-match</li>
-            <li>Per-monitor DPI, drawn into a 640 px canvas in physical pixels</li>
-          </ul>
         </div>
-        <figure>
-          <img id="shot-designer" alt="The ReticleX designer: a crosshair preview beside its controls." width="1200" height="750">
-          <figcaption>The designer. Every value is a real number in pixels, not a slider with no units.</figcaption>
-        </figure>
+        <div>
+        <p>The reticle you designed, drawn over whatever is on screen, by the same rasteriser
+          that drew it in the designer — so what you approved is what you get.</p>
+        <ul class="facts">
+          <li>Click-through and never focusable: the mouse behaves as though it is not there</li>
+          <li>A global shortcut shows and hides it while another window has focus</li>
+          <li>Monitor picker and pixel offsets for multi-monitor and letterboxed setups</li>
+          <li>Four profile slots and a second shortcut that steps between them mid-match</li>
+          <li>Per-monitor DPI, drawn into a 640 px canvas in physical pixels</li>
+        </ul>
+        </div>
       </div>
+      <figure>
+        <img id="shot-designer" alt="The ReticleX designer: a crosshair preview beside its controls." width="1200" height="750">
+        <figcaption>The designer. Every value is a real number in pixels, not a slider with no units.</figcaption>
+      </figure>
+    </div>
 
-      <div class="feature">
-        <div class="feature__body">
+    <div class="feature">
+      <div class="section__head">
+        <div>
           <p class="eyebrow">Contrast</p>
           <h2>Know before the fight whether you will see it.</h2>
-          <p>Load a screenshot of the game you actually play and the read-out measures the pixels
-            the reticle covers — reporting the <strong>worst</strong> of them, not the average.
-            A crosshair that averages well still disappears against the one pale wall it crosses,
-            and that pixel is the one that loses the fight.</p>
-          <ul class="facts">
-            <li>Scored per pixel under a coverage mask, so the empty middle does not count</li>
-            <li>An outlined reticle is judged on whichever of its two colours stands out more</li>
-            <li>Warns below 3:1 — the readable floor the randomizer already works to</li>
-          </ul>
         </div>
-        <div class="gauge">
-          <div class="gauge__art">
-            <div class="gauge__wall"></div>
-            <canvas id="gauge" width="480" height="300"></canvas>
-          </div>
-          <div class="gauge__rows">
-            <div class="gauge__row gauge__row--bad"><span>Worst contrast</span><b>1.2:1</b></div>
-            <div class="gauge__row gauge__row--good"><span>Typical</span><b>11.6:1</b></div>
-          </div>
-          <p class="gauge__note" style="margin:0">The reticle disappears where it crosses the brightest part of this image.</p>
+        <div>
+        <p>Load a screenshot of the game you actually play and the read-out measures the pixels
+          the reticle covers — reporting the <strong>worst</strong> of them, not the average.
+          A crosshair that averages well still disappears against the one pale wall it crosses,
+          and that pixel is the one that loses the fight.</p>
+        <ul class="facts">
+          <li>Scored per pixel under a coverage mask, so the empty middle does not count</li>
+          <li>An outlined reticle is judged on whichever of its two colours stands out more</li>
+          <li>Warns below 3:1 — the readable floor the randomizer already works to</li>
+        </ul>
         </div>
       </div>
+      <div class="gauge">
+        <div class="gauge__art">
+          <div class="gauge__wall"></div>
+          <canvas id="gauge" width="960" height="360"></canvas>
+          <div class="chips">
+            <span class="chip chip--bad"><span>worst</span><b id="g-bad">—</b></span>
+            <span class="chip chip--good"><span>typical</span><b id="g-good">—</b></span>
+          </div>
+        </div>
+        <p class="gauge__note">Measured, not asserted: the same mint arms read 12.9:1 against the
+          sky and 1.2:1 where they cross the pale wall. ReticleX reports the 1.2.</p>
+      </div>
+    </div>
 
-      <div class="feature">
-        <div class="feature__body">
+    <div class="feature">
+      <div class="section__head">
+        <div>
           <p class="eyebrow">Library</p>
           <h2>Send a crosshair in a chat message.</h2>
-          <p>A reticle is 200 bytes of configuration, so it fits in a line of text. Codes run
-            between 16 and 90 characters — short enough to paste anywhere, and refused rather
-            than half-decoded if they arrive cut short.</p>
-          <ul class="facts">
-            <li>Import and export as JSON as well, with clear errors for anything malformed</li>
-            <li>A randomizer that only produces reticles you could actually aim with</li>
-            <li>Ten languages, including Arabic with a fully mirrored right-to-left layout</li>
-            <li>Undo and redo throughout; a slider drag collapses into one step</li>
-          </ul>
         </div>
-        <figure>
-          <img id="shot-presets" alt="The ReticleX preset library, showing crosshair thumbnails in a grid." width="1200" height="750">
-          <figcaption>The library. Presets and your own saves, side by side.</figcaption>
-        </figure>
+        <div>
+        <p>A reticle is 200 bytes of configuration, so it fits in a line of text. Codes run
+          between 16 and 90 characters — short enough to paste anywhere, and refused rather
+          than half-decoded if they arrive cut short.</p>
+        <ul class="facts">
+          <li>Import and export as JSON as well, with clear errors for anything malformed</li>
+          <li>A randomizer that only produces reticles you could actually aim with</li>
+          <li>Ten languages, including Arabic with a fully mirrored right-to-left layout</li>
+          <li>Undo and redo throughout; a slider drag collapses into one step</li>
+        </ul>
+        </div>
       </div>
-
+      <figure>
+        <img id="shot-presets" alt="The ReticleX preset library, showing crosshair thumbnails in a grid." width="1200" height="750">
+        <figcaption>The library. Presets and your own saves, side by side.</figcaption>
+      </figure>
     </div>
+
   </section>
 
   <section id="spec">
     <div class="section__head">
-      <p class="eyebrow">What it is made of</p>
-      <h2>One core, compiled twice.</h2>
-      <p class="lede narrow">The geometry, the rasteriser, the validation and the randomizer live
+      <div>
+        <p class="eyebrow">What it is made of</p>
+        <h2>One core, compiled twice.</h2>
+      </div>
+      <p class="lede">The geometry, the rasteriser, the validation and the randomizer live
         in one set of C and C++ sources, built as a native library for the application and as a
         WebAssembly module for the browser. That is why the reticle at the top of this page is
         the real thing and not a drawing of one.</p>
     </div>
     <div class="spec">
-      <div><span class="spec__value">200</span><span class="spec__name">bytes per crosshair</span></div>
-      <div><span class="spec__value">50</span><span class="spec__name">fields, schema 2</span></div>
-      <div><span class="spec__value">15</span><span class="spec__name">built-in presets</span></div>
-      <div><span class="spec__value">10</span><span class="spec__name">languages</span></div>
-      <div><span class="spec__value">23 KB</span><span class="spec__name">WebAssembly core</span></div>
-      <div><span class="spec__value">1:1</span><span class="spec__name">designer to overlay</span></div>
+      <div class="stat"><span class="stat__value">200</span><span class="stat__name">bytes per crosshair</span></div>
+      <div class="stat"><span class="stat__value">50</span><span class="stat__name">fields, schema 2</span></div>
+      <div class="stat"><span class="stat__value">15</span><span class="stat__name">built-in presets</span></div>
+      <div class="stat"><span class="stat__value">10</span><span class="stat__name">languages</span></div>
+      <div class="stat"><span class="stat__value">23 <em>KB</em></span><span class="stat__name">WebAssembly core</span></div>
+      <div class="stat"><span class="stat__value">1:1</span><span class="stat__name">designer to overlay</span></div>
     </div>
   </section>
 
   <section id="trust">
     <div class="trust">
-      <p class="eyebrow" style="margin-bottom:10px">Plainly</p>
+      <p class="eyebrow eyebrow--quiet">Plainly</p>
       <p><strong>ReticleX draws a window on top of your screen. That is all it does.</strong>
         It does not read, modify or inject anything into any game, and it never has.</p>
       <p>Your crosshairs and settings stay in <code>%APPDATA%\ReticleX</code>. No telemetry, no
@@ -996,10 +1084,10 @@ async function start() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, width, height);
     const geometry = core.geometry(config);
-    // Held near the application's own default rather than blown up to fill the
-    // panel: past about six times a reticle stops reading as a reticle and
-    // starts reading as four green bars, which is the opposite of the point.
-    const zoom = Math.min(6 * dpr, zoomToFill(geometry, width, height, 26, dpr));
+    // Capped rather than blown up to fill the stage: past about eight times a
+    // reticle stops reading as a reticle and starts reading as four green bars,
+    // which is the opposite of the point.
+    const zoom = Math.min(8 * dpr, zoomToFill(geometry, width, height, 26, dpr));
     draw(ctx, geometry, { zoom, originX: width / 2, originY: height / 2 });
 
     el('r-size').textContent =
@@ -1011,6 +1099,11 @@ async function start() {
     for (const [name, input] of Object.entries(dials)) {
       input.value = String(config[name]);
       values[name].textContent = Number(config[name]).toFixed(1).replace(/\.0$/, '');
+      // The track is painted by a gradient rather than by the browser, so the
+      // filled portion has to be told where it ends.
+      const min = Number(input.min);
+      const span = Number(input.max) - min || 1;
+      input.style.setProperty('--fill', `${((Number(input.value) - min) / span) * 100}%`);
     }
     for (const button of document.querySelectorAll('.swatch')) {
       button.setAttribute('aria-pressed',
@@ -1118,8 +1211,8 @@ async function start() {
       for (const other of rack.querySelectorAll('.tile')) other.setAttribute('aria-pressed', 'false');
       tile.setAttribute('aria-pressed', 'true');
       render();
-      el('presets').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      document.querySelector('.hero').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Up to the instrument, which is where the tile just landed.
+      document.querySelector('.rig').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   }
 
@@ -1139,10 +1232,8 @@ async function start() {
 
     const WALL = 0xD6CDAE;
     const SKY = 0x141B22;
-    document.querySelector('.gauge__row--bad b').textContent =
-      `${core.contrast(hex(bare), WALL).toFixed(1)}:1`;
-    document.querySelector('.gauge__row--good b').textContent =
-      `${core.contrast(hex(bare), SKY).toFixed(1)}:1`;
+    el('g-bad').textContent = `${core.contrast(hex(bare), WALL).toFixed(1)}:1`;
+    el('g-good').textContent = `${core.contrast(hex(bare), SKY).toFixed(1)}:1`;
   }
 }
 
