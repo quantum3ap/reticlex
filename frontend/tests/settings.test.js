@@ -210,6 +210,17 @@ test('a slot list of the wrong shape is repaired rather than trusted', () => {
   assert.equal(settings.overlaySlot, -1, 'an index outside the slots falls back to unset');
 });
 
+test('following the cursor stays off unless the file says otherwise', () => {
+  // A settings.json written before the option existed must keep the placement
+  // it was written with, which is the centre of the screen.
+  assert.equal(normalizeSettings({ theme: 'dark' }).settings.overlayFollowCursor, false);
+  for (const value of ['true', 1, 'yes', {}, [], 'on', null, undefined]) {
+    assert.equal(
+      normalizeSettings({ overlayFollowCursor: value }).settings.overlayFollowCursor, false);
+  }
+  assert.equal(normalizeSettings({ overlayFollowCursor: true }).settings.overlayFollowCursor, true);
+});
+
 test('the cycle hotkey only accepts a combination the overlay offers', () => {
   assert.equal(normalizeSettings({ overlayCycleHotkey: 'Ctrl+F9' }).settings.overlayCycleHotkey, 'Ctrl+F9');
   for (const bad of ['Ctrl+Q', 'nonsense', 7, null]) {

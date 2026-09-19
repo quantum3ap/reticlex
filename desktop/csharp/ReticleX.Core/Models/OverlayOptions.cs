@@ -43,12 +43,24 @@ public sealed class OverlayOptions
     /// </summary>
     public string CycleHotkey { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Draws the reticle at the mouse pointer instead of at the centre of a
+    /// monitor. Off by default, which is the placement every other setting
+    /// here is written around.
+    /// </summary>
+    /// <remarks>
+    /// This only changes where the overlay window is put. Nothing reads or
+    /// moves the pointer: the position is asked for, the window follows it.
+    /// </remarks>
+    public bool FollowCursor { get; init; }
+
     public static OverlayOptions Defaults() => new();
 
     /// <summary>Clamps every field into a range the overlay can actually use.</summary>
     public OverlayOptions Sanitized() => new()
     {
         Enabled = Enabled,
+        FollowCursor = FollowCursor,
         Monitor = string.IsNullOrWhiteSpace(Monitor) ? string.Empty : Monitor.Trim(),
         OffsetX = Math.Clamp(OffsetX, -MaxOffset, MaxOffset),
         OffsetY = Math.Clamp(OffsetY, -MaxOffset, MaxOffset),
@@ -64,9 +76,11 @@ public sealed class OverlayOptions
         int? offsetX = null,
         int? offsetY = null,
         string? hotkey = null,
-        string? cycleHotkey = null) => new OverlayOptions
+        string? cycleHotkey = null,
+        bool? followCursor = null) => new OverlayOptions
         {
             Enabled = enabled ?? Enabled,
+            FollowCursor = followCursor ?? FollowCursor,
             Monitor = monitor ?? Monitor,
             OffsetX = offsetX ?? OffsetX,
             OffsetY = offsetY ?? OffsetY,
@@ -84,4 +98,18 @@ public sealed class OverlayOptions
         var centreY = monitorTop + (monitorHeight / 2);
         return (centreX - (CanvasSize / 2) + OffsetX, centreY - (CanvasSize / 2) + OffsetY);
     }
+
+    /// <summary>
+    /// Top-left corner, in physical pixels, that centres the canvas on the
+    /// pointer and then applies the user's offset.
+    /// </summary>
+    /// <remarks>
+    /// The result is deliberately not clamped to any monitor. Near a screen
+    /// edge the canvas hangs off it, which is correct: the reticle belongs at
+    /// the pointer, and a layered window partly outside the desktop is
+    /// perfectly ordinary. Clamping would drag the reticle off the pointer
+    /// exactly where aiming into a corner matters.
+    /// </remarks>
+    public (int X, int Y) TopLeftForCursor(int cursorX, int cursorY) =>
+        (cursorX - (CanvasSize / 2) + OffsetX, cursorY - (CanvasSize / 2) + OffsetY);
 }

@@ -83,6 +83,7 @@ export function defaultSettings() {
     overlayOffsetY: 0,
     overlayHotkey: DEFAULT_OVERLAY_HOTKEY,
     overlayCycleHotkey: '',
+    overlayFollowCursor: false,
     overlaySlots: Array.from({ length: OVERLAY_SLOTS }, () => null),
     // -1 is "no slot has been activated yet", so the first press of the cycle
     // hotkey lands on the first filled slot rather than stepping past it.
@@ -171,6 +172,10 @@ export function normalizeSettings(raw) {
   // Empty is a real answer here and the default one: no second hotkey.
   settings.overlayCycleHotkey = OVERLAY_HOTKEYS.includes(raw.overlayCycleHotkey)
     ? raw.overlayCycleHotkey : '';
+
+  // Off unless the file says otherwise, so a settings.json written before the
+  // option existed keeps the placement it was written with.
+  settings.overlayFollowCursor = raw.overlayFollowCursor === true;
 
   // A slot holds the id of a saved crosshair. Whether that crosshair still
   // exists is the library's business, checked when the slot is used, so a

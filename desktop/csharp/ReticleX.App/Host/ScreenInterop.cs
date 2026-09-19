@@ -40,6 +40,12 @@ internal static class ScreenInterop
     private const int MONITOR_DEFAULTTONEAREST = 2;
 
     [StructLayout(LayoutKind.Sequential)]
+    private struct POINT
+    {
+        public int X, Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     private struct RECT
     {
         public int Left, Top, Right, Bottom;
@@ -70,6 +76,12 @@ internal static class ScreenInterop
 
     [DllImport("user32.dll")]
     private static extern IntPtr MonitorFromWindow(IntPtr hwnd, int flags);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromPoint(POINT point, int flags);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool GetCursorPos(out POINT point);
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern int GetWindowLongW(IntPtr hwnd, int index);
@@ -106,6 +118,30 @@ internal static class ScreenInterop
 
         found.Sort((a, b) => b.IsPrimary.CompareTo(a.IsPrimary));
         return found;
+    }
+
+    /// <summary>
+    /// Where the pointer is, in physical pixels, or null if Windows would not
+    /// say — which it does on a locked or secure desktop.
+    /// </summary>
+    /// <remarks>
+    /// This is a plain read of the one position Windows already publishes to
+    /// every program on the desktop. It is not a hook: nothing is installed
+    /// into the input chain, no other process is opened, no button or key is
+    /// observed, and the pointer is never moved. The overlay needs somewhere
+    /// to put a window and this is the cheapest way to ask.
+    /// </remarks>
+    public static (int X, int Y)? CursorPosition() =>
+        GetCursorPos(out var point) ? (point.X, point.Y) : null;
+
+    /// <summary>The display a point falls on, or null if there is none.</summary>
+    public static MonitorInfo? MonitorForPoint(int x, int y)
+    {
+        var monitor = MonitorFromPoint(new POINT { X = x, Y = y }, MONITOR_DEFAULTTONEAREST);
+        if (monitor == IntPtr.Zero) return null;
+
+        var info = new MONITORINFOEXW { cbSize = Marshal.SizeOf<MONITORINFOEXW>() };
+        return GetMonitorInfoW(monitor, ref info) ? Describe(monitor, info) : null;
     }
 
     /// <summary>The display a window is mostly on, or null if it has none yet.</summary>

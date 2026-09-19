@@ -72,6 +72,9 @@ outside ReticleX.
   combinations, and works while another window has focus
 - **Four profile slots** holding saved crosshairs, and a second shortcut that
   steps between the filled ones without leaving your game
+- **Follow the mouse** — draw the reticle at the pointer instead of at the
+  centre of the screen, across every monitor. Off by default, which leaves it
+  in the middle. The pointer position is read, never hooked and never moved
 - Monitor picker and pixel offsets for multi-monitor and letterboxed setups
 - Drawn by the same rasteriser as the designer at 1:1, so what you designed is
   what appears — and edits land on screen as you make them
@@ -159,7 +162,9 @@ Adding a language is one file:
 
 ## Installation
 
-Grab the latest build from [**Releases**](https://github.com/quantum3ap/reticlex/releases).
+Grab the latest build from [**Releases**](https://github.com/quantum3ap/reticlex/releases),
+or from the site at **[quantum3ap.github.io/reticlex](https://quantum3ap.github.io/reticlex/)**,
+which runs the crosshair designer in your browser before you download anything.
 
 | Download | Use it when |
 |---|---|
@@ -391,8 +396,12 @@ log keystrokes, or communicate with a game in any way. The overlay is an
 ordinary always-on-top window that knows nothing about what is underneath it;
 the global shortcut is registered with Windows through `RegisterHotKey`, which
 delivers that one combination and nothing else — no keyboard hook, and no other
-key ever reaches this process. There is nothing here to bypass anti-cheat with,
-and nothing that would want to.
+key ever reaches this process. When the overlay is set to follow the mouse it
+asks Windows where the pointer is, sixty times a second, with `GetCursorPos` —
+a plain read of the one position every program on the desktop can already see.
+That is not a mouse hook either: nothing is installed into the input chain, no
+click or movement is observed, and the pointer is never moved. There is nothing
+here to bypass anti-cheat with, and nothing that would want to.
 
 **A note on the overlay and competitive games.** Some games prohibit
 third-party crosshair overlays in their rules and will act on it, regardless of

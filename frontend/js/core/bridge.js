@@ -201,6 +201,7 @@ class LocalBridge {
           offsetY: 0,
           hotkey: 'Ctrl+Shift+X',
           hotkeyRegistered: false,
+          followCursor: false,
           maxOffset: 4000,
           monitors: [],
         };
