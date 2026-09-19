@@ -148,6 +148,18 @@ export function createSettingsPage(app) {
     },
   });
 
+  const followToggle = createToggle({
+    i18n,
+    labelKey: 'overlay.followCursor',
+    tipKey: 'overlay.followCursorTip',
+    checked: app.overlay.followCursor,
+    onChange: async (checked) => {
+      const state = await app.setOverlay({ followCursor: checked });
+      followToggle.set(state.followCursor);
+      renderOverlay();
+    },
+  });
+
   const monitorSelect = createSelect({
     i18n,
     labelKey: 'overlay.monitor',
@@ -192,6 +204,7 @@ export function createSettingsPage(app) {
     onChange: (value) => app.setOverlay({ hotkey: value }),
   });
 
+  const overlayFollowHint = h('p', { class: 'settings__hint' });
   const overlayHint = h('p', { class: 'settings__hint' });
   const overlayTrayHint = h('p', { class: 'settings__hint' });
   const overlayNotice = h('p', { class: 'settings__hint settings__hint--warn' });
@@ -224,6 +237,7 @@ export function createSettingsPage(app) {
   function renderOverlay() {
     const state = app.overlay;
     overlayToggle.set(state.enabled);
+    followToggle.set(state.followCursor);
     offsetX.set(state.offsetX);
     offsetY.set(state.offsetY);
     hotkeySelect.set(state.hotkey);
@@ -262,6 +276,11 @@ export function createSettingsPage(app) {
       })),
     ], state.monitor);
 
+    // Said only while it applies: the monitor picker goes quiet in this mode
+    // and the offsets stop meaning "from the centre of the screen".
+    overlayFollowHint.textContent = state.followCursor ? i18n.t('overlay.followCursorHint') : '';
+    overlayFollowHint.hidden = !state.followCursor;
+
     overlayHint.textContent = i18n.t('overlay.hint', { hotkey: state.hotkey });
     // Only true in the desktop build; a browser has no notification area.
     overlayTrayHint.textContent = state.supported ? i18n.t('overlay.trayHint') : '';
@@ -276,9 +295,13 @@ export function createSettingsPage(app) {
     overlayNotice.textContent = problem;
     overlayNotice.hidden = problem === '';
 
-    for (const control of [overlayToggle, monitorSelect, offsetX, offsetY, hotkeySelect]) {
+    for (const control of [overlayToggle, followToggle, offsetX, offsetY, hotkeySelect]) {
       control.element.classList.toggle('is-disabled', !state.supported);
     }
+    // Nothing for the picker to choose while the reticle crosses every
+    // monitor with the pointer.
+    monitorSelect.element.classList.toggle(
+      'is-disabled', !state.supported || state.followCursor);
   }
 
   const aboutList = h('dl', { class: 'about' });
@@ -330,6 +353,8 @@ export function createSettingsPage(app) {
 
     settingsCard('overlay.title', 'monitor', [
       overlayToggle.element,
+      followToggle.element,
+      overlayFollowHint,
       monitorSelect.element,
       offsetX.element,
       offsetY.element,

@@ -66,6 +66,7 @@ class App {
       hotkeyRegistered: false,
       cycleHotkey: '',
       cycleHotkeyRegistered: true,
+      followCursor: false,
       maxOffset: OVERLAY_OFFSET.max,
       monitors: [],
     };
@@ -840,6 +841,7 @@ class App {
         offsetY: this.settings.overlayOffsetY,
         hotkey: this.settings.overlayHotkey,
         cycleHotkey: this.settings.overlayCycleHotkey,
+        followCursor: this.settings.overlayFollowCursor,
         config: this.session.config,
       });
       this.#applyOverlayState(state);
@@ -861,6 +863,7 @@ class App {
       hotkeyRegistered: Boolean(state.hotkeyRegistered),
       cycleHotkey: typeof state.cycleHotkey === 'string' ? state.cycleHotkey : '',
       cycleHotkeyRegistered: state.cycleHotkeyRegistered !== false,
+      followCursor: state.followCursor === true,
       maxOffset: Number(state.maxOffset) || OVERLAY_OFFSET.max,
       monitors: Array.isArray(state.monitors) ? state.monitors : [],
     };
@@ -873,6 +876,7 @@ class App {
         overlayOffsetY: this.overlay.offsetY,
         overlayHotkey: this.overlay.hotkey,
         overlayCycleHotkey: this.overlay.cycleHotkey,
+        overlayFollowCursor: this.overlay.followCursor,
       });
     }
     this.store.set({ overlayRevision: Date.now() });
@@ -882,7 +886,8 @@ class App {
 
   /**
    * Applies an overlay change and remembers it.
-   * @param {object} patch any of enabled, monitor, offsetX, offsetY, hotkey
+   * @param {object} patch any of enabled, monitor, offsetX, offsetY, hotkey,
+   *   cycleHotkey, followCursor
    */
   async setOverlay(patch) {
     try {

@@ -471,7 +471,8 @@ public sealed class WebBridge
                 offsetX: Whole(parameters, "offsetX"),
                 offsetY: Whole(parameters, "offsetY"),
                 hotkey: parameters["hotkey"]?.GetValue<string>(),
-                cycleHotkey: parameters["cycleHotkey"]?.GetValue<string>()));
+                cycleHotkey: parameters["cycleHotkey"]?.GetValue<string>(),
+                followCursor: Flag(parameters, "followCursor")));
 
             return OverlayState(applied);
         });
@@ -530,6 +531,7 @@ public sealed class WebBridge
             ["hotkeyRegistered"] = _overlay.HotkeyRegistered,
             ["cycleHotkey"] = options.CycleHotkey,
             ["cycleHotkeyRegistered"] = _overlay.CycleHotkeyRegistered,
+            ["followCursor"] = options.FollowCursor,
             ["maxOffset"] = OverlayOptions.MaxOffset,
             ["monitors"] = monitors,
         };

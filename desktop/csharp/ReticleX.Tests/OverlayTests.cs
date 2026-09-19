@@ -170,4 +170,67 @@ public class OverlayOptionsTests
         Assert.Equal(-2560 + 1280 - (OverlayOptions.CanvasSize / 2), x);
         Assert.Equal(-200 + 720 - (OverlayOptions.CanvasSize / 2), y);
     }
+
+    [Fact]
+    public void FollowingTheCursorIsOffUntilItIsAskedFor()
+    {
+        Assert.False(OverlayOptions.Defaults().FollowCursor);
+        Assert.True(OverlayOptions.Defaults().With(followCursor: true).FollowCursor);
+    }
+
+    [Fact]
+    public void FollowingSurvivesSanitizingAndEveryOtherChange()
+    {
+        var options = new OverlayOptions { FollowCursor = true, OffsetX = 999_999 }.Sanitized();
+        Assert.True(options.FollowCursor);
+        Assert.True(options.With(offsetY: 12).FollowCursor);
+        Assert.True(options.With(monitor: @"\\.\DISPLAY2").FollowCursor);
+        Assert.False(options.With(followCursor: false).FollowCursor);
+    }
+
+    [Fact]
+    public void TheCanvasIsCentredOnThePointer()
+    {
+        var (x, y) = OverlayOptions.Defaults().With(followCursor: true).TopLeftForCursor(1200, 800);
+        Assert.Equal(1200 - (OverlayOptions.CanvasSize / 2), x);
+        Assert.Equal(800 - (OverlayOptions.CanvasSize / 2), y);
+    }
+
+    [Fact]
+    public void OffsetsMoveTheCanvasFromThePointerToo()
+    {
+        // Sitting the reticle just above the pointer is the reason the offsets
+        // stay live while following, rather than being ignored.
+        var options = new OverlayOptions { FollowCursor = true, OffsetX = 6, OffsetY = -18 }.Sanitized();
+        var (x, y) = options.TopLeftForCursor(1200, 800);
+        Assert.Equal(1200 - (OverlayOptions.CanvasSize / 2) + 6, x);
+        Assert.Equal(800 - (OverlayOptions.CanvasSize / 2) - 18, y);
+    }
+
+    [Fact]
+    public void APointerOnAMonitorLeftOfThePrimaryKeepsItsNegativeCoordinates()
+    {
+        var (x, y) = OverlayOptions.Defaults().TopLeftForCursor(-1400, -60);
+        Assert.Equal(-1400 - (OverlayOptions.CanvasSize / 2), x);
+        Assert.Equal(-60 - (OverlayOptions.CanvasSize / 2), y);
+    }
+
+    [Fact]
+    public void ThePointerInACornerIsNotDraggedBackOnScreen()
+    {
+        // Half the canvas hangs off the desktop here, which is the point: the
+        // reticle has to stay under the pointer when aiming into a corner.
+        var (x, y) = OverlayOptions.Defaults().TopLeftForCursor(0, 0);
+        Assert.Equal(-(OverlayOptions.CanvasSize / 2), x);
+        Assert.Equal(-(OverlayOptions.CanvasSize / 2), y);
+    }
+
+    [Fact]
+    public void TheTwoPlacementsAgreeWhenThePointerIsAtTheCentre()
+    {
+        // Switching the setting on with the pointer already in the middle of
+        // the screen must not move the reticle.
+        var options = new OverlayOptions { OffsetX = 7, OffsetY = -9 }.Sanitized();
+        Assert.Equal(options.TopLeftFor(0, 0, 1920, 1080), options.TopLeftForCursor(960, 540));
+    }
 }

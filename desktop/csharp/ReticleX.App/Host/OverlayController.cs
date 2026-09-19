@@ -140,16 +140,24 @@ public sealed class OverlayController : IDisposable
     {
         try
         {
-            _window ??= CreateWindow();
-            if (_hasConfig) _window.SetConfig(_config);
+            var window = _window ??= CreateWindow();
+            if (_hasConfig) window.SetConfig(_config);
 
-            var monitor = ResolveMonitor();
-            if (monitor is not null) _window.PlaceOn(monitor, Options);
+            // Following the pointer needs no monitor: the reticle goes
+            // wherever the pointer is, across all of them.
+            var monitor = Options.FollowCursor ? null : ResolveMonitor();
 
-            if (!_window.IsVisible) _window.Show();
+            void Position()
+            {
+                if (Options.FollowCursor) window.FollowCursor(Options);
+                else if (monitor is not null) window.PlaceOn(monitor, Options);
+            }
+
+            Position();
+            if (!window.IsVisible) window.Show();
             // Re-assert placement after Show: WPF may have moved the window
             // onto whichever monitor it thought was appropriate.
-            if (monitor is not null) _window.PlaceOn(monitor, Options);
+            Position();
         }
         catch (Exception error)
         {

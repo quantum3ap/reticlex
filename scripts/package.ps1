@@ -93,16 +93,18 @@ if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed ($LASTEXITCODE)." }
 # and then find nothing to show. With it, the content is unpacked beside the
 # extracted binaries and AppContext.BaseDirectory points at them.
 #
-# Deliberately not compressed. Compression makes the download smaller and every
-# launch slower, because the bundle is decompressed before anything runs. This
-# is the build people keep on a USB stick and open when they want a crosshair
-# now, so the seconds go to them and the megabytes go to the download.
+# Compressed. Dropping this in 1.4.1 to save a second on the very first launch
+# took the portable build from 66 MB to 157 MB, which is past what a release
+# asset uploads reliably and is paid by everyone who downloads it. The cost it
+# saves is paid once: the bundle is extracted to a cache on first run and
+# reused afterwards. Megabytes every time beats a second once.
 Write-Host "==> Publishing the portable build" -ForegroundColor Cyan
 dotnet publish $appProject @common `
     --self-contained true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:IncludeAllContentForSelfExtract=true `
+    -p:EnableCompressionInSingleFile=true `
     -o $portableDir
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish (portable) failed ($LASTEXITCODE)." }
 
@@ -120,6 +122,14 @@ if (-not (Test-Path $portableSource)) { throw 'The portable ReticleX.exe was not
 $portableSize = (Get-Item $portableSource).Length
 if ($portableSize -lt 30MB) {
     throw "The portable build is only $portableSize bytes, so its payload cannot be embedded."
+}
+# A ceiling as well as a floor. 1.4.1 shipped a 157 MB portable because the
+# compression flag had been dropped, and nothing noticed until the release
+# upload refused it. A compressed build is around 66 MB, so this catches the
+# flag going missing again while leaving room for the app to grow.
+if ($portableSize -gt 120MB) {
+    throw ("The portable build is {0:N0} bytes. That is far past a compressed " +
+           "single file, so EnableCompressionInSingleFile is not taking effect." -f $portableSize)
 }
 
 $portableExe = Join-Path $OutputDir "ReticleX-v$Version-Portable.exe"
